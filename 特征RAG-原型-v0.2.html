@@ -1,0 +1,1508 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Feature Knowledge Library · 特征知识库 v0.2</title>
+<style>
+:root{
+  --primary:#3B82F6;
+  --primary-hover:#2563EB;
+  --primary-light:#EFF6FF;
+  --danger:#EF4444;
+  --warn:#F59E0B;
+  --success:#10B981;
+  --success-light:#D1FAE5;
+  --required:#F97316;
+  --text-1:#111827;
+  --text-2:#374151;
+  --text-3:#6B7280;
+  --text-4:#9CA3AF;
+  --border:#E5E7EB;
+  --border-strong:#D1D5DB;
+  --bg:#FFFFFF;
+  --bg-soft:#F9FAFB;
+  --bg-hover:#F3F4F6;
+  --radius:6px;
+  --radius-lg:10px;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:0 4px 12px rgba(0,0,0,.08);
+  --shadow-lg:0 12px 32px rgba(0,0,0,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  color:var(--text-1);
+  background:var(--bg-soft);
+  font-size:14px;
+  line-height:1.5;
+}
+
+/* ---------- Top nav ---------- */
+.topbar{
+  background:#fff;
+  border-bottom:1px solid var(--border);
+  padding:0 24px;
+  height:56px;
+  display:flex;
+  align-items:center;
+  gap:32px;
+  position:sticky;top:0;z-index:100;
+}
+.brand{font-weight:700;font-size:16px;color:var(--text-1)}
+.brand-sub{color:var(--text-3);font-weight:400;font-size:13px;margin-left:6px}
+.tabs{display:flex;gap:4px;flex:1}
+.tab{
+  padding:8px 14px;border-radius:var(--radius);cursor:pointer;
+  color:var(--text-2);font-weight:500;
+  transition:all .15s;
+}
+.tab:hover{background:var(--bg-hover)}
+.tab.active{background:var(--primary-light);color:var(--primary)}
+.env-badge{
+  padding:4px 10px;background:#FEF3C7;color:#92400E;
+  border-radius:var(--radius);font-size:12px;font-weight:600;
+}
+
+/* ---------- Page shell ---------- */
+.page{display:none;padding:24px 32px;max-width:1440px;margin:0 auto}
+.page.active{display:block}
+.page-header{margin-bottom:20px;display:flex;align-items:flex-end;justify-content:space-between;gap:16px}
+.page-title{font-size:22px;font-weight:700;color:var(--text-1)}
+.page-sub{color:var(--text-3);margin-top:4px;font-size:13px}
+.crumb{color:var(--text-3);font-size:12px;margin-bottom:6px}
+.crumb .sep{margin:0 6px;color:var(--text-4)}
+
+/* ---------- Buttons ---------- */
+.btn{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:8px 14px;border-radius:var(--radius);
+  border:1px solid transparent;cursor:pointer;
+  font-size:13px;font-weight:600;
+  transition:all .15s;
+  background:#fff;color:var(--text-2);border-color:var(--border);
+}
+.btn:hover{background:var(--bg-hover)}
+.btn-primary{background:var(--primary);color:#fff;border-color:var(--primary)}
+.btn-primary:hover{background:var(--primary-hover);border-color:var(--primary-hover)}
+.btn-ghost{background:transparent;border-color:transparent;color:var(--primary);padding:6px 8px}
+.btn-ghost:hover{background:var(--primary-light)}
+.btn-danger-ghost{color:var(--danger);background:transparent;border-color:transparent}
+.btn-danger-ghost:hover{background:#FEE2E2}
+.btn-sm{padding:5px 10px;font-size:12px}
+.icon{display:inline-block;width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* ---------- KPI bar ---------- */
+.kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px}
+.kpi{
+  background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);
+  padding:14px 16px;cursor:pointer;transition:all .15s;
+}
+.kpi:hover{border-color:var(--primary);box-shadow:var(--shadow-sm)}
+.kpi-label{font-size:12px;color:var(--text-3);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.kpi-value{font-size:22px;font-weight:700;color:var(--text-1)}
+.kpi-value .unit{font-size:12px;color:var(--text-3);font-weight:400;margin-left:4px}
+.dot{width:6px;height:6px;border-radius:50%;display:inline-block}
+.dot.blue{background:var(--primary)}
+.dot.green{background:var(--success)}
+.dot.amber{background:var(--warn)}
+.dot.red{background:var(--danger)}
+.dot.gray{background:var(--text-4)}
+
+/* ---------- Filter panel ---------- */
+.filter-card{
+  background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);
+  padding:16px 20px;margin-bottom:16px;
+}
+.filter-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px 20px}
+.field-label{font-weight:700;font-size:13px;color:var(--text-1);margin-bottom:6px;display:block}
+.req{color:var(--required);margin-left:2px}
+.input,.select{
+  width:100%;padding:8px 10px;
+  border:1px solid var(--border);border-radius:var(--radius);
+  font-size:13px;color:var(--text-1);background:#fff;
+  transition:border-color .15s;
+}
+.input:focus,.select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(59,130,246,.12)}
+.input::placeholder{color:var(--text-4)}
+.select{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%239CA3AF' stroke-width='2'><path d='M6 9l6 6 6-6'/></svg>");background-repeat:no-repeat;background-position:right 10px center;appearance:none;padding-right:28px}
+.filter-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
+
+/* ---------- Table ---------- */
+.table-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.table-toolbar{
+  padding:12px 20px;border-bottom:1px solid var(--border);
+  display:flex;justify-content:space-between;align-items:center;
+}
+.table-toolbar .left{display:flex;align-items:center;gap:12px;color:var(--text-3);font-size:13px}
+.table-toolbar .right{display:flex;gap:8px}
+table{width:100%;border-collapse:collapse}
+th{
+  background:var(--bg-soft);text-align:left;
+  font-size:12px;font-weight:600;color:var(--text-3);
+  padding:11px 16px;border-bottom:1px solid var(--border);
+  text-transform:uppercase;letter-spacing:.02em;white-space:nowrap;
+}
+td{padding:14px 16px;border-bottom:1px solid var(--border);vertical-align:middle;font-size:13px}
+tbody tr:hover{background:var(--primary-light)}
+.code{font-family:"SF Mono",Consolas,monospace;font-size:12px;color:var(--text-2);background:var(--bg-soft);padding:2px 6px;border-radius:4px}
+.cell-name{display:flex;flex-direction:column;gap:2px}
+.cell-name .en{color:var(--text-1);font-weight:500}
+.cell-name .cn{color:var(--text-3);font-size:12px}
+
+/* ---------- Chip / Badge ---------- */
+.chip{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:2px 8px;border-radius:12px;
+  font-size:11px;font-weight:600;
+}
+.chip.type-ord{background:#DBEAFE;color:#1E40AF}
+.chip.type-metric{background:#EDE9FE;color:#5B21B6}
+.chip.type-model{background:#FCE7F3;color:#9D174D}
+.chip.sla-a{background:var(--success-light);color:#065F46}
+.chip.sla-b{background:#FEF3C7;color:#92400E}
+.chip.sla-c{background:#FEE2E2;color:#991B1B}
+.chip.status-indexed{background:var(--success-light);color:#065F46}
+.chip.status-pending{background:#FEF3C7;color:#92400E}
+.chip.status-failed{background:#FEE2E2;color:#991B1B}
+.chip.status-neligible{background:#F3F4F6;color:var(--text-3)}
+.quality{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600}
+.quality-bar{width:60px;height:5px;background:var(--bg-hover);border-radius:3px;overflow:hidden}
+.quality-bar > i{display:block;height:100%;border-radius:3px}
+.q-good{color:#047857}.q-good > i,.q-good ~ .quality-bar > i{background:var(--success)}
+.q-mid{color:#B45309}
+.q-bad{color:#991B1B}
+
+/* ---------- F2 · 3-col detail ---------- */
+.detail-grid{display:grid;grid-template-columns:340px 1fr 380px;gap:16px}
+.panel{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.panel-header{
+  padding:12px 16px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--bg-soft);
+}
+.panel-title{font-weight:700;font-size:13px;color:var(--text-1)}
+.panel-hint{font-size:11px;color:var(--text-3);font-weight:400}
+.panel-body{padding:16px}
+.meta-item{padding:8px 0;border-bottom:1px dashed var(--border)}
+.meta-item:last-child{border-bottom:0}
+.meta-key{font-size:11px;color:var(--text-3);text-transform:uppercase;letter-spacing:.03em;margin-bottom:3px}
+.meta-val{font-size:13px;color:var(--text-1);font-weight:500}
+.meta-val.mono{font-family:"SF Mono",monospace;font-size:12px;word-break:break-all}
+.readonly-lock{display:inline-flex;align-items:center;gap:3px;font-size:11px;color:var(--text-4);margin-left:6px}
+
+/* Structured text preview */
+.structured-block{
+  background:var(--bg-soft);border:1px solid var(--border);
+  border-radius:var(--radius);padding:14px;
+  font-family:"SF Mono",Consolas,monospace;font-size:12.5px;line-height:1.7;
+  color:var(--text-2);white-space:pre-wrap;
+}
+.structured-block .k{color:#7C2D12;font-weight:600}
+.structured-block .v{color:var(--text-1)}
+.section-hd{
+  font-size:12px;color:var(--text-3);font-weight:700;
+  text-transform:uppercase;letter-spacing:.04em;
+  margin:18px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--border);
+}
+.section-hd:first-child{margin-top:0}
+.desc-issues{background:#FFFBEB;border:1px solid #FDE68A;border-radius:var(--radius);padding:12px;margin-top:10px}
+.desc-issues-title{font-size:12px;font-weight:700;color:#92400E;margin-bottom:6px}
+.desc-issues ul{margin-left:18px;color:#78350F;font-size:12px}
+.embed-row{display:flex;justify-content:space-between;padding:6px 0;font-size:12px}
+.embed-row .k{color:var(--text-3)}
+.embed-row .v{color:var(--text-1);font-weight:500}
+
+/* Try Ask box */
+.try-box{background:linear-gradient(135deg,#EFF6FF 0%,#F5F3FF 100%);border:1px solid #C7D2FE;border-radius:var(--radius);padding:14px;margin-top:12px}
+.try-hint{font-size:11px;color:var(--text-3);margin-bottom:8px}
+.try-input{
+  width:100%;padding:9px 12px;border:1px solid #C7D2FE;background:#fff;
+  border-radius:var(--radius);font-size:13px;
+}
+.try-btn{margin-top:8px;width:100%}
+.try-answer{margin-top:12px;padding:10px;background:#fff;border-radius:var(--radius);font-size:12px;color:var(--text-2)}
+
+/* Agent knowledge entry task */
+.agent-task-box{background:linear-gradient(135deg,#ECFEFF 0%,#F0F9FF 100%);border:1px solid #A5F3FC;border-radius:var(--radius);padding:14px;margin-top:12px}
+.agent-task-title{font-size:13px;font-weight:800;color:var(--text-1);display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+.agent-task-tag{font-size:10px;font-weight:800;color:#0E7490;background:#CFFAFE;border:1px solid #67E8F9;border-radius:999px;padding:3px 8px;white-space:nowrap}
+.agent-dialog{display:flex;flex-direction:column;gap:8px;margin:10px 0}
+.agent-msg{border-radius:var(--radius);padding:9px 10px;font-size:12px;line-height:1.45}
+.agent-msg.user{background:#fff;border:1px solid #BAE6FD;color:var(--text-2);margin-left:22px}
+.agent-msg.agent{background:#F8FAFC;border:1px solid var(--border);color:var(--text-2);margin-right:22px}
+.agent-draft{background:#fff;border:1px solid #BAE6FD;border-radius:var(--radius);padding:10px;margin-top:10px;font-size:12px;color:var(--text-2)}
+.agent-draft-hd{font-size:11px;font-weight:800;color:#0369A1;text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px}
+.agent-draft-row{padding:4px 0;border-bottom:1px dashed #E0F2FE}
+.agent-draft-row:last-child{border-bottom:0}
+.agent-draft-row b{color:var(--text-1)}
+.agent-actions{display:grid;grid-template-columns:1fr;gap:8px;margin-top:10px}
+.agent-step{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:8px}
+.agent-step-copy{font-size:12px;color:var(--text-2)}
+.agent-step-copy b{display:block;color:var(--text-1);margin-bottom:2px}
+.agent-complete{display:none;margin-top:10px;background:var(--success-light);border:1px solid #6EE7B7;border-radius:var(--radius);padding:10px;font-size:12px;color:#065F46}
+.agent-complete.show{display:block}
+.agent-note{font-size:11px;color:var(--text-3);line-height:1.45;margin-top:8px}
+.agent-window-mock{margin-top:16px;background:rgba(15,23,42,.05);border:1px dashed #CBD5E1;border-radius:var(--radius-lg);padding:18px}
+.agent-window{
+  width:860px;max-width:100%;margin:0 auto;background:#fff;border:1px solid var(--border);
+  border-radius:14px;box-shadow:0 18px 48px rgba(15,23,42,.18);overflow:hidden;
+}
+.agent-window-head{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border);background:#F8FAFC}
+.agent-window-title{font-size:15px;font-weight:800;color:var(--text-1)}
+.agent-window-sub{font-size:12px;color:var(--text-3);margin-top:3px}
+.agent-window-close{width:28px;height:28px;border:1px solid var(--border);border-radius:8px;background:#fff;color:var(--text-3);font-weight:800}
+.agent-window-body{display:grid;grid-template-columns:1.15fr .85fr;min-height:420px}
+.agent-window-chat{padding:16px;border-right:1px solid var(--border);background:#FBFDFF}
+.agent-window-side{padding:16px;background:#fff}
+.agent-window-label{font-size:11px;font-weight:800;color:var(--text-3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:10px}
+.agent-window-input{display:flex;gap:8px;margin-top:12px;border-top:1px solid var(--border);padding-top:12px}
+.agent-window-input input{flex:1;border:1px solid var(--border);border-radius:var(--radius);padding:9px 10px;font-size:12px}
+.agent-eval-list{margin-top:10px;display:grid;gap:7px}
+.agent-eval-item{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text-2)}
+.agent-eval-dot{width:16px;height:16px;border-radius:999px;background:var(--success-light);color:#047857;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;flex-shrink:0}
+.agent-window-footer{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 16px;border-top:1px solid var(--border);background:#F8FAFC}
+.agent-window-footer .hint{font-size:11px;color:var(--text-3)}
+
+/* ---------- F3 · New feature form ---------- */
+.form-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;max-width:900px;margin:0 auto}
+.f3-agent-layout{display:grid;grid-template-columns:minmax(0,1fr) 390px;gap:16px;align-items:start}
+.f3-agent-layout .form-card{max-width:none;margin:0}
+.f3-agent-panel{position:sticky;top:72px;background:#F0FDFF;border:1px solid #67E8F9;border-radius:var(--radius-lg);padding:18px;box-shadow:var(--shadow-sm)}
+.f3-agent-panel-hd{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:12px}
+.f3-agent-panel-title{font-size:16px;font-weight:800;color:var(--text-1)}
+.f3-agent-panel-sub{font-size:12px;color:var(--text-3);line-height:1.45;margin-top:4px}
+.skill-badge{display:inline-flex;align-items:center;justify-content:center;padding:5px 10px;border:1px solid #22D3EE;border-radius:999px;background:#ECFEFF;color:#0E7490;font-size:11px;font-weight:800;white-space:nowrap}
+.skill-template{background:#fff;border:1px dashed #7DD3FC;border-radius:var(--radius);padding:12px;margin:12px 0}
+.skill-template-title{font-size:11px;font-weight:900;color:#0369A1;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.skill-template-list{display:grid;gap:6px}
+.skill-template-item{display:grid;grid-template-columns:20px 1fr;gap:8px;align-items:flex-start;font-size:12px;color:var(--text-2);line-height:1.4}
+.skill-template-item span:first-child{width:18px;height:18px;border-radius:999px;background:var(--primary-light);color:var(--primary);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;margin-top:1px}
+.sync-card{background:#fff;border:1px solid #BAE6FD;border-radius:var(--radius);padding:12px;margin-top:12px}
+.sync-card-title{font-size:12px;font-weight:800;color:var(--text-1);margin-bottom:6px}
+.sync-card-row{font-size:12px;color:var(--text-2);line-height:1.5;padding:5px 0;border-top:1px dashed #E0F2FE}
+.sync-card-row:first-of-type{border-top:0}
+.f3-agent-panel .agent-dialog{margin-top:12px}
+.f3-agent-panel .agent-actions{margin-top:12px}
+.f3-agent-panel .agent-step{background:#fff}
+@media(max-width:980px){
+  .f3-agent-layout{grid-template-columns:1fr}
+  .f3-agent-panel{position:static}
+}
+.form-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:20px}
+.form-tab{padding:10px 18px;color:var(--text-3);cursor:pointer;font-weight:600;font-size:13px;border-bottom:2px solid transparent}
+.form-tab.active{color:var(--primary);border-bottom-color:var(--primary)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:14px}
+.form-field{display:flex;flex-direction:column}
+.form-field.full{grid-column:1 / -1}
+textarea.input{resize:vertical;min-height:110px;font-family:inherit}
+.desc-check{
+  display:flex;align-items:center;gap:12px;margin-top:8px;
+  padding:10px 12px;border-radius:var(--radius);
+  font-size:12px;
+}
+.desc-check.warn{background:#FFFBEB;border:1px solid #FDE68A;color:#92400E}
+.desc-check.pass{background:var(--success-light);border:1px solid #6EE7B7;color:#065F46}
+.desc-check.block{background:#FEE2E2;border:1px solid #FCA5A5;color:#991B1B}
+.desc-check .score{font-weight:700;font-size:14px;padding:2px 8px;border-radius:12px;background:rgba(255,255,255,.6)}
+.checklist{margin-top:8px;font-size:12px;color:var(--text-3)}
+.checklist li{padding:3px 0;display:flex;align-items:center;gap:6px;list-style:none}
+.checklist .ok{color:var(--success)}
+.checklist .miss{color:var(--danger)}
+.form-info-banner{background:var(--primary-light);border:1px solid #BFDBFE;border-radius:var(--radius);padding:12px 14px;margin-bottom:20px;color:#1E40AF;font-size:12.5px;display:flex;gap:10px}
+.form-actions{display:flex;justify-content:flex-end;gap:8px;padding-top:20px;margin-top:20px;border-top:1px solid var(--border)}
+.toggle{position:relative;display:inline-block;width:38px;height:22px}
+.toggle input{display:none}
+.toggle-slider{position:absolute;inset:0;background:#D1D5DB;border-radius:22px;cursor:pointer;transition:.2s}
+.toggle-slider::before{content:"";position:absolute;height:16px;width:16px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}
+.toggle input:checked + .toggle-slider{background:var(--success)}
+.toggle input:checked + .toggle-slider::before{transform:translateX(16px)}
+.radio-group{display:flex;gap:8px}
+.radio-chip{
+  padding:6px 12px;border:1px solid var(--border);border-radius:var(--radius);
+  cursor:pointer;font-size:12px;color:var(--text-2);background:#fff;
+}
+.radio-chip.on{border-color:var(--primary);background:var(--primary-light);color:var(--primary);font-weight:600}
+
+/* ---------- F4 · Floating widget ---------- */
+.fab{
+  position:fixed;right:24px;bottom:24px;z-index:200;
+  padding:12px 18px;background:var(--text-1);color:#fff;
+  border-radius:24px;font-weight:600;font-size:13px;
+  box-shadow:var(--shadow-lg);cursor:pointer;
+  display:flex;align-items:center;gap:8px;
+}
+.fab:hover{background:#000}
+.fab-dot{width:8px;height:8px;background:var(--success);border-radius:50%;box-shadow:0 0 0 3px rgba(16,185,129,.25)}
+.qa-panel{
+  position:fixed;right:24px;bottom:84px;z-index:200;
+  width:420px;height:560px;
+  background:#fff;border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-lg);
+  display:none;flex-direction:column;overflow:hidden;
+}
+.qa-panel.open{display:flex}
+.qa-head{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.qa-head-title{font-weight:700;font-size:14px}
+.qa-head-sub{font-size:11px;color:var(--text-3);margin-top:2px}
+.qa-mode{display:flex;gap:0;border-bottom:1px solid var(--border);background:var(--bg-soft)}
+.qa-mode > div{flex:1;padding:9px;text-align:center;font-size:12px;color:var(--text-3);cursor:pointer;font-weight:600;border-bottom:2px solid transparent}
+.qa-mode > div.active{background:#fff;color:var(--primary);border-bottom-color:var(--primary)}
+.qa-body{flex:1;overflow-y:auto;padding:16px}
+.qa-suggest{margin-bottom:14px}
+.qa-suggest-hint{font-size:11px;color:var(--text-3);text-transform:uppercase;letter-spacing:.03em;margin-bottom:8px}
+.qa-suggest-card{
+  padding:9px 12px;background:var(--bg-soft);border:1px solid var(--border);
+  border-radius:var(--radius);margin-bottom:6px;font-size:12.5px;color:var(--text-2);
+  cursor:pointer;transition:all .15s;
+}
+.qa-suggest-card:hover{background:var(--primary-light);border-color:var(--primary);color:var(--primary)}
+.qa-suggest-card.active{background:var(--primary-light);border-color:var(--primary);color:var(--primary);font-weight:600}
+.qa-suggest-card.static{cursor:default}
+.qa-suggest-card.static:hover{background:var(--bg-soft);border-color:var(--border);color:var(--text-2)}
+.bubble{margin-bottom:14px;max-width:88%}
+.bubble.user{margin-left:auto;background:var(--primary);color:#fff;padding:9px 12px;border-radius:12px 12px 3px 12px;font-size:13px}
+.bubble.ai{background:var(--bg-soft);padding:10px 12px;border-radius:12px 12px 12px 3px;font-size:13px;color:var(--text-2)}
+.feat-card{margin-top:10px;padding:10px;background:#fff;border:1px solid var(--border);border-radius:var(--radius);cursor:pointer}
+.feat-card:hover{border-color:var(--primary)}
+.feat-card-name{font-weight:600;font-size:12.5px;color:var(--text-1);display:flex;align-items:center;gap:6px}
+.feat-card-code{font-family:"SF Mono",monospace;font-size:11px;color:var(--text-3);margin-top:3px}
+.feat-card-meta{margin-top:6px;font-size:11px;color:var(--text-3);display:flex;gap:10px}
+.feat-card-row{margin-top:7px;font-size:11.5px;color:var(--text-2);line-height:1.45}
+.feat-card-row b{color:var(--text-1)}
+.fit-pill{display:inline-flex;align-items:center;padding:1px 6px;border-radius:10px;background:var(--success-light);color:#065F46;font-size:10.5px;font-weight:700;margin-left:auto;white-space:nowrap}
+.fit-pill.context{background:#FEF3C7;color:#92400E}
+.feat-more{margin-top:7px;padding-top:7px;border-top:1px dashed var(--border);font-size:11.5px;color:var(--text-2);line-height:1.45}
+.feat-card-cta{margin-top:8px;color:var(--primary);font-size:11px;font-weight:600}
+.qa-input-row{padding:12px 14px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:flex-end}
+.qa-input{flex:1;border:1px solid var(--border);border-radius:var(--radius);padding:8px 10px;font-size:13px;resize:none;font-family:inherit}
+.qa-send{padding:8px 12px;background:var(--primary);color:#fff;border-radius:var(--radius);cursor:pointer;font-weight:600;font-size:13px;border:none}
+
+/* Utilities */
+.mono{font-family:"SF Mono",monospace;font-size:12px}
+.mt-2{margin-top:8px}.mt-3{margin-top:12px}
+.muted{color:var(--text-3)}
+.tag-inline{display:inline-block;padding:1px 6px;background:var(--bg-hover);color:var(--text-3);border-radius:3px;font-size:11px;margin-left:6px}
+.divider-lbl{display:flex;align-items:center;gap:8px;margin:20px 0 12px;color:var(--text-3);font-size:11px;text-transform:uppercase;letter-spacing:.05em;font-weight:700}
+.divider-lbl::after{content:"";flex:1;height:1px;background:var(--border)}
+
+/* ---------- F3 · New feature (v0.2 rebuild) ---------- */
+.entry-mode{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
+.entry-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 18px;cursor:pointer;transition:all .15s}
+.entry-card:hover{border-color:var(--primary);box-shadow:var(--shadow-sm)}
+.entry-card.active{border-color:var(--primary);background:linear-gradient(135deg,var(--primary-light) 0%,#F5F3FF 100%)}
+.entry-card-hd{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.entry-icon{width:34px;height:34px;border-radius:8px;background:var(--primary);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:15px;font-weight:700}
+.entry-title{font-weight:700;font-size:14px;color:var(--text-1);display:flex;align-items:center;gap:6px}
+.entry-sub{font-size:11px;color:var(--text-3);margin-top:1px}
+.entry-desc{font-size:12.5px;color:var(--text-3);line-height:1.5}
+
+.section-nav{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:8px 12px;margin-bottom:16px;display:flex;flex-wrap:wrap;gap:2px;position:sticky;top:56px;z-index:50}
+.section-nav a{padding:6px 10px;color:var(--text-2);text-decoration:none;font-size:12px;border-radius:var(--radius);font-weight:500;white-space:nowrap}
+.section-nav a:hover{background:var(--bg-hover);color:var(--primary)}
+
+.form-section{padding:18px 22px;border:1px solid var(--border);border-left-width:4px;border-radius:var(--radius);margin-bottom:14px;background:#fff}
+.form-section.role-user{border-left-color:var(--primary)}
+.form-section.role-rd{border-left-color:var(--warn);background:linear-gradient(90deg,#FFFBEB 0%,#fff 12%)}
+.form-section.role-system{border-left-color:var(--text-4);background:linear-gradient(90deg,var(--bg-hover) 0%,#fff 12%)}
+.section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.section-title{font-weight:700;font-size:14.5px;color:var(--text-1);display:flex;align-items:center;gap:8px}
+.section-role{font-size:10.5px;padding:3px 8px;border-radius:12px;background:var(--primary-light);color:var(--primary);font-weight:700;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
+.section-role.rd{background:#FEF3C7;color:#92400E}
+.section-role.sys{background:var(--bg-hover);color:var(--text-3)}
+
+.chip-multi{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
+.chip-check{padding:6px 11px;border:1px solid var(--border);border-radius:14px;background:#fff;color:var(--text-2);cursor:pointer;font-size:12px;transition:all .15s;user-select:none}
+.chip-check:hover{border-color:var(--primary)}
+.chip-check.on{border-color:var(--primary);background:var(--primary-light);color:var(--primary);font-weight:600}
+.chip-check.on::before{content:"✓ ";font-weight:700}
+
+.form-actions.sticky{position:sticky;bottom:0;background:#fff;border-top:1px solid var(--border);padding:14px 24px;display:flex;justify-content:space-between;align-items:center;margin-top:0;box-shadow:0 -4px 12px rgba(0,0,0,.04);z-index:60}
+.form-actions.sticky .left{font-size:12px;color:var(--text-3)}
+.form-actions.sticky .right{display:flex;gap:8px;padding-top:0;border:0;margin:0}
+
+.role-hint{background:#F5F3FF;border:1px solid #DDD6FE;border-radius:var(--radius);padding:10px 12px;font-size:12px;color:#5B21B6;margin-bottom:14px;display:flex;gap:10px;align-items:flex-start}
+.role-legend{display:flex;gap:14px;font-size:11.5px;margin-top:4px}
+.role-legend span{display:flex;align-items:center;gap:5px}
+.role-legend .lbl{width:14px;height:14px;border-radius:3px}
+</style>
+</head>
+<body>
+
+<!-- ================= TOP NAV ================= -->
+<div class="topbar">
+  <div>
+    <span class="brand">Feature Platform</span>
+    <span class="brand-sub">/ 特征 Agent 应用 / Knowledge Library</span>
+  </div>
+  <div class="tabs">
+    <div class="tab active" data-page="f1">F1 · Library Management</div>
+    <div class="tab" data-page="f2">F2 · Feature Detail</div>
+    <div class="tab" data-page="f3">F3 · New Feature</div>
+    <div class="tab" data-page="f4">F4 · Q&amp;A Widget (always on)</div>
+  </div>
+  <span class="env-badge">v0.2 · sketch</span>
+</div>
+
+<!-- ================= F1 · LIBRARY MANAGEMENT ================= -->
+<div class="page active" id="page-f1">
+  <div class="page-header">
+    <div>
+      <div class="crumb">Feature Platform <span class="sep">/</span> 特征 Agent 应用 <span class="sep">/</span> <strong>Knowledge Library 知识库</strong></div>
+      <div class="page-title">Feature Knowledge Library · 特征知识库</div>
+      <div class="page-sub">现有 Feature List 的升级版：从 FP Meta 同步 + description 校验 + embedding 状态可视化</div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M21 12a9 9 0 11-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
+        Sync from Meta
+      </button>
+      <button class="btn">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M12 20v-6M6 20V10M18 20V4"/></svg>
+        Batch Re-index
+      </button>
+      <button class="btn btn-primary" onclick="switchPage('f3')">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+        New Feature
+      </button>
+    </div>
+  </div>
+
+  <!-- KPI row -->
+  <div class="kpi-row" style="grid-template-columns:repeat(3,1fr)">
+    <div class="kpi">
+      <div class="kpi-label">Total Features</div>
+      <div class="kpi-value">7,024</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label"><span class="dot green"></span> Indexed</div>
+      <div class="kpi-value">6,683 <span class="unit">/ 95.1%</span></div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label"><span class="dot red"></span> Failed</div>
+      <div class="kpi-value">341</div>
+    </div>
+  </div>
+
+  <!-- Filter -->
+  <div class="filter-card">
+    <div class="filter-grid">
+      <div>
+        <label class="field-label">Feature name / code</label>
+        <input class="input" placeholder="Enter to search"/>
+      </div>
+      <div>
+        <label class="field-label">Create time (UTC+8)</label>
+        <input class="input" placeholder="Start date  ~  End date"/>
+      </div>
+      <div>
+        <label class="field-label">Feature type</label>
+        <select class="select">
+          <option>All</option><option>Ordinary feature</option><option>Metric feature</option><option>Model feature</option>
+        </select>
+      </div>
+      <div>
+        <label class="field-label">Owner entity</label>
+        <select class="select"><option>All</option><option>Live room</option><option>User</option><option>User-User</option><option>User-live room</option><option>Device</option><option>Video Slice</option></select>
+      </div>
+      <div>
+        <label class="field-label">Creator</label>
+        <input class="input" placeholder="Select creator"/>
+      </div>
+      <div>
+        <label class="field-label">Data Source Extra</label>
+        <select class="select"><option>All</option><option>RPC</option><option>Abase</option><option>JUNO</option><option>DAG</option><option>Slice</option></select>
+      </div>
+      <div style="border-left:2px solid var(--primary-light);padding-left:14px">
+        <label class="field-label" style="color:var(--primary)">RAG Status <span class="tag-inline">new</span></label>
+        <select class="select"><option>All</option><option>Indexed</option><option>Failed</option></select>
+      </div>
+    </div>
+    <div class="filter-actions">
+      <button class="btn">Reset</button>
+      <button class="btn btn-primary">Query</button>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="table-card">
+    <div class="table-toolbar">
+      <div class="left"><span>7,024 features</span><span>·</span><span>3 selected</span></div>
+      <div class="right">
+        <button class="btn btn-sm">Re-index (3)</button>
+        <button class="btn btn-sm">Export</button>
+      </div>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:36px"><input type="checkbox"/></th>
+          <th>Feature code</th>
+          <th>Feature Chinese/English name</th>
+          <th>Stability level</th>
+          <th>Real-time level</th>
+          <th>Entity</th>
+          <th style="color:var(--primary)">RAG Status</th>
+          <th style="color:var(--primary)">Last Synced</th>
+          <th>Operation</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><input type="checkbox" checked/></td>
+          <td><span class="code">slice_is_in_battle</span></td>
+          <td><div class="cell-name"><span class="cn">CN name: 切片是否在 PK 中</span><span class="cn">EN name: Slice · In Battle</span></div></td>
+          <td><span class="chip sla-a">A</span></td>
+          <td>Second level</td>
+          <td>Video Slice</td>
+          <td><span class="chip status-indexed"><span class="dot green"></span>Indexed</span></td>
+          <td class="muted mono">07-08 14:22</td>
+          <td>
+            <button class="btn-ghost btn-sm">Feature Monitor</button>
+            <button class="btn-ghost btn-sm">Go to Grafana</button>
+            <button class="btn-ghost btn-sm" onclick="switchPage('f2')">View RAG</button>
+          </td>
+        </tr>
+        <tr>
+          <td><input type="checkbox" checked/></td>
+          <td><span class="code">account_eco_enforce_cnt_room_level_135833c4_1_day</span></td>
+          <td><div class="cell-name"><span class="cn">CN name: 房间层级经济处罚计数 · 1 天</span><span class="cn">EN name: Account · Eco Enforce Cnt · Room · 1 Day</span></div></td>
+          <td><span class="chip sla-a">A</span></td>
+          <td>Second level</td>
+          <td>Live room</td>
+          <td><span class="chip status-indexed"><span class="dot green"></span>Indexed</span></td>
+          <td class="muted mono">07-08 14:22</td>
+          <td>
+            <button class="btn-ghost btn-sm">Feature Monitor</button>
+            <button class="btn-ghost btn-sm">Go to Grafana</button>
+            <button class="btn-ghost btn-sm">View RAG</button>
+          </td>
+        </tr>
+        <tr>
+          <td><input type="checkbox" checked/></td>
+          <td><span class="code">account_policy_human_detected_cnt_135833c4_30_day</span></td>
+          <td><div class="cell-name"><span class="cn">CN name: 策略人工识别计数 · 30 天</span><span class="cn">EN name: Account · Policy Human Detected · 30 Day</span></div></td>
+          <td><span class="chip sla-a">A</span></td>
+          <td>Second level</td>
+          <td>User</td>
+          <td><span class="chip status-indexed"><span class="dot green"></span>Indexed</span></td>
+          <td class="muted mono">07-08 14:22</td>
+          <td>
+            <button class="btn-ghost btn-sm">Feature Monitor</button>
+            <button class="btn-ghost btn-sm">Go to Grafana</button>
+            <button class="btn-ghost btn-sm">View RAG</button>
+          </td>
+        </tr>
+        <tr>
+          <td><input type="checkbox"/></td>
+          <td><span class="code">anchor_account_punish_count_135833c4_lmg_365_day</span></td>
+          <td><div class="cell-name"><span class="cn">CN name: 主播账号处罚计数 · 365 天</span><span class="cn">EN name: Anchor · Account Punish Count · 365 Day</span></div></td>
+          <td><span class="chip sla-b">B</span></td>
+          <td>Minute level</td>
+          <td>User-live room</td>
+          <td><span class="chip status-failed"><span class="dot red"></span>Failed</span></td>
+          <td class="muted mono">07-08 03:15</td>
+          <td>
+            <button class="btn-ghost btn-sm">Feature Monitor</button>
+            <button class="btn-ghost btn-sm">Go to Grafana</button>
+            <button class="btn-ghost btn-sm">Re-run</button>
+          </td>
+        </tr>
+        <tr>
+          <td><input type="checkbox"/></td>
+          <td><span class="code">room_country_root</span></td>
+          <td><div class="cell-name"><span class="cn">CN name: 房间归属根国家</span><span class="cn">EN name: Room · Root Country</span></div></td>
+          <td><span class="chip sla-a">A</span></td>
+          <td>Hour level</td>
+          <td>Live room</td>
+          <td><span class="chip status-indexed"><span class="dot green"></span>Indexed</span></td>
+          <td class="muted mono">07-08 14:22</td>
+          <td>
+            <button class="btn-ghost btn-sm">Feature Monitor</button>
+            <button class="btn-ghost btn-sm">Go to Grafana</button>
+            <button class="btn-ghost btn-sm">View RAG</button>
+          </td>
+        </tr>
+        <tr>
+          <td><input type="checkbox"/></td>
+          <td><span class="code">room_country_broadcast</span></td>
+          <td><div class="cell-name"><span class="cn">CN name: 直播开播国</span><span class="cn">EN name: Room · Broadcast Country</span></div></td>
+          <td><span class="chip sla-c">C</span></td>
+          <td>Day level</td>
+          <td>Live room</td>
+          <td><span class="chip status-indexed"><span class="dot green"></span>Indexed</span></td>
+          <td class="muted mono">07-08 14:22</td>
+          <td>
+            <button class="btn-ghost btn-sm">Feature Monitor</button>
+            <button class="btn-ghost btn-sm">Go to Grafana</button>
+            <button class="btn-ghost btn-sm">View RAG</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ================= F2 · FEATURE DETAIL ================= -->
+<div class="page" id="page-f2">
+  <div class="page-header">
+    <div>
+      <div class="crumb">Knowledge Library <span class="sep">/</span> <span class="mono">slice_is_in_battle</span></div>
+      <div class="page-title">Slice · In Battle <span style="font-size:14px;color:var(--text-3);font-weight:500">切片是否在 PK 中</span></div>
+      <div class="page-sub" style="margin-top:8px;display:flex;gap:16px;flex-wrap:wrap">
+        <span><span class="chip type-model">Model</span></span>
+        <span><span class="chip sla-a">SLA A</span></span>
+        <span><span class="chip status-indexed"><span class="dot green"></span>Indexed</span></span>
+        <span class="muted">Last synced: 2026-07-08 14:22</span>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn">Re-index</button>
+      <button class="btn btn-primary">Edit Description</button>
+    </div>
+  </div>
+
+  <div class="detail-grid">
+    <!-- LEFT · Meta (read-only) -->
+    <div class="panel">
+      <div class="panel-header">
+        <div>
+          <div class="panel-title">Feature Meta</div>
+          <div class="panel-hint">Synced from Feature Platform · read-only</div>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="meta-item">
+          <div class="meta-key">Feature Code</div>
+          <div class="meta-val mono">slice_is_in_battle</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-key">Feature English name</div>
+          <div class="meta-val">Slice · In Battle</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-key">Feature Chinese name</div>
+          <div class="meta-val">切片是否在 PK 中</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-key">Feature type</div>
+          <div class="meta-val">Model feature</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-key">Owner entity</div>
+          <div class="meta-val">Video Slice</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-key">Date type</div>
+          <div class="meta-val">FLOAT64</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-key">Stability level</div>
+          <div class="meta-val">A <span class="tag-inline">system-evaluated</span></div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-key">Real-time level</div>
+          <div class="meta-val">Second level</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-key">Feature validity</div>
+          <div class="meta-val">Minute level</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-key">Data Source Extra</div>
+          <div class="meta-val">DAG</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-key">Config Mode</div>
+          <div class="meta-val">Field Mode</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MIDDLE · Structured text preview -->
+    <div class="panel">
+      <div class="panel-header">
+        <div>
+          <div class="panel-title">Structured Text · Ready for Embedding</div>
+          <div class="panel-hint">向量化前的可读结构化文本 · 拼装规则见 F6</div>
+        </div>
+        <button class="btn btn-sm">Regenerate</button>
+      </div>
+      <div class="panel-body">
+        <div class="structured-block"><span class="k">FEATURE:</span> <span class="v">slice_is_in_battle</span>
+<span class="k">TYPE:</span>     <span class="v">Model feature</span>
+<span class="k">ENTITY:</span>   <span class="v">Video Slice</span>
+<span class="k">VALUE:</span>    <span class="v">FLOAT64 · minute-level · SLA A</span>
+
+<span class="k">DESCRIPTION</span>
+Whether the given video slice is currently in a PK (battle) session
+between two live rooms. Returns 1 when the slice belongs to a room that
+is engaged in an active PK; 0 otherwise. Used for governance policies
+that treat PK sessions differently from normal broadcast (e.g. gift-boost
+scenarios, cross-room co-broadcast risk models).
+
+<span class="k">USAGE SCOPE</span>
+Generic · applies to any live-room governance policy involving PK state.
+Not bound to a specific policy code.
+
+<span class="k">DATA SOURCE</span>
+Upstream data source: DAG pipeline
+Nodes:
+  - GetLocalFeatureProvider (fetches treco_user_name, treco_room_title,
+    slice_sub_feature_info, slice_is_in_battle, slice_effect ...)
+  - LLMGatewayInferenceProvider (biz_code: atlas.issue_discovery.htd_normal_filter)
+Task key: zeta_inference_htd
+
+<span class="k">CODE LOGIC (extracted)</span>
+1. GetLocalFeatureProvider assembles the slice's feature list
+2. LLMGatewayInferenceProvider runs prompt_id 7655179793482631943 (v2)
+3. Result JMES: (label &amp;&amp; `1`) || `0`
+4. Fallback value: 0
+
+<span class="k">RATE LIMIT</span>
+Rate limited per caller PSM, per-VDC QPS cap.
+</div>
+      </div>
+    </div>
+
+    <!-- RIGHT · Embedding + Try Q&A -->
+    <div class="panel">
+      <div class="panel-header">
+        <div>
+          <div class="panel-title">RAG Status</div>
+          <div class="panel-hint">Embedding · vector store</div>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="embed-row"><span class="k">Status</span><span class="v"><span class="chip status-indexed"><span class="dot green"></span>Indexed</span></span></div>
+        <div class="embed-row"><span class="k">Vector ID</span><span class="v mono">vec_9f2a…c81b</span></div>
+        <div class="embed-row"><span class="k">Embedding model</span><span class="v">bge-m3</span></div>
+        <div class="embed-row"><span class="k">Chunk count</span><span class="v">3</span></div>
+        <div class="embed-row"><span class="k">First indexed</span><span class="v mono">07-05 09:12</span></div>
+        <div class="embed-row"><span class="k">Last synced</span><span class="v mono">07-08 14:22</span></div>
+        <div class="embed-row"><span class="k">Coverage</span><span class="v">Discovery + Q&amp;A</span></div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= F3 · NEW FEATURE ================= -->
+<div class="page" id="page-f3">
+  <div class="page-header">
+    <div>
+      <div class="crumb">Knowledge Library <span class="sep">/</span> New Feature</div>
+      <div class="page-title">New Feature Entry · Agent-assisted Create</div>
+      <div class="page-sub">右侧 Agent 按 F3 新特征设置模板问答收集信息；左侧展示 Agent 完成渲染后的新 feature 表单</div>
+    </div>
+  </div>
+
+  <div class="f3-agent-layout">
+    <div class="form-card">
+      <div class="form-info-banner">
+        <svg class="icon" viewBox="0 0 24 24" style="color:var(--primary);flex-shrink:0"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+        <div>
+          Agent 使用 <strong>F3 New Feature Skill Template</strong> 把问答结果渲染到原 F3 表单。用户确认后进入 <strong>Skills Evaluation</strong>，通过即 Submit 生效。<br>
+          <span style="font-size:11.5px;color:var(--text-3)">无中间暂存状态 · 无人工审批 · 单个 feature 创建任务结束后开启新的 Agent conversation。</span>
+        </div>
+      </div>
+
+      <div class="form-tabs">
+        <div class="form-tab active">Basic Info</div>
+        <div class="form-tab">Storage &amp; Data Source</div>
+        <div class="form-tab">Rate Limit</div>
+        <div class="form-tab" style="color:var(--primary)">Knowledge Library <span class="tag-inline" style="background:var(--primary-light);color:var(--primary)">agent-filled</span></div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-field">
+          <label class="field-label">Feature English name <span class="req">*</span></label>
+          <input class="input" value="Slice · PK Interaction Risk Score"/>
+        </div>
+        <div class="form-field">
+          <label class="field-label">Feature Chinese name <span class="req">*</span></label>
+          <input class="input" value="PK 互动风险分数"/>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-field full">
+          <label class="field-label">Short description · 一句话解释 <span class="req">*</span> <span class="muted">(≤ 80 字，用于列表 / Ask AI 摘要 / hover)</span></label>
+          <input class="input" value="衡量 video slice 在直播 PK 场景下的互动风险分数"/>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-field">
+          <label class="field-label">Feature code <span class="req">*</span></label>
+          <input class="input mono" value="slice_pk_interaction_risk_score"/>
+        </div>
+        <div class="form-field">
+          <label class="field-label">Owner entity · 主体 <span class="req">*</span></label>
+          <select class="select">
+            <option selected>Video Slice</option><option>Live room</option><option>User</option><option>User-User</option>
+            <option>User-live room</option><option>Device</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-field">
+          <label class="field-label">Feature type <span class="req">*</span></label>
+          <select class="select">
+            <option selected>Model feature</option><option>Ordinary feature</option><option>Metric feature</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label class="field-label">Date type <span class="req">*</span></label>
+          <select class="select">
+            <option selected>FLOAT64</option><option>INT64</option><option>STRING</option><option>BOOL</option>
+            <option>STRING_LIST</option><option>ENUM</option><option>INT64_LIST</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-field">
+          <label class="field-label">Stability level <span class="tag-inline">skill-evaluated</span></label>
+          <input class="input" value="A · ready for skills evaluation" disabled style="background:var(--bg-soft);color:var(--text-3)"/>
+        </div>
+        <div class="form-field">
+          <label class="field-label">Real-time level <span class="req">*</span></label>
+          <select class="select">
+            <option selected>Minute level</option><option>Second level</option><option>Hour level</option><option>Day level</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="divider-lbl">RAG 分类 · Classification <span class="tag-inline" style="background:var(--primary-light);color:var(--primary)">filled by agent</span></div>
+
+      <div class="form-row">
+        <div class="form-field">
+          <label class="field-label">Freshness · 时效性 <span class="req">*</span></label>
+          <div class="radio-group">
+            <div class="radio-chip on" onclick="pickRadio(this)">Online 在线</div>
+            <div class="radio-chip" onclick="pickRadio(this)">Offline 离线</div>
+          </div>
+        </div>
+        <div class="form-field">
+          <label class="field-label">Source · 来源 <span class="req">*</span></label>
+          <div class="radio-group">
+            <div class="radio-chip" onclick="pickRadio(this)">Native 原生</div>
+            <div class="radio-chip on" onclick="pickRadio(this)">Derived 衍生</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-field">
+          <label class="field-label">Usage · 用途 <span class="req">*</span> <span class="muted">(multi)</span></label>
+          <div class="chip-multi">
+            <span class="chip-check on" onclick="this.classList.toggle('on')">Model 模型</span>
+            <span class="chip-check on" onclick="this.classList.toggle('on')">Strategy 策略</span>
+            <span class="chip-check" onclick="this.classList.toggle('on')">Metric 指标</span>
+            <span class="chip-check on" onclick="this.classList.toggle('on')">RAG 检索</span>
+          </div>
+        </div>
+        <div class="form-field">
+          <label class="field-label">Scope · 作用域 <span class="req">*</span></label>
+          <div class="radio-group">
+            <div class="radio-chip" onclick="pickRadio(this)">Common 通用</div>
+            <div class="radio-chip on" onclick="pickRadio(this)">Current scenario</div>
+            <div class="radio-chip" onclick="pickRadio(this)">Scenario specific</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider-lbl">覆盖范围 · Coverage <span class="tag-inline" style="background:var(--primary-light);color:var(--primary)">agent-filled</span></div>
+
+      <div class="form-row">
+        <div class="form-field">
+          <label class="field-label">Business domain · 业务域</label>
+          <input class="input" value="live_governance / pk_risk"/>
+        </div>
+        <div class="form-field">
+          <label class="field-label">Scenarios · 场景 <span class="muted">(multi · Scope=Scenario specific 时必填)</span></label>
+          <div class="chip-multi">
+            <span class="chip-check on" onclick="this.classList.toggle('on')">live_review</span>
+            <span class="chip-check on" onclick="this.classList.toggle('on')">pk_battle</span>
+            <span class="chip-check on" onclick="this.classList.toggle('on')">risk_recall</span>
+            <span class="chip-check on" onclick="this.classList.toggle('on')">strategy_thresholding</span>
+            <span class="chip-check" style="border-style:dashed;color:var(--primary)">+ 添加场景</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-field">
+          <label class="field-label">Supported regions · 支持国家/区域 <span class="req">*</span> <span class="muted">(multi)</span></label>
+          <div class="chip-multi">
+            <span class="chip-check on" onclick="this.classList.toggle('on')">Global</span>
+            <span class="chip-check on" onclick="this.classList.toggle('on')">SEA</span>
+            <span class="chip-check" onclick="this.classList.toggle('on')">US</span>
+            <span class="chip-check" onclick="this.classList.toggle('on')">EU</span>
+            <span class="chip-check" onclick="this.classList.toggle('on')">LATAM</span>
+            <span class="chip-check" onclick="this.classList.toggle('on')">MEA</span>
+            <span class="chip-check" style="border-style:dashed;color:var(--primary)">+ Add</span>
+          </div>
+        </div>
+        <div class="form-field">
+          <label class="field-label">Not available in <span class="muted">(exceptions)</span></label>
+          <input class="input" value="TBD after launch validation"/>
+        </div>
+      </div>
+
+      <div class="divider-lbl">Feature Content · 描述与逻辑</div>
+
+      <div class="form-row">
+        <div class="form-field full">
+          <label class="field-label">Feature description · 特征含义描述 <span class="req">*</span></label>
+          <textarea class="input" rows="4">Measures the interaction risk score of a video slice during live PK / battle scenarios. The score can be used by governance strategies to add risk weight when gifts, co-hosting, cross-room interaction, or PK state create higher policy sensitivity.</textarea>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-field full">
+          <label class="field-label">Coding · 代码逻辑 <span class="req">*</span></label>
+          <textarea class="input mono" rows="6" style="font-size:12px">1. Read slice context from DAG pipeline.
+2. GetLocalFeatureProvider fetches PK state, gift/co-host/cross-room interaction signals.
+3. LLMGatewayInferenceProvider normalizes high-risk interaction description.
+4. Weighted score = signal confidence × PK scene multiplier × recency decay.
+5. Output FLOAT64 score for minute-level strategy use.</textarea>
+          <div class="muted mt-2" style="font-size:11.5px">Agent 从 F3 skill template 收集代码逻辑说明；RD 可在后续维护中补齐实现细节。</div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-field full">
+          <label class="field-label">Data source <span class="req">*</span> <span class="muted">(multi · 选取上游 subfeature 数据源)</span></label>
+          <div class="chip-multi">
+            <span class="chip-check on" onclick="this.classList.toggle('on')" style="font-family:'SF Mono',Consolas,monospace;font-size:11px">DAG pipeline<span style="color:var(--text-3);font-family:-apple-system,sans-serif;font-weight:400;margin-left:6px">source</span></span>
+            <span class="chip-check on" onclick="this.classList.toggle('on')" style="font-family:'SF Mono',Consolas,monospace;font-size:11px">GetLocalFeatureProvider<span style="color:var(--text-3);font-family:-apple-system,sans-serif;font-weight:400;margin-left:6px">slice context</span></span>
+            <span class="chip-check on" onclick="this.classList.toggle('on')" style="font-family:'SF Mono',Consolas,monospace;font-size:11px">LLMGatewayInferenceProvider<span style="color:var(--text-3);font-family:-apple-system,sans-serif;font-weight:400;margin-left:6px">risk text</span></span>
+            <span class="chip-check on" onclick="this.classList.toggle('on')" style="font-family:'SF Mono',Consolas,monospace;font-size:11px">slice_is_in_battle<span style="color:var(--text-3);font-family:-apple-system,sans-serif;font-weight:400;margin-left:6px">PK state</span></span>
+            <span class="chip-check" style="border-style:dashed;color:var(--primary)">+ 添加</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider-lbl">RAG Discovery · 检索增强 <span class="tag-inline" style="background:var(--primary-light);color:var(--primary)">required by skill</span></div>
+
+      <div class="form-row">
+        <div class="form-field full">
+          <label class="field-label">Search summary · 检索摘要 <span class="muted">(2–3 句 · 灌入向量库的可读摘要)</span></label>
+          <textarea class="input" rows="2">This is a Video Slice level model feature for live PK governance. It estimates interaction risk in PK/battle scenes and can be used by Ask AI to recommend risk-weighting features for strategy configuration.</textarea>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-field full">
+          <label class="field-label">Aliases · 别名 / 同义词 / 常见误拼 <span class="muted">(帮助 Ask AI 提升召回)</span></label>
+          <div class="chip-multi">
+            <span class="chip-check on" onclick="this.classList.toggle('on')">pk_risk_score</span>
+            <span class="chip-check on" onclick="this.classList.toggle('on')">battle interaction risk</span>
+            <span class="chip-check on" onclick="this.classList.toggle('on')">PK 风险分</span>
+            <span class="chip-check on" onclick="this.classList.toggle('on')">互动风险分数</span>
+            <span class="chip-check" style="border-style:dashed;color:var(--primary)">+ 添加别名</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-field full">
+          <label class="field-label">RAG tags · 检索标签 <span class="muted">(chips · Ask AI 侧过滤/加权用)</span></label>
+          <div class="chip-multi">
+            <span class="chip-check on" onclick="this.classList.toggle('on')">slice</span>
+            <span class="chip-check on" onclick="this.classList.toggle('on')">pk</span>
+            <span class="chip-check on" onclick="this.classList.toggle('on')">risk_score</span>
+            <span class="chip-check on" onclick="this.classList.toggle('on')">model_feature</span>
+            <span class="chip-check on" onclick="this.classList.toggle('on')">idsp</span>
+            <span class="chip-check" style="border-style:dashed;color:var(--primary)">+ 添加 tag</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-field full">
+          <label class="field-label">Common questions · 常见问法 <span class="muted">(one per line · 用户真实会问的话)</span></label>
+          <textarea class="input" rows="3">PK 场景下应该用哪个互动风险特征？
+有没有可以给 PK 直播互动风险加权的分数？
+slice_pk_interaction_risk_score 的数据来源和 owner 是谁？</textarea>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-field">
+          <label class="field-label">Usage example · 使用示例</label>
+          <textarea class="input" rows="3">在 live_review / PK 策略中，当该分数高于阈值时，对礼物、连麦、跨房间互动相关风险做策略加权。</textarea>
+        </div>
+        <div class="form-field">
+          <label class="field-label">Risk / limitation · 风险与限制</label>
+          <textarea class="input" rows="3">依赖 DAG、上游 PK 状态和 prompt 版本；PK 状态变化后可能存在短暂延迟，新特征上线前需要完成稳定性评估。</textarea>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn">Cancel</button>
+        <button class="btn">Skills Evaluation</button>
+        <button class="btn btn-primary">Submit New Feature</button>
+      </div>
+    </div>
+
+    <aside class="f3-agent-panel">
+      <div class="f3-agent-panel-hd">
+        <div>
+          <div class="f3-agent-panel-title">New feature entry · Ask AI</div>
+          <div class="f3-agent-panel-sub">用户先描述要解决的策略问题，Agent 用 F3 skill template 追问缺失字段，并把结果渲染到左侧表单。</div>
+        </div>
+        <span class="skill-badge">Create mode</span>
+      </div>
+
+      <button class="btn btn-primary" style="width:100%;margin-bottom:12px">Start Agent Entry</button>
+
+      <div class="skill-template">
+        <div class="skill-template-title">F3 New Feature Skill Template</div>
+        <div class="skill-template-list">
+          <div class="skill-template-item"><span>1</span><div><b>Basic Info</b><br>feature code / English &amp; Chinese name / entity / data type</div></div>
+          <div class="skill-template-item"><span>2</span><div><b>RAG Classification</b><br>freshness / source / usage / scope</div></div>
+          <div class="skill-template-item"><span>3</span><div><b>Coverage</b><br>business domain / scenarios / supported regions / exceptions</div></div>
+          <div class="skill-template-item"><span>4</span><div><b>Feature Content</b><br>description / coding logic / data source / owner</div></div>
+          <div class="skill-template-item"><span>5</span><div><b>Discovery Fields</b><br>summary / aliases / tags / common questions / usage example / risk</div></div>
+          <div class="skill-template-item"><span>6</span><div><b>Confirm + Skills Evaluation + Submit</b><br>检查完整度、可追溯性、检索可用性后直接提交生效</div></div>
+        </div>
+      </div>
+
+      <div class="agent-dialog">
+        <div class="agent-msg user">我想创建一个新 feature，用来表示直播 PK 场景下的互动风险分数。</div>
+        <div class="agent-msg agent">好的。我会按照 F3 新特征设置模板帮你生成表单。请确认 entity、data source、owner、usage example 和 risk / limitation。</div>
+        <div class="agent-msg user">Entity 是 Video Slice。Data source 来自 DAG + LLMGatewayInferenceProvider，owner 是 Video Slice Feature Team。用于 PK 场景下对礼物、连麦、跨房间互动风险做策略加权。</div>
+        <div class="agent-msg agent">已生成左侧表单，请确认内容；确认后我会调用 skills evaluation 检查是否满足入库要求。</div>
+      </div>
+
+      <div class="sync-card">
+        <div class="sync-card-title">Rendered result · 同步到左侧 F3</div>
+        <div class="sync-card-row"><b>Feature code:</b> <span class="mono">slice_pk_interaction_risk_score</span></div>
+        <div class="sync-card-row"><b>Owner:</b> Video Slice Feature Team</div>
+        <div class="sync-card-row"><b>Data source:</b> DAG pipeline · GetLocalFeatureProvider · LLMGatewayInferenceProvider</div>
+        <div class="sync-card-row"><b>Risk:</b> DAG / prompt version dependency; stability evaluation before launch</div>
+      </div>
+
+      <div class="agent-actions">
+        <div class="agent-step">
+          <div class="agent-step-copy"><b>1. Confirm</b>用户确认 Agent 渲染到左侧的 F3 表单内容。</div>
+          <button class="btn btn-sm">Confirm</button>
+        </div>
+        <div class="agent-step">
+          <div class="agent-step-copy"><b>2. Skills Evaluation</b>Agent 调用 skill 检查字段完整度、source/owner 可追溯、usage example 可检索、risk 边界充分。</div>
+          <button class="btn btn-sm">Evaluate</button>
+        </div>
+        <div class="agent-step">
+          <div class="agent-step-copy"><b>3. Submit</b>通过后写入 Feature Platform Meta + Knowledge Library，并进入 embedding queue。</div>
+          <button class="btn btn-sm btn-primary">Submit</button>
+        </div>
+      </div>
+      <div class="agent-note">One feature task = one conversation. Submit 后当前任务结束，创建下一条 feature 需要重新开启 Agent Entry。</div>
+    </aside>
+  </div>
+</div>
+
+<!-- ================= F4 · Q&A widget explainer page ================= -->
+<div class="page" id="page-f4">
+  <div class="page-header">
+    <div>
+      <div class="crumb">Knowledge Library <span class="sep">/</span> AI Q&amp;A Widget</div>
+      <div class="page-title">AI Q&amp;A Widget · 悬浮窗方案说明</div>
+      <div class="page-sub">页面右下常驻 · 未来底层 agent 会同时对接 Lark 对话框（同一个 agent，两个入口）</div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 520px;gap:20px">
+    <div class="panel">
+      <div class="panel-header"><div class="panel-title">Design Notes / 设计说明</div></div>
+      <div class="panel-body">
+        <div class="section-hd">Positioning · 定位</div>
+        <ul style="margin-left:20px;color:var(--text-2);line-height:1.9">
+          <li>页面右下常驻 <span class="mono">Ask AI</span> 按钮 · 与现有 <span class="mono">Oncall</span> 悬浮窗<strong>并存</strong>（本期不动 Oncall）</li>
+          <li>点击弹出侧边面板（本 Sketch）· 支持最大化为居中 modal</li>
+          <li>底层 agent 未来与 Lark bot 共用一套</li>
+        </ul>
+
+        <div class="section-hd">Modes · 模式</div>
+        <ul style="margin-left:20px;color:var(--text-2);line-height:1.9">
+          <li><strong>Feature Discovery</strong>（本期唯一）—— 我该用哪个特征？逻辑是什么？稳定性如何？</li>
+          <li><strong>Platform Oncall 合并</strong>—— <strong>P2 再课 Oncall 团队</strong> 对齐，本期不 block；届时评估：并入 Ask AI / 保留独立</li>
+        </ul>
+
+        <div class="section-hd">Interaction · 交互</div>
+        <ul style="margin-left:20px;color:var(--text-2);line-height:1.9">
+          <li>示例 prompt 卡片 3 张 · 引导初次使用</li>
+          <li>召回结果以 <strong>Feature Card</strong> 形式返回 · 点击跳 F2 详情</li>
+          <li>为空时引导用户跳 F3 新建（"没找到 · 是否新建？"）</li>
+          <li>Score &lt; 阈值：结果打灰 + "参考度低"标签</li>
+        </ul>
+
+        <div class="section-hd">Rollout · 上线路径</div>
+        <ol style="margin-left:20px;color:var(--text-2);line-height:1.9">
+          <li><strong>Phase 1（本期）</strong> · Ask AI 悬浮窗独立上线 · 只做 Feature Discovery · Oncall widget 不动</li>
+          <li>Phase 2 · 记忆 / 多轮 / 收藏 + 与 Oncall 团队对齐是否合并</li>
+          <li>Phase 3 · Lark 对话框接入（同一 agent 底座）</li>
+        </ol>
+
+        <div class="section-hd">User Persona · 谁在问</div>
+        <p style="color:var(--text-2)">雪荣团队等业务方 —— 现有 7000+ 特征里只知道自己提过的几十个，其余靠"抓着艺楠、加浩问"。本 widget 就是把这个"图书管理员"角色搬到平台上。</p>
+      </div>
+    </div>
+
+    <!-- Detailed Ask AI prototype -->
+    <div>
+      <div class="panel" style="height:760px;display:flex;flex-direction:column;overflow:hidden">
+        <div class="qa-head" style="position:static;border-bottom:1px solid var(--border)">
+          <div>
+            <div class="qa-head-title">Feature Discovery Agent</div>
+            <div class="qa-head-sub">Detailed prototype · RAG-powered · 7,024 features indexed</div>
+          </div>
+          <span class="tag-inline" style="background:var(--primary-light);color:var(--primary)">P0</span>
+        </div>
+        <div class="qa-mode">
+          <div class="active">Feature Discovery</div>
+          <div>Platform Oncall <span class="tag-inline" style="background:var(--bg-hover)">P2</span></div>
+        </div>
+        <div class="qa-body" style="flex:1">
+          <div class="qa-suggest">
+            <div class="qa-suggest-hint">Try asking</div>
+            <div class="qa-suggest-card static">我想找一个直播间开播国相关的特征</div>
+            <div class="qa-suggest-card static">slice_is_in_battle 的稳定性怎么样？</div>
+            <div class="qa-suggest-card static">有没有可以替代 zeta_zero_shot_features 的？</div>
+          </div>
+
+          <div class="bubble user">我想找一个直播间开播国相关的特征</div>
+          <div class="bubble ai">
+            我找到 2 个相关特征。country 有几个口径，建议先对比后使用：你要的是房间归属地、当前开播地，还是观众/IP 地区？
+            <div class="feat-card">
+              <div class="feat-card-name">Room · Root Country <span class="fit-pill">Likely suitable</span></div>
+              <div class="feat-card-code">room_country_root</div>
+              <div class="feat-card-meta">
+                <span>SLA A</span><span>·</span>
+                <span>Ordinary</span><span>·</span>
+                <span>Live room</span><span>·</span>
+                <span>Hour level</span>
+              </div>
+              <div class="feat-card-row"><b>Why matched:</b> 命中“直播间 + 国家口径”，适合判断 room 归属地。</div>
+              <div class="feat-card-row"><b>Scope:</b> live_governance / room-level country policy · Global</div>
+              <div class="feat-more">
+                <b>Data source:</b> Room profile service<br>
+                <b>Owner:</b> Live Governance Feature Platform<br>
+                <b>Usage example:</b> 用于按房间归属国家配置策略阈值。<br>
+                <b>Risk / limitation:</b> 不代表当前开播地；如需实时开播位置，对比 broadcast country。
+              </div>
+              <div class="feat-card-cta">View detail to confirm</div>
+            </div>
+            <div class="feat-card">
+              <div class="feat-card-name">Room · Broadcast Country <span class="fit-pill context">Need more context</span></div>
+              <div class="feat-card-code">room_country_broadcast</div>
+              <div class="feat-card-meta">
+                <span>SLA C</span><span>·</span>
+                <span>Ordinary</span><span>·</span>
+                <span>Live room</span><span>·</span>
+                <span>Day level</span>
+              </div>
+              <div class="feat-card-row"><b>Why matched:</b> 命中“开播国”，但该特征口径更偏当前直播开播地。</div>
+              <div class="feat-card-row"><b>Scope:</b> live_review / broadcast-country routing · Global</div>
+              <div class="feat-more">
+                <b>Data source:</b> Livestream session metadata<br>
+                <b>Owner:</b> Live Room Feature Team<br>
+                <b>Usage example:</b> 用于按当前开播地做分区策略或路由。<br>
+                <b>Risk / limitation:</b> SLA C，日级更新；不适合强实时策略。
+              </div>
+              <div class="feat-card-cta">View detail to confirm</div>
+            </div>
+            <div style="margin-top:8px;font-size:12px;color:var(--text-3)">
+              Compare before use. 如果你要观众/IP 地区，我可以换一组候选特征。
+            </div>
+          </div>
+
+          <div class="bubble user">slice_is_in_battle 的稳定性怎么样？</div>
+          <div class="bubble ai">
+            这个特征当前看起来比较稳定，但仍建议进入详情确认数据源和使用边界。
+            <div class="feat-card">
+              <div class="feat-card-name">Slice · In Battle <span class="fit-pill">Likely suitable</span></div>
+              <div class="feat-card-code">slice_is_in_battle</div>
+              <div class="feat-card-meta">
+                <span>SLA A</span><span>·</span>
+                <span>Model</span><span>·</span>
+                <span>Video Slice</span><span>·</span>
+                <span>Second level</span>
+              </div>
+              <div class="feat-card-row"><b>Why matched:</b> 直接命中特征 code，用户问题关注 stability，因此优先展示 SLA、实时性和向量入库状态。</div>
+              <div class="feat-card-row"><b>Scope:</b> live_governance / PK-state policies · applies to video-slice level risk logic</div>
+              <div class="feat-more">
+                <b>Data source:</b> DAG pipeline · GetLocalFeatureProvider + LLMGatewayInferenceProvider<br>
+                <b>Owner:</b> Video Slice Feature Team<br>
+                <b>Usage example:</b> 在 PK 场景下对礼物、连麦、跨房间互动风险做策略加权。<br>
+                <b>Risk / limitation:</b> 这是 model feature，依赖上游 DAG 和 prompt 版本；PK 结束后的短时间窗口可能存在延迟，使用前需要确认 validity。
+              </div>
+              <div class="feat-card-cta">View detail to confirm</div>
+            </div>
+          </div>
+
+          <div class="bubble user">有没有可以替代 zeta_zero_shot_features 的？</div>
+          <div class="bubble ai">
+            需要更多上下文。zeta_zero_shot_features 可能覆盖多个 zero-shot / prompt inference 口径，我先列出 2 个可能相关的替代方向；如果你能补充使用场景，我可以缩小范围。
+            <div class="feat-card">
+              <div class="feat-card-name">Slice · In Battle <span class="fit-pill context">Need more context</span></div>
+              <div class="feat-card-code">slice_is_in_battle</div>
+              <div class="feat-card-meta">
+                <span>SLA A</span><span>·</span>
+                <span>Model</span><span>·</span>
+                <span>Video Slice</span><span>·</span>
+                <span>Second level</span>
+              </div>
+              <div class="feat-card-row"><b>Why matched:</b> 同样来自 LLMGatewayInferenceProvider，适合替代“是否在 PK 场景”的 zero-shot 判断。</div>
+              <div class="feat-card-row"><b>Scope:</b> PK-state detection / live room interaction risk</div>
+              <div class="feat-more">
+                <b>Data source:</b> DAG pipeline · prompt inference result<br>
+                <b>Owner:</b> Video Slice Feature Team<br>
+                <b>Usage example:</b> 当原策略只需要判断 PK 状态时，可优先比较该特征。<br>
+                <b>Risk / limitation:</b> 不能替代所有 zero-shot 语义，只适用于 PK-state 相关判断。
+              </div>
+              <div class="feat-card-cta">View detail to confirm</div>
+            </div>
+            <div class="feat-card">
+              <div class="feat-card-name">Slice · Sub Feature Info <span class="fit-pill context">Need more context</span></div>
+              <div class="feat-card-code">slice_sub_feature_info</div>
+              <div class="feat-card-meta">
+                <span>SLA B</span><span>·</span>
+                <span>Ordinary</span><span>·</span>
+                <span>Video Slice</span><span>·</span>
+                <span>Minute level</span>
+              </div>
+              <div class="feat-card-row"><b>Why matched:</b> 适合作为更底层的 slice context 输入，用来替代部分泛化 zero-shot 特征里的上下文字段。</div>
+              <div class="feat-card-row"><b>Scope:</b> slice-level context enrichment / risk model input</div>
+              <div class="feat-more">
+                <b>Data source:</b> Subfeature provider<br>
+                <b>Owner:</b> Slice Data Platform<br>
+                <b>Usage example:</b> 如果策略需要拆解 zero-shot 输出背后的 slice 信息，可用它做规则条件或模型输入。<br>
+                <b>Risk / limitation:</b> 不是直接风险判断结果，需要和具体 policy label / model output 组合使用。
+              </div>
+              <div class="feat-card-cta">View detail to confirm</div>
+            </div>
+            <div style="margin-top:8px;font-size:12px;color:var(--text-3)">
+              你可以补充：要替代的是 PK 判断、违规语义判断，还是 zero-shot 模型输入字段？
+            </div>
+          </div>
+        </div>
+        <div class="qa-input-row" style="position:static">
+          <textarea class="qa-input" rows="1" placeholder="Ask about features…"></textarea>
+          <button class="qa-send">Send</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= FLOATING WIDGET (always visible) ================= -->
+<div class="fab" id="fab" onclick="toggleQA()">
+  <span class="fab-dot"></span>
+  Ask AI · 问特征
+</div>
+
+<div class="qa-panel" id="qa-panel">
+  <div class="qa-head">
+    <div>
+      <div class="qa-head-title">Feature Discovery Agent</div>
+      <div class="qa-head-sub">RAG-powered · 7,024 features indexed</div>
+    </div>
+    <div>
+      <button class="btn btn-sm" onclick="toggleQA()">×</button>
+    </div>
+  </div>
+  <div class="qa-mode">
+    <div class="active">Feature Discovery</div>
+    <div>Platform Oncall <span class="tag-inline" style="background:var(--bg-hover)">P2</span></div>
+  </div>
+  <div class="qa-body">
+    <div class="qa-suggest">
+      <div class="qa-suggest-hint">Try asking</div>
+      <div class="qa-suggest-card" data-answer="country">我想找一个直播间开播国相关的特征</div>
+      <div class="qa-suggest-card" data-answer="stability">slice_is_in_battle 的稳定性怎么样？</div>
+      <div class="qa-suggest-card" data-answer="alternative">有没有可以替代 zeta_zero_shot_features 的？</div>
+    </div>
+
+    <!-- sample conversation -->
+    <div class="qa-conversation" id="qa-conversation"></div>
+  </div>
+  <div class="qa-input-row">
+    <textarea class="qa-input" rows="1" placeholder="Ask about features…"></textarea>
+    <button class="qa-send">Send</button>
+  </div>
+</div>
+
+<script>
+function switchPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelector('.tab[data-page="'+id+'"]').classList.add('active');
+  window.scrollTo(0,0);
+}
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click',()=>switchPage(t.dataset.page));
+});
+function updateAgentStep(step){
+  if(step === 'new'){
+    const complete = document.getElementById('agent-complete');
+    if(complete) complete.classList.remove('show');
+    return;
+  }
+  if(step === 'submit'){
+    const complete = document.getElementById('agent-complete');
+    if(complete) complete.classList.add('show');
+  }
+}
+document.querySelectorAll('[data-agent-step]').forEach(btn=>{
+  btn.addEventListener('click',()=>updateAgentStep(btn.dataset.agentStep));
+});
+function toggleQA(){
+  document.getElementById('qa-panel').classList.toggle('open');
+}
+const qaAnswers = {
+  country: {
+    q: '我想找一个直播间开播国相关的特征',
+    a: `我找到 2 个相关特征。country 有几个口径，建议先对比后使用：你要的是房间归属地、当前开播地，还是观众/IP 地区？
+      <div class="feat-card">
+        <div class="feat-card-name">Room · Root Country <span class="fit-pill">Likely suitable</span></div>
+        <div class="feat-card-code">room_country_root</div>
+        <div class="feat-card-meta">
+          <span>SLA A</span><span>·</span>
+          <span>Ordinary</span><span>·</span>
+          <span>Live room</span><span>·</span>
+          <span>Hour level</span>
+        </div>
+        <div class="feat-card-row"><b>Why matched:</b> 命中“直播间 + 国家口径”，适合判断 room 归属地。</div>
+        <div class="feat-card-row"><b>Scope:</b> live_governance / room-level country policy · Global</div>
+        <div class="feat-more">
+          <b>Data source:</b> Room profile service<br>
+          <b>Owner:</b> Live Governance Feature Platform<br>
+          <b>Usage example:</b> 用于按房间归属国家配置策略阈值。<br>
+          <b>Risk / limitation:</b> 不代表当前开播地；如需实时开播位置，对比 broadcast country。
+        </div>
+        <div class="feat-card-cta">View detail to confirm</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-card-name">Room · Broadcast Country <span class="fit-pill context">Need more context</span></div>
+        <div class="feat-card-code">room_country_broadcast</div>
+        <div class="feat-card-meta">
+          <span>SLA C</span><span>·</span>
+          <span>Ordinary</span><span>·</span>
+          <span>Live room</span><span>·</span>
+          <span>Day level</span>
+        </div>
+        <div class="feat-card-row"><b>Why matched:</b> 命中“开播国”，但该特征口径更偏当前直播开播地。</div>
+        <div class="feat-card-row"><b>Scope:</b> live_review / broadcast-country routing · Global</div>
+        <div class="feat-more">
+          <b>Data source:</b> Livestream session metadata<br>
+          <b>Owner:</b> Live Room Feature Team<br>
+          <b>Usage example:</b> 用于按当前开播地做分区策略或路由。<br>
+          <b>Risk / limitation:</b> SLA C，日级更新；不适合强实时策略。
+        </div>
+        <div class="feat-card-cta">View detail to confirm</div>
+      </div>
+      <div style="margin-top:8px;font-size:12px;color:var(--text-3)">
+        Compare before use. 如果你要观众/IP 地区，我可以换一组候选特征。
+      </div>`
+  },
+  stability: {
+    q: 'slice_is_in_battle 的稳定性怎么样？',
+    a: `这个特征当前看起来比较稳定，但仍建议进入详情确认数据源和使用边界。
+      <div class="feat-card">
+        <div class="feat-card-name">Slice · In Battle <span class="fit-pill">Likely suitable</span></div>
+        <div class="feat-card-code">slice_is_in_battle</div>
+        <div class="feat-card-meta">
+          <span>SLA A</span><span>·</span>
+          <span>Model</span><span>·</span>
+          <span>Video Slice</span><span>·</span>
+          <span>Second level</span>
+        </div>
+        <div class="feat-card-row"><b>Why matched:</b> 直接命中特征 code，用户问题关注 stability，因此优先展示 SLA、实时性和向量入库状态。</div>
+        <div class="feat-card-row"><b>Scope:</b> live_governance / PK-state policies · applies to video-slice level risk logic</div>
+        <div class="feat-more">
+          <b>Data source:</b> DAG pipeline · GetLocalFeatureProvider + LLMGatewayInferenceProvider<br>
+          <b>Owner:</b> Video Slice Feature Team<br>
+          <b>Usage example:</b> 在 PK 场景下对礼物、连麦、跨房间互动风险做策略加权。<br>
+          <b>Risk / limitation:</b> 这是 model feature，依赖上游 DAG 和 prompt 版本；PK 结束后的短时间窗口可能存在延迟，使用前需要确认 validity。
+        </div>
+        <div class="feat-card-cta">View detail to confirm</div>
+      </div>`
+  },
+  alternative: {
+    q: '有没有可以替代 zeta_zero_shot_features 的？',
+    a: `需要更多上下文。zeta_zero_shot_features 可能覆盖多个 zero-shot / prompt inference 口径，我先列出 2 个可能相关的替代方向；如果你能补充使用场景，我可以缩小范围。
+      <div class="feat-card">
+        <div class="feat-card-name">Slice · In Battle <span class="fit-pill context">Need more context</span></div>
+        <div class="feat-card-code">slice_is_in_battle</div>
+        <div class="feat-card-meta">
+          <span>SLA A</span><span>·</span>
+          <span>Model</span><span>·</span>
+          <span>Video Slice</span><span>·</span>
+          <span>Second level</span>
+        </div>
+        <div class="feat-card-row"><b>Why matched:</b> 同样来自 LLMGatewayInferenceProvider，适合替代“是否在 PK 场景”的 zero-shot 判断。</div>
+        <div class="feat-card-row"><b>Scope:</b> PK-state detection / live room interaction risk</div>
+        <div class="feat-more">
+          <b>Data source:</b> DAG pipeline · prompt inference result<br>
+          <b>Owner:</b> Video Slice Feature Team<br>
+          <b>Usage example:</b> 当原策略只需要判断 PK 状态时，可优先比较该特征。<br>
+          <b>Risk / limitation:</b> 不能替代所有 zero-shot 语义，只适用于 PK-state 相关判断。
+        </div>
+        <div class="feat-card-cta">View detail to confirm</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-card-name">Slice · Sub Feature Info <span class="fit-pill context">Need more context</span></div>
+        <div class="feat-card-code">slice_sub_feature_info</div>
+        <div class="feat-card-meta">
+          <span>SLA B</span><span>·</span>
+          <span>Ordinary</span><span>·</span>
+          <span>Video Slice</span><span>·</span>
+          <span>Minute level</span>
+        </div>
+        <div class="feat-card-row"><b>Why matched:</b> 适合作为更底层的 slice context 输入，用来替代部分泛化 zero-shot 特征里的上下文字段。</div>
+        <div class="feat-card-row"><b>Scope:</b> slice-level context enrichment / risk model input</div>
+        <div class="feat-more">
+          <b>Data source:</b> Subfeature provider<br>
+          <b>Owner:</b> Slice Data Platform<br>
+          <b>Usage example:</b> 如果策略需要拆解 zero-shot 输出背后的 slice 信息，可用它做规则条件或模型输入。<br>
+          <b>Risk / limitation:</b> 不是直接风险判断结果，需要和具体 policy label / model output 组合使用。
+        </div>
+        <div class="feat-card-cta">View detail to confirm</div>
+      </div>
+      <div style="margin-top:8px;font-size:12px;color:var(--text-3)">
+        你可以补充：要替代的是 PK 判断、违规语义判断，还是 zero-shot 模型输入字段？
+      </div>`
+  }
+};
+function renderQAAnswer(key){
+  const item = qaAnswers[key] || qaAnswers.country;
+  const target = document.getElementById('qa-conversation');
+  if(!target) return;
+  target.innerHTML = '<div class="bubble user">' + item.q + '</div><div class="bubble ai">' + item.a + '</div>';
+  target.scrollIntoView({block:'nearest'});
+}
+document.querySelectorAll('.qa-panel .qa-suggest-card').forEach(c=>{
+  c.addEventListener('click',()=>{
+    document.querySelectorAll('.qa-panel .qa-suggest-card').forEach(x=>x.classList.remove('active'));
+    c.classList.add('active');
+    document.querySelector('.qa-input').value = c.textContent.trim();
+    renderQAAnswer(c.dataset.answer);
+    document.querySelector('.qa-input').focus();
+  });
+});
+renderQAAnswer('country');
+// keyboard shortcuts
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape') document.getElementById('qa-panel').classList.remove('open');
+  if((e.ctrlKey||e.metaKey) && e.key==='k'){e.preventDefault();toggleQA();document.querySelector('.qa-input')?.focus();}
+});
+</script>
+
+</body>
+</html>

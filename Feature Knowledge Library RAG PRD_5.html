@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>【Feature Platform】Feature Knowledge Library RAG PRD</title>
+<style>
+  :root{
+    --text:#111827;--muted:#6B7280;--line:#E5E7EB;--soft:#F9FAFB;
+    --blue:#2563EB;--blue-soft:#EFF6FF;--green:#047857;--amber:#B45309;--red:#B91C1C;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:#F3F4F6;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;line-height:1.65;font-size:14px}
+  .doc{max-width:1180px;margin:0 auto;background:white;min-height:100vh;padding:42px 56px 80px}
+  h1{font-size:30px;line-height:1.25;margin:0 0 24px;letter-spacing:0}
+  h2{font-size:22px;margin:42px 0 16px;padding-top:8px;border-top:2px solid var(--text)}
+  h3{font-size:17px;margin:28px 0 12px}
+  h4{font-size:15px;margin:22px 0 8px}
+  p{margin:8px 0}
+  .summary{background:var(--blue-soft);border:1px solid #BFDBFE;border-left:4px solid var(--blue);padding:18px 20px;margin:18px 0 26px}
+  .muted{color:var(--muted)}
+  .en{display:block;color:var(--muted);font-size:12.5px;line-height:1.55;margin-top:4px}
+  .pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:2px 9px;font-size:12px;background:#fff;color:#374151}
+  .tag-new{background:var(--blue-soft);border-color:#BFDBFE;color:var(--blue)}
+  table{width:100%;border-collapse:collapse;margin:12px 0 22px;table-layout:fixed}
+  th,td{border:1px solid var(--line);padding:10px 12px;vertical-align:top}
+  th{background:var(--soft);font-weight:700;text-align:left}
+  ul,ol{padding-left:22px;margin:8px 0 14px}
+  li{margin:4px 0}
+  code{font-family:"SF Mono",Menlo,Consolas,monospace;background:#F3F4F6;border:1px solid #E5E7EB;border-radius:4px;padding:1px 5px;font-size:12px}
+  .shot{margin:14px 0 28px;border:1px solid var(--line);background:#fff}
+  .shot figcaption{padding:10px 12px;border-bottom:1px solid var(--line);background:var(--soft);font-weight:700}
+  .shot img{display:block;width:100%;height:auto}
+  .note{border:1px solid #FDE68A;background:#FFFBEB;color:#78350F;padding:12px 14px;margin:12px 0 18px}
+  .ok{color:var(--green);font-weight:700}.warn{color:var(--amber);font-weight:700}.bad{color:var(--red);font-weight:700}
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .small{font-size:12px}
+  @media print{body{background:white}.doc{padding:24px;max-width:none}.shot{break-inside:avoid}h2,h3{break-after:avoid}}
+</style>
+</head>
+<body>
+<main class="doc">
+  <h1>【Feature Platform】Feature Knowledge Library RAG PRD</h1>
+
+  <div class="summary">
+    <p><strong>Summary</strong></p>
+    <p>收到 4 个需求：1. 将现有 Feature List 升级为可检索的 Feature Knowledge Library；2. 在特征详情页展示可向量化的结构化文本与 RAG 状态；3. 在新建特征流程中提供 <code>New feature entry · Ask AI</code>，让有 RAG 编辑权限的用户通过 Agent 问答生成新 feature 方案；4. 提供常驻 Ask AI 入口，帮助业务方用自然语言发现特征并跳转详情。</p>
+    <p>We have received 4 requests: 1. Upgrade the existing Feature List into a searchable Feature Knowledge Library; 2. Show embedding-ready structured text and RAG status on the feature detail page; 3. Provide <code>New feature entry · Ask AI</code> in the new feature flow, so users with RAG edit permission can generate a new feature proposal through Agent Q&amp;A; 4. Provide an always-on Ask AI entry for feature discovery and detail navigation.</p>
+  </div>
+
+  <h2>Related Documents // 相关文档</h2>
+  <table>
+    <tr><th>Document</th><th>Link</th><th>POC</th></tr>
+    <tr><td>Prototype / 原型</td><td><code>file:///Users/bytedance/Downloads/特征RAG-原型-v0.3_1.html</code></td><td>PM</td></tr>
+    <tr><td>Feature Platform V3.1 context</td><td>TBD with Feature Platform proposal</td><td>PM / RD</td></tr>
+    <tr><td>Event tracking</td><td>TBD with DA</td><td>DA</td></tr>
+    <tr><td>Starling copy</td><td>TBD with UX writer</td><td>UX writer</td></tr>
+  </table>
+
+  <h2>Basic Info // 基础信息</h2>
+  <h3>Change Log // 变更记录</h3>
+  <table>
+    <tr><th>Date // 日期</th><th>Description // 描述</th><th>修改人 // by</th></tr>
+    <tr><td>07/14/2026</td><td>Initial PRD generated from prototype v0.2.</td><td>gaoyueming / Codex</td></tr>
+    <tr><td>07/28/2026</td><td>根据与 Ysabelle Torres（策略/业务方）的评审会更新：① F2 Code Logic 下方新增 Output Samples（仅类目型/枚举型特征，model feature 不需要）；② MVP 不展示 IDSP 侧 hit / not hit，业务方判断"能否用于策略"以特征值为准；③ 列表页 hover 预览 output samples 定为 P2；④ 明确手动模板与 Agent 录入双路径并存（控制 token 成本，Zach）。<span class="en">Updated after review with Ysabelle Torres: ① Add Output Samples under Code Logic on F2 (categorical/enum features only; not needed for model features); ② MVP excludes IDSP-side hit/not-hit — feature values matter most for strategy adoption; ③ Hover preview of output samples on the list page is P2; ④ Manual template and Agent entry remain dual paths (token cost control, Zach).</span></td><td>gaoyueming</td></tr>
+    <tr><td>07/28/2026</td><td>Output Samples 口径 clarification：定义为<strong>完整取值枚举表 + 每个值的业务含义</strong>（如 room type 共 10 个枚举值，001 = "Game LIVE room"），仅 categorization features 维护、非必填；新增后端字段 <code>output_samples</code>；Agent Q&amp;A 支持查询特征取值与含义。<span class="en">Output Samples clarification: defined as the complete enum value list + business meaning per value (e.g. room type has 10 enum values, 001 = "Game LIVE room"); categorization features only, optional; added backend field <code>output_samples</code>; Agent Q&amp;A supports querying feature values and meanings.</span></td><td>gaoyueming</td></tr>
+    <tr><td>07/29/2026</td><td>同步原型 <code>v0.3_1</code>：① F3 Proposal 明确 19 个必填字段、Confirm 锁定、6 项 Skills Evaluation、失败修改与重新评估闭环；② 修正评估触发时机为 Confirm 后运行，而不是 Submit 后；③ F4 按 NEED_CLARIFICATION / FEATURE_CARDS / LOW_CONFIDENCE / NO_RESULT 四种状态补齐交互与权限分支；④ Featurelist 按 FE / BE 分行。<span class="en">Synced with prototype <code>v0.3_1</code>: ① F3 now specifies 19 required proposal fields, Confirm locking, six Skills Evaluation checks, and the fix/re-evaluation loop; ② corrected evaluation timing to run after Confirm rather than after Submit; ③ completed F4 interactions and permission routing across NEED_CLARIFICATION / FEATURE_CARDS / LOW_CONFIDENCE / NO_RESULT; ④ split Featurelist into FE and BE rows.</span></td><td>gaoyueming / Codex</td></tr>
+  </table>
+
+  <h3>Relevant Links // 相关链接</h3>
+  <table>
+    <tr><th></th><th>Links // 链接</th><th>POC</th></tr>
+    <tr><td>Link to Meego Ticket</td><td>TBD</td><td>PM</td></tr>
+    <tr><td>Link to Figma/Demo</td><td><code>特征RAG-原型-v0.3_1.html</code></td><td>PM / UED</td></tr>
+    <tr><td>Link to Starling</td><td>TBD</td><td>UX writer</td></tr>
+    <tr><td>Link to Event Tracking</td><td>TBD</td><td>DA</td></tr>
+    <tr><td>Other Useful Links</td><td>TBD: Feature Platform Meta schema / vector store design / Agent evaluation skill config</td><td>RD</td></tr>
+  </table>
+
+  <h2>Background // 需求背景</h2>
+  <h3>What are we building? // 需求概述</h3>
+  <ol>
+    <li>
+      <p><strong>Problem 1:</strong> Feature Platform 当前已有大量特征，但业务方通常只熟悉自己提过的几十个特征，找特征仍依赖人工问平台同学；特征含义、代码逻辑、适用范围、稳定性与数据源信息缺少一个可被 RAG 检索的统一知识层。</p>
+      <p><strong>Problem 1:</strong> Feature Platform has thousands of features, but business users usually only know the small subset they previously requested. Feature discovery still relies on asking platform owners manually, and feature semantics, code logic, usage scope, stability, and data source details are not organized as a unified RAG-searchable knowledge layer.</p>
+    </li>
+    <li>
+      <p><strong>Problem 2:</strong> 现有 Feature List 更像资产列表，缺少 embedding 状态、同步状态、失败重跑与可召回性验证，无法让 PM/RD 判断某条特征是否已经进入 Ask AI 可用范围。</p>
+      <p><strong>Problem 2:</strong> The current Feature List works as an asset inventory, but it does not expose embedding status, sync status, failed re-index handling, or recall validation. PM/RD cannot easily tell whether a feature is ready for Ask AI.</p>
+    </li>
+    <li>
+      <p><strong>Problem 3:</strong> 新建特征时，用户不应该先手填一堆 RAG 字段；更自然的路径是先从业务诉求描述开始，由 Agent 追问 feature meaning、entity、data source、owner、usage example、risk / limitation，并生成新 feature 方案供确认。</p>
+      <p><strong>Problem 3:</strong> In the new feature flow, users should not start by manually filling a long RAG template. The better path starts from describing the business need, then lets the Agent ask for feature meaning, entity, data source, owner, usage example, and risk / limitation, and generate a new feature proposal for confirmation.</p>
+    </li>
+    <li>
+      <p><strong>Problem 4:</strong> 业务方需要在平台内直接用自然语言问“我该用哪个特征 / 逻辑是什么 / 稳定性如何”，并从结果卡片跳回特征详情页完成确认。</p>
+      <p><strong>Problem 4:</strong> Business users need an in-platform natural-language entry to ask which feature to use, how a feature works, and how stable it is, then navigate from result cards back to feature details for confirmation.</p>
+    </li>
+  </ol>
+
+  <h3>Goal // 目标 and key metrics</h3>
+  <table>
+    <tr><th>Goal</th><th>Metric // 指标</th><th>Owner</th></tr>
+    <tr>
+      <td>提升特征可检索覆盖率<br>Improve searchable feature coverage</td>
+      <td>当前原型基线：7,024 features，其中 6,683 indexed，覆盖率 95.1%；P0 目标：indexed 可用率 ≥ 99%，failed items 可被批量重跑并保留失败原因。<span class="en">Prototype baseline: 7,024 features, 6,683 indexed, indexed rate 95.1%. P0 target: indexed availability ≥ 99%; failed items can be batch re-run with failure reasons preserved.</span></td>
+      <td>Feature Platform RD / PM</td>
+    </tr>
+    <tr>
+      <td>降低业务方找特征成本<br>Reduce feature discovery effort</td>
+      <td>从人工询问平台 owner 的 X min → Ask AI 首轮返回 ≤ 30s；Feature Card 点击到详情页路径 1 step。<span class="en">Reduce discovery from X minutes of manually asking platform owners to ≤ 30 seconds for Ask AI's first response; Feature Card to detail page takes 1 step.</span></td>
+      <td>PM / DA</td>
+    </tr>
+    <tr>
+      <td>提高新特征创建完整度<br>Improve completeness for new feature creation</td>
+      <td><code>New feature entry · Ask AI</code> 的 Proposal 必填完成度必须达到 <code>19/19</code>，最新已确认版本的 Skills Evaluation 必须达到 <code>6/6</code> 后才允许 Submit；两项 gate 覆盖率 = 100%。<span class="en">A <code>New feature entry · Ask AI</code> proposal must reach <code>19/19</code> required-field completion, and the latest confirmed version must pass Skills Evaluation at <code>6/6</code> before Submit. Coverage of both gates = 100%.</span></td>
+      <td>PM / RD</td>
+    </tr>
+    <tr>
+      <td>提升 RAG 召回可验证性<br>Make RAG recall verifiable</td>
+      <td>每条详情页展示 structured text、embedding model、chunk count、vector id、last synced；用户从 Ask AI Feature Card 跳转 F2 后可完成最终确认。<span class="en">Each detail page shows structured text, embedding model, chunk count, vector id, and last synced. Users can navigate from an Ask AI Feature Card to F2 for final confirmation.</span></td>
+      <td>RD</td>
+    </tr>
+  </table>
+
+  <h2>Requirement Overall</h2>
+  <h3>Featurelist（分前后端）</h3>
+  <table>
+    <tr><th style="width:16%">Platform</th><th style="width:20%">Menu</th><th>Feature list</th><th style="width:9%">优先级</th></tr>
+    <tr>
+      <td>Feature Platform</td>
+      <td>特征 Agent 应用 / Knowledge Library</td>
+      <td><strong>FE：</strong>将现有 Feature List 升级为 Knowledge Library 管理页，展示 KPI、筛选、RAG Status、Last Synced、批量 Re-index、单条 View RAG / Re-run。<span class="en"><strong>FE:</strong> Upgrade the existing Feature List into a Knowledge Library management page with KPI, filters, RAG Status, Last Synced, batch Re-index, and per-row View RAG / Re-run actions.</span></td>
+      <td>P0</td>
+    </tr>
+    <tr>
+      <td>Feature Platform</td>
+      <td>特征 Agent 应用 / Knowledge Library</td>
+      <td><strong>BE：</strong>从 Feature Platform Meta 同步基础字段，并与 Knowledge Library / embedding pipeline 建立状态映射；返回失败原因并支持批量重跑。<span class="en"><strong>BE:</strong> Sync base fields from Feature Platform Meta, map Knowledge Library and embedding-pipeline statuses, return failure reasons, and support batch retry.</span></td>
+      <td>P0</td>
+    </tr>
+    <tr>
+      <td>Feature Platform</td>
+      <td>Feature Detail</td>
+      <td><strong>FE：</strong>详情页三栏展示 read-only Meta、Structured Text、RAG Status 与只读 Recall Test；详情页只用于查看、确认、Regenerate / Re-index，不承载创建或补录。<span class="en"><strong>FE:</strong> Use a three-column layout for read-only Meta, Structured Text, RAG Status, and a read-only Recall Test. The detail page supports viewing, confirmation, Regenerate, and Re-index only; it does not host creation or backfill.</span></td>
+      <td>P0</td>
+    </tr>
+    <tr>
+      <td>Feature Platform</td>
+      <td>Feature Detail</td>
+      <td><strong>BE：</strong>生成 embedding-ready structured text，返回 vector id、embedding model、chunk count、sync time、coverage 与 recall result；categorization features 可返回可选的 <code>output_samples</code>。<span class="en"><strong>BE:</strong> Generate embedding-ready structured text and return vector ID, embedding model, chunk count, sync time, coverage, and recall result. Categorization features may also return optional <code>output_samples</code>.</span></td>
+      <td>P0</td>
+    </tr>
+    <tr>
+      <td>Feature Platform</td>
+      <td>New Feature Entry · Ask AI</td>
+      <td><strong>FE：</strong>以 Agent Q&amp;A 为主路径、手动模板为次路径；实时展示 <code>Required N/19</code> 与 Generated New Feature Proposal。19/19 后启用 Confirm，Confirm 后锁定 Proposal；Skills Evaluation 通过 6/6 后才启用 Submit。<span class="en"><strong>FE:</strong> Use Agent Q&amp;A as the main path and the manual template as the secondary path. Show <code>Required N/19</code> and the Generated New Feature Proposal in real time. Enable Confirm at 19/19, lock the proposal after Confirm, and enable Submit only after Skills Evaluation passes 6/6.</span></td>
+      <td>P0</td>
+    </tr>
+    <tr>
+      <td>Feature Platform</td>
+      <td>New Feature Entry · Ask AI</td>
+      <td><strong>BE / Agent：</strong>Confirm 后运行 6 项 Skills Evaluation；失败时返回逐项修改建议，用户更新后重新 Confirm / Evaluate。仅最新已确认 Proposal 通过评估后允许 Submit；Submit 后写入 Feature Platform Meta + Knowledge Library，进入 embedding queue。<span class="en"><strong>BE / Agent:</strong> Run six Skills Evaluation checks after Confirm. On failure, return itemized fixes and require an updated proposal to be confirmed and evaluated again. Allow Submit only when the latest confirmed proposal has passed; after Submit, write to Feature Platform Meta + Knowledge Library and enter the embedding queue.</span></td>
+      <td>P0</td>
+    </tr>
+    <tr>
+      <td>Feature Platform</td>
+      <td>Ask AI Widget</td>
+      <td><strong>FE：</strong>页面右下常驻 Ask AI，与 Oncall widget 并存；展示 suggest prompts、澄清选项、Feature Cards、低置信与空结果；无 RAG 编辑权限时以申请权限 modal 阻断 F3 写模式。<span class="en"><strong>FE:</strong> Keep Ask AI at the bottom right alongside Oncall. Render suggested prompts, clarification options, Feature Cards, low-confidence and empty states; block F3 write mode with an apply-permission modal for users without RAG edit access.</span></td>
+      <td>P0</td>
+    </tr>
+    <tr>
+      <td>Feature Platform</td>
+      <td>Ask AI Widget</td>
+      <td><strong>BE / Agent：</strong>本期仅支持 Feature Discovery；只消费 INDEXED Feature Knowledge，并返回 <code>NEED_CLARIFICATION</code> / <code>FEATURE_CARDS</code> / <code>LOW_CONFIDENCE</code> / <code>NO_RESULT</code>、候选解释、置信度与跳转信息。<span class="en"><strong>BE / Agent:</strong> P0 supports Feature Discovery only. Consume INDEXED Feature Knowledge and return <code>NEED_CLARIFICATION</code> / <code>FEATURE_CARDS</code> / <code>LOW_CONFIDENCE</code> / <code>NO_RESULT</code>, candidate explanations, confidence, and navigation metadata.</span></td>
+      <td>P0</td>
+    </tr>
+    <tr>
+      <td>Feature Platform</td>
+      <td>Knowledge Library · Output Samples Hover</td>
+      <td><strong>FE：</strong>仅 categorization features 在 feature code 旁显示 <code>enum · N</code>；hover 展示前 5 个 value → meaning，<code>+N more</code> 跳 F2。原型提供演示，但本期仍为 P2。<span class="en"><strong>FE:</strong> Show <code>enum · N</code> beside the feature code for categorization features only. Hover shows the first five value → meaning pairs, and <code>+N more</code> opens F2. The prototype demonstrates it, but delivery remains P2.</span></td>
+      <td>P2</td>
+    </tr>
+    <tr>
+      <td>Feature Platform / Oncall</td>
+      <td>Ask AI Widget / Platform Oncall</td>
+      <td>P2 再与 Oncall 团队对齐是否合并；本期不改现有 Oncall，不 block RAG 上线。<br><span class="en">Align with the Oncall team in P2 on whether the two widgets should merge. P0 does not change the existing Oncall widget and should not block the RAG launch.</span></td>
+      <td>P2</td>
+    </tr>
+  </table>
+
+  <h3>User Story Route</h3>
+  <ol>
+    <li>PM/RD 进入 Feature Platform → 特征 Agent 应用 → Knowledge Library，查看 indexed/failed 总量，通过 Feature name/code、Feature type、Owner entity、Data Source Extra、RAG Status 筛选特征。<span class="en">PM/RD enters Feature Platform → Feature Agent app → Knowledge Library, checks indexed/failed totals, and filters features by name/code, type, owner entity, data source extra, and RAG Status.</span></li>
+    <li>用户点击 View RAG 进入特征详情页，检查 Meta、Structured Text 与 embedding 状态；F2 不承载新 feature 创建或补录任务，只用于查看和最终确认。<span class="en">The user clicks View RAG to open the feature detail page and checks Meta, Structured Text, and embedding status. F2 does not host new-feature creation or backfill tasks; it is for viewing and final confirmation only.</span></li>
+    <li>有 RAG 编辑权限的用户进入 F3 新建特征页，先看到 <code>New feature entry · Ask AI</code> 空态入口：<code>Start Agent Entry</code> 按钮在 <code>Start from describing</code> 之前，提示用户从描述业务诉求开始，而不是手填模板。<span class="en">A user with RAG edit permission enters the F3 new feature page and first sees the empty-state <code>New feature entry · Ask AI</code> entry. The <code>Start Agent Entry</code> button appears before <code>Start from describing</code>, guiding the user to start from the business need instead of manually filling a template.</span></li>
+    <li>用户点击 <code>Start Agent Entry</code> 后打开 Agent Entry 窗口；左侧 Agent Q&amp;A 收集字段，右侧实时渲染 <code>Generated New Feature Proposal</code>，并用 <code>Required N/19</code> 展示必填完成度。<span class="en">After clicking <code>Start Agent Entry</code>, the Agent Entry window opens. Agent Q&amp;A on the left collects fields, while the right side renders the <code>Generated New Feature Proposal</code> and shows required-field completion as <code>Required N/19</code>.</span></li>
+    <li>达到 19/19 后用户点击 <code>Confirm Proposal</code> 锁定方案，再运行 6 项 Skills Evaluation；如果返回 <code>EVALUATION_FAILED</code>，用户按建议回到 Q&amp;A 补充，更新后的 Proposal 必须重新 Confirm / Evaluate。<span class="en">At 19/19, the user clicks <code>Confirm Proposal</code> to lock the proposal and runs six Skills Evaluation checks. If <code>EVALUATION_FAILED</code> is returned, the user adds the requested information through Q&amp;A, and the updated proposal must be confirmed and evaluated again.</span></li>
+    <li>只有最新 Proposal 达到 Evaluation 6/6 才启用 Submit。Submit 后写入 Feature Platform Meta + Knowledge Library 并进入 embedding queue；embedding 成功后进入 INDEXED。提交后当前 conversation 关闭，下一条 feature 必须新开 conversation。<span class="en">Submit is enabled only when the latest proposal passes Evaluation at 6/6. After Submit, write to Feature Platform Meta + Knowledge Library and enter the embedding queue; the feature becomes INDEXED after embedding succeeds. The current conversation closes after submission, and the next feature requires a new conversation.</span></li>
+    <li>业务方在任意页面点击 Ask AI；系统按 <code>NEED_CLARIFICATION</code> / <code>FEATURE_CARDS</code> / <code>LOW_CONFIDENCE</code> / <code>NO_RESULT</code> 返回对应状态。正常 Feature Card 可跳 F2；无结果创建分支按 RAG 编辑权限进入 F3 或申请权限 modal。<span class="en">Business users can click Ask AI from any page. The system returns <code>NEED_CLARIFICATION</code> / <code>FEATURE_CARDS</code> / <code>LOW_CONFIDENCE</code> / <code>NO_RESULT</code> as applicable. Normal Feature Cards open F2; the no-result creation branch opens F3 for users with RAG edit permission or an apply-permission modal otherwise.</span></li>
+  </ol>
+
+  <h2>Feature Details - Page</h2>
+
+  <h3>F1 · Library Management // 知识库管理页</h3>
+  <figure class="shot">
+    <figcaption>F1 Historical Screenshot · 旧版示意图；交互与范围以 v0.3_1 及本文为准</figcaption>
+    <img src="feature-rag-prd-f1.png" alt="F1 Library Management screenshot" />
+  </figure>
+  <table>
+    <tr><th>Area</th><th>Description // 描述</th></tr>
+    <tr><td>KPI</td><td>展示 Total Features、Indexed、Failed。当前原型基线为 7,024 / 6,683 / 341，Indexed 比例 95.1%。<span class="en">Show Total Features, Indexed, and Failed. The prototype baseline is 7,024 / 6,683 / 341, with an Indexed rate of 95.1%.</span></td></tr>
+    <tr><td>Filter</td><td>保留现有 name/code、create time、type、owner、creator、data source extra；新增 RAG Status，支持 All / Indexed / Failed。<span class="en">Keep existing filters such as name/code, create time, type, owner, creator, and data source extra. Add RAG Status with All / Indexed / Failed options.</span></td></tr>
+    <tr><td>Table</td><td>新增 RAG Status、Last Synced。Indexed 行展示 View RAG；Failed 行展示 Re-run。多选后支持 Re-index (N) 与 Export。<span class="en">Add RAG Status and Last Synced columns. Indexed rows show View RAG, while Failed rows show Re-run. Multi-select supports Re-index (N) and Export.</span></td></tr>
+    <tr><td>Output Samples Hover · P2</td><td>仅 categorization features 在 feature code 旁展示 <code>enum · N</code>，model features 不展示。Hover 气泡默认展示前 5 个 <code>value → business meaning</code>，若仍有剩余值则展示 <code>+N more</code>，点击进入 F2 查看完整枚举。原型已演示该交互，但根据 07/28 评审结论仍为 P2，不进入本期 P0。<span class="en">Show <code>enum · N</code> beside the feature code for categorization features only; model features do not show it. The hover popover displays the first five <code>value → business meaning</code> pairs and shows <code>+N more</code> when additional values exist; clicking opens F2 for the complete enum. The prototype demonstrates this interaction, but it remains P2 under the 07/28 review decision and is not part of P0.</span></td></tr>
+    <tr><td>Sync</td><td>Sync from Meta 将 Feature Platform Meta 中基础字段同步到 Knowledge Library；Batch Re-index 将选中特征重新进入 embedding pipeline。<span class="en">Sync from Meta syncs basic fields from Feature Platform Meta into Knowledge Library. Batch Re-index sends selected features back into the embedding pipeline.</span></td></tr>
+  </table>
+
+  <h3>F2 · Feature Detail // 特征详情页</h3>
+  <figure class="shot">
+    <figcaption>F2 Historical Screenshot · 旧版示意图；交互与范围以 v0.3_1 及本文为准</figcaption>
+    <img src="feature-rag-prd-f2.png" alt="F2 Feature Detail screenshot" />
+  </figure>
+  <table>
+    <tr><th>Area</th><th>Description // 描述</th></tr>
+    <tr><td>Feature Meta</td><td>左栏展示从 Feature Platform 同步的只读字段：code、英文名、中文名、type、owner entity、data type、stability、real-time level、validity、data source extra、config mode。除 Edit Description 入口外，详情页不直接修改 Meta。<span class="en">The left column shows read-only fields synced from Feature Platform: code, English name, Chinese name, type, owner entity, data type, stability, real-time level, validity, data source extra, and config mode. Except for Edit Description, the detail page does not directly modify Meta.</span></td></tr>
+    <tr><td>Structured Text</td><td>中栏展示向量化前的可读文本，由 Meta、description、usage scope、data source、code logic、rate limit 等信息拼装。用户可点击 Regenerate 重新生成。<span class="en">The middle column shows readable pre-embedding text assembled from Meta, description, usage scope, data source, code logic, rate limit, and related fields. The user can click Regenerate to rebuild it.</span></td></tr>
+    <tr><td>Output Samples</td><td>在 Feature Meta 栏 <code>Config Mode</code> 下方（07/29 调整位置）维护特征的<strong>完整取值枚举表 + 每个值的业务含义</strong>，回答两个问题：① 这个特征共有多少个取值、分别是什么（如 room type 共 10 个枚举值）；② 每个值的业务含义是什么（如 room type = 001 代表 "Game LIVE room"）。该信息由 Feature RAG 维护并进入向量化文本，Agent Q&amp;A 支持直接查询（"这个特征有哪些取值 / 001 代表什么"）。范围：<strong>仅 categorization features，非必填</strong>；model feature 分数范围固定（-1 ~ 100），不需要。数据可从开发团队已有数据直接提取（对应 IDSP 条件配置下拉里的枚举值，如 RoomStatusEnum_Prepare / Living / Pause / Finish）。MVP 不展示 IDSP 侧 hit / not hit；列表页 hover 预览为 P2，方案：仅 categorization 行在 feature code 旁显示 <code>enum · N</code> 徽标，hover 弹出"值 → 含义"气泡（默认展示前 5 个，"+N more" 跳详情），原型已演示。<span class="en">Maintain the complete enum value list + business meaning of each value below Config Mode in the Feature Meta column (position adjusted 07/29), answering: ① how many values the feature has and what they are (e.g. room type has 10 enum values); ② what each value means in business terms (e.g. room type = 001 = "Game LIVE room"). Feature RAG maintains this info, it feeds the embedding text, and Agent Q&amp;A supports querying it directly. Scope: categorization features only, optional (not required); model features have fixed score ranges (-1 to 100) and do not need it. Data can be extracted from what dev teams already store (matching the enum values in IDSP condition dropdowns, e.g. RoomStatusEnum_Prepare / Living / Pause / Finish). MVP excludes IDSP-side hit/not-hit; hover preview on the list page is P2.</span></td></tr>
+    <tr><td>RAG Status</td><td>右栏展示 status、vector id、embedding model、chunk count、first indexed、last synced、coverage。当前原型展示 embedding model = bge-m3，chunk count = 3。<span class="en">The right column shows status, vector id, embedding model, chunk count, first indexed, last synced, and coverage. The current prototype shows embedding model = bge-m3 and chunk count = 3.</span></td></tr>
+    <tr><td>Recall Test</td><td>右栏提供只读 Recall Test：用一条真实问法验证当前特征能否被 Ask AI 召回，展示 top-N 命中、score 与展示阈值。该能力只消费已经 <code>INDEXED</code> 的向量，不在 F2 直接修改检索结果。<span class="en">Provide a read-only Recall Test in the right column. A real user question validates whether Ask AI recalls the feature and shows the top-N hit, score, and display threshold. It consumes only <code>INDEXED</code> vectors and does not modify retrieval results from F2.</span></td></tr>
+    <tr><td>Boundary</td><td>F2 不展示新 feature 创建或补录任务；<code>New feature entry · Ask AI</code> 入口放在 F3 新建特征页。F2 只负责展示已有特征的可读知识、向量状态和最终确认信息。<span class="en">F2 does not show new-feature creation or backfill tasks. The <code>New feature entry · Ask AI</code> entry belongs to F3. F2 is only for readable knowledge, vector status, and final confirmation of existing features.</span></td></tr>
+  </table>
+
+  <h3>F3 · New Feature // 录入特征</h3>
+  <figure class="shot">
+    <figcaption>F3 Historical Screenshot · 旧版示意图；交互与范围以 v0.3_1 及本文为准</figcaption>
+    <img src="feature-rag-prd-f3.png" alt="F3 New Feature screenshot" />
+  </figure>
+  <table>
+    <tr><th>Demo Area</th><th>Description // 描述</th></tr>
+    <tr><td>Entry &amp; dual path</td><td>新建特征页顶部展示 <code>New feature entry · Ask AI</code>，<code>Start Agent Entry</code> 为主路径；用户先描述策略问题，再由 Agent 追问。手动模板作为次要路径保留以控制 token 成本；两条路径写入同一字段合同，并受同一 Skills Evaluation gate 约束。<span class="en">Show <code>New feature entry · Ask AI</code> at the top of the new-feature page, with <code>Start Agent Entry</code> as the main path. The user describes the strategy problem first, then the Agent asks follow-up questions. The manual template remains a secondary path for token-cost control. Both paths write the same field contract and use the same Skills Evaluation gate.</span></td></tr>
+    <tr><td>Agent Entry window</td><td>左侧为 Agent Q&amp;A，右侧为 <code>Generated New Feature Proposal</code>。右侧按 F3 表单分组实时渲染已收集字段，并用 <code>Required N/19</code> 显示必填完成度。<span class="en">The left side is Agent Q&amp;A and the right side is the <code>Generated New Feature Proposal</code>. The proposal renders collected fields in F3 form groups and shows required-field completion as <code>Required N/19</code>.</span></td></tr>
+    <tr><td>19 required fields</td><td>必填字段固定为 19 个：Feature English name、Feature Chinese name、Short description、Feature code、Owner entity、Owner team、Feature type、Data type、Real-time level、Freshness、Source、Usage、Scope、Supported regions、Feature description、Coding、Data source、Usage example、Risk / limitation。只有达到 <code>19/19</code> 才启用 <code>Confirm Proposal</code>。<span class="en">The 19 required fields are: Feature English name, Feature Chinese name, Short description, Feature code, Owner entity, Owner team, Feature type, Data type, Real-time level, Freshness, Source, Usage, Scope, Supported regions, Feature description, Coding, Data source, Usage example, and Risk / limitation. Enable <code>Confirm Proposal</code> only at <code>19/19</code>.</span></td></tr>
+    <tr><td>Confirm Proposal</td><td>Confirm 后 Proposal 进入 locked 状态，启用 <code>Run Skills Evaluation</code>。如用户回到 Q&amp;A 修改任一 Proposal 内容，系统必须取消旧 Confirm 与旧 Evaluation 结果；用户需要重新 Confirm 后再评估。<span class="en">After Confirm, the proposal becomes locked and <code>Run Skills Evaluation</code> is enabled. If the user returns to Q&amp;A and changes any proposal content, the system invalidates the previous Confirm and Evaluation result; the updated proposal must be confirmed again before re-evaluation.</span></td></tr>
+    <tr><td>Skills Evaluation · 6 checks</td><td>Agent 评估 6 类要求：① 必填字段完整度；② 语义清晰度；③ source / owner 可追溯；④ usage example 可支持未来召回；⑤ risk / limitation 覆盖上线边界；⑥ classification / region 一致性。运行期间状态为 <code>AGENT_EVALUATING</code>，此时不可重复运行或 Submit。<span class="en">The Agent evaluates six categories: ① required-field completeness; ② semantic clarity; ③ source / owner traceability; ④ usage-example recallability; ⑤ risk / limitation coverage of launch boundaries; ⑥ classification / region consistency. While running, status is <code>AGENT_EVALUATING</code>; duplicate evaluation and Submit are blocked.</span></td></tr>
+    <tr><td>Case: <code>EVALUATION_FAILED</code></td><td>若任一检查失败，保持 Agent Entry 窗口打开，并逐项返回修改建议。v0.3_1 演示为 5/6 通过、Risk / limitation 未覆盖上线边界：需补充上线前稳定性评估、prompt / 上游版本变更的失效场景、PK 结束后的延迟窗口等时效边界。用户在 Q&amp;A 补充后，Proposal 更新并重新走 Confirm → Evaluation。<span class="en">If any check fails, keep the Agent Entry window open and return itemized fixes. The v0.3_1 demo passes 5/6 and fails risk-boundary coverage, requesting a pre-launch stability evaluation, failure scenarios caused by prompt/upstream version changes, and timeliness boundaries such as the latency window after a PK ends. After the user adds the missing information through Q&amp;A, update the proposal and repeat Confirm → Evaluation.</span></td></tr>
+    <tr><td>Submit &amp; conversation lifecycle</td><td>只有最新已确认 Proposal 的 Evaluation 达到 <code>6/6</code> 才启用 Submit。Submit 后写入 Feature Platform Meta + Knowledge Library，进入 embedding queue，并关闭当前 conversation；embedding 成功后才进入 <code>INDEXED</code> 并可被 Ask AI 召回。一个新 feature task 对应一个 conversation，创建下一条 feature 必须点击 <code>Start new conversation</code>。<span class="en">Enable Submit only when the latest confirmed proposal passes Evaluation at <code>6/6</code>. After Submit, write to Feature Platform Meta + Knowledge Library, enter the embedding queue, and close the current conversation. The feature becomes <code>INDEXED</code> and retrievable by Ask AI only after embedding succeeds. One new-feature task equals one conversation; creating another feature requires <code>Start new conversation</code>.</span></td></tr>
+  </table>
+  <table>
+    <tr><th>Section</th><th>Fields // 字段</th><th>Rule // 规则</th></tr>
+    <tr><td>Basic Info</td><td>Feature English name, Chinese name, Short description, Feature code, Owner entity, Owner team, Feature type, Data type, Stability level, Real-time level</td><td>除 Stability level 外均计入 19 个必填字段；Stability level 由系统评估并可显示 pending eval。<span class="en">All fields except Stability level count toward the 19 required fields. Stability level is system-evaluated and may show pending eval.</span></td></tr>
+    <tr><td>RAG Classification</td><td>Freshness, Source, Usage, Scope</td><td>Usage 支持多选，至少选择一个；RAG 检索作为可选用途，但若本特征进入 Knowledge Library，默认建议打开。<span class="en">Usage supports multi-select and requires at least one value. RAG discovery is optional, but should be on by default if the feature enters Knowledge Library.</span></td></tr>
+    <tr><td>Coverage</td><td>Business domain, Scenarios, Supported regions, Not available in</td><td>Supported regions 计入 19 个必填字段；Business domain 与 Not available in 为可选。Scope = Scenario specific 时 Scenarios 条件必填。<span class="en">Supported regions counts toward the 19 required fields. Business domain and Not available in are optional. Scenarios becomes conditionally required when Scope = Scenario specific.</span></td></tr>
+    <tr><td>Feature Content</td><td>Feature description, Coding, Data source</td><td>Description / Coding / Data source 为 P0 必填；Coding 可由 RD 填写，后期可由 Agent 读取策略代码和血缘自动推导。<span class="en">Description, Coding, and Data source are P0 required fields. Coding can be filled by RD in P0, and may later be inferred by the Agent from strategy code and lineage.</span></td></tr>
+    <tr><td>RAG Discovery</td><td>Search summary, Aliases, RAG tags, Common questions, Usage example, Risk / limitation, Output samples (value → meaning)</td><td>Usage example 与 Risk / limitation 计入 19 个必填字段；Search summary、Aliases、RAG tags、Common questions 为可选但建议填写。Output Samples 仅 categorization features 适用且非必填；model features 不适用。<span class="en">Usage example and Risk / limitation count toward the 19 required fields. Search summary, aliases, RAG tags, and common questions are optional but recommended. Output Samples is optional and applies only to categorization features; it is not applicable to model features.</span></td></tr>
+    <tr><td>Submission gate</td><td>Required 19/19, Confirmed &amp; locked, Skills Evaluation 6/6</td><td>三个条件缺一不可。手动模板与 Agent 路径使用相同 gate；不允许手动模板绕过 Evaluation。<span class="en">All three conditions are required. The manual-template and Agent paths use the same gate; the manual path cannot bypass Evaluation.</span></td></tr>
+  </table>
+
+  <h3>F4 · Ask AI Widget // 常驻问答悬浮窗</h3>
+  <figure class="shot">
+    <figcaption>F4 Historical Design Notes Screenshot · 旧版示意图；交互与范围以 v0.3_1 及本文为准</figcaption>
+    <img src="feature-rag-prd-f4.png" alt="F4 Ask AI widget design notes screenshot" />
+  </figure>
+  <figure class="shot">
+    <figcaption>Ask AI Historical Open State Screenshot · 旧版示意图；交互与范围以 v0.3_1 及本文为准</figcaption>
+    <img src="feature-rag-prd-qa.png" alt="Ask AI widget open state screenshot" />
+  </figure>
+  <table>
+    <tr><th>Area</th><th>Description // 描述</th></tr>
+    <tr><td>Positioning</td><td>页面右下常驻 Ask AI 按钮，与现有 Oncall 悬浮窗并存；本期 Ask AI 归 RAG PRD，Oncall widget 不改。<span class="en">Ask AI is an always-on bottom-right button, coexisting with the existing Oncall widget. P0 Ask AI belongs to this RAG PRD, and the Oncall widget remains unchanged.</span></td></tr>
+    <tr><td>Mode</td><td>本期唯一模式为 Feature Discovery。Platform Oncall 为 P2，对齐后再决定是否合并。<span class="en">The only P0 mode is Feature Discovery. Platform Oncall is P2 and will be aligned later before deciding whether to merge.</span></td></tr>
+    <tr><td>Case 1 · <code>NEED_CLARIFICATION</code></td><td><strong>触发：</strong>问题过泛，候选覆盖多个容易误用的业务口径。<br><strong>UX：</strong>用 chips 提供一次选项式澄清并允许 Skip；当前 conversation 最多追问这一轮。用户回答或 Skip 后必须返回 Feature Cards，后续同会话的模糊问题直接返回排序候选，不再连环追问。<span class="en"><strong>Trigger:</strong> The query is broad and candidates cover multiple easily confused business definitions.<br><strong>UX:</strong> Offer one option-based clarification using chips, with Skip. Allow at most this one clarification round in the current conversation. After an answer or Skip, return Feature Cards; later ambiguous queries in the same conversation return ranked candidates without another follow-up.</span></td></tr>
+    <tr><td>Case 2 · <code>FEATURE_CARDS</code></td><td><strong>触发：</strong>正常语义召回，或用户明确搜索 feature code / name。<br><strong>UX：</strong>默认先解释口径，再按相关度排序；code/name 直查跳过解释直接返回。卡片不标 <code>Recommended</code>，只支持 <code>Likely suitable</code> / <code>Likely not suitable</code> / <code>Need more context</code>。<span class="en"><strong>Trigger:</strong> Normal semantic retrieval or an explicit feature code/name lookup.<br><strong>UX:</strong> Explain the business definition before ranked results by default; skip the explanation for direct code/name lookup. Never label a card <code>Recommended</code>; supported fit labels are <code>Likely suitable</code>, <code>Likely not suitable</code>, and <code>Need more context</code>.</span></td></tr>
+    <tr><td>Case 3 · <code>LOW_CONFIDENCE</code></td><td><strong>触发：</strong>候选 score 低于展示阈值。<br><strong>UX：</strong>结果卡打灰，展示 <code>参考度低 / Low confidence</code>、实际 score 与阈值，并引导用户补充场景。低置信卡不提供 F2 跳转，避免用户把弱匹配当作可用结论。<span class="en"><strong>Trigger:</strong> Candidate score is below the display threshold.<br><strong>UX:</strong> Gray out cards, show <code>Low confidence</code>, disclose the score and threshold, and ask for more scenario context. Low-confidence cards do not navigate to F2, preventing weak matches from being treated as usable conclusions.</span></td></tr>
+    <tr><td>Case 4 · <code>NO_RESULT</code></td><td><strong>触发：</strong>没有召回可用的 INDEXED feature。<br><strong>UX：</strong>明确“不编造特征逻辑”，提供 Rephrase 与 Create in F3。具备 RAG 编辑权限的用户跳 F3 并打开 Agent Entry；无权限用户返回 <code>PERMISSION_REQUIRED</code>，展示申请权限 modal，禁止进入写模式。<span class="en"><strong>Trigger:</strong> No usable INDEXED feature is retrieved.<br><strong>UX:</strong> State that the system will not invent feature logic, and offer Rephrase and Create in F3. Users with RAG edit permission open F3 Agent Entry; users without permission receive <code>PERMISSION_REQUIRED</code>, see an apply-permission modal, and cannot enter write mode.</span></td></tr>
+    <tr><td>Feature Card contract</td><td>卡片包含 Feature name CN/EN、<code>feature_code</code>、why matched、scope、SLA / real-time / validity、data source、owner、usage example、risk / limitation 与 <code>View detail to confirm</code>。点击正常卡片跳 F2；支持基于 <code>output_samples</code> 回答枚举值与业务含义。<span class="en">Cards include the CN/EN feature name, <code>feature_code</code>, why matched, scope, SLA / real-time / validity, data source, owner, usage example, risk / limitation, and <code>View detail to confirm</code>. Normal cards open F2. Enum-value questions are answered from <code>output_samples</code>.</span></td></tr>
+    <tr><td>Guardrail</td><td>Ask AI 只消费 <code>INDEXED</code> Feature Knowledge，不编造特征逻辑；可以输出 <code>likely suitable</code> 级别判断，但最终确认必须进入 F2 detail。<span class="en">Ask AI only consumes <code>INDEXED</code> Feature Knowledge and must not invent feature logic. It can provide light-fit judgments such as <code>likely suitable</code>, but final confirmation must happen in F2 detail.</span></td></tr>
+    <tr><td>Future rollout</td><td>Phase 2 支持记忆、多轮、收藏；Phase 3 接入 Lark 对话框，同一 agent 底座复用。<span class="en">Phase 2 adds memory, multi-turn interaction, and favorites. Phase 3 integrates with Lark dialogs using the same agent foundation.</span></td></tr>
+  </table>
+
+  <h2>Feature Details - no Page</h2>
+
+  <h3>Backend Data Contract // 后端数据合同</h3>
+  <table>
+    <tr><th>Object</th><th>Required fields</th><th>Notes</th></tr>
+    <tr><td>Feature Meta</td><td><code>feature_code</code>, <code>feature_name_en</code>, <code>feature_name_cn</code>, <code>feature_type</code>, <code>owner_entity</code>, <code>owner_team</code>, <code>data_type</code>, <code>stability_level</code>, <code>real_time_level</code>, <code>feature_validity</code>, <code>data_source_extra</code>, <code>config_mode</code></td><td>已有特征从 Feature Platform Meta 同步，详情页只读；新 feature 仅在 Evaluation 通过且用户 Submit 后写入。<span class="en">Existing features are synced from Feature Platform Meta and read-only on the detail page. A new feature is written only after Evaluation passes and the user submits.</span></td></tr>
+    <tr><td>Knowledge Library Extension</td><td><code>short_description</code>, <code>freshness</code>, <code>source</code>, <code>usage</code>, <code>scope</code>, <code>business_domain</code>, <code>scenarios</code>, <code>supported_regions</code>, <code>not_available_in</code>, <code>feature_description</code>, <code>coding</code>, <code>data_source</code>, <code>search_summary</code>, <code>aliases</code>, <code>rag_tags</code>, <code>common_questions</code>, <code>usage_example</code>, <code>risk_limitation</code>, <code>output_samples</code></td><td>由 <code>New feature entry · Ask AI</code> 或手动模板生成草稿；Confirm 与 Evaluation 不写入正式库，只有 Evaluation 6/6 后的 Submit 才同时写入 Feature Platform Meta + Knowledge Library。<code>output_samples</code> 为可选字段，仅 categorization features 维护并进入向量化文本。<span class="en">Drafted by <code>New feature entry · Ask AI</code> or the manual template. Confirm and Evaluation do not write to the production library; only Submit after a 6/6 Evaluation writes to Feature Platform Meta + Knowledge Library. <code>output_samples</code> is optional, maintained only for categorization features, and included in embedding text.</span></td></tr>
+    <tr><td>Proposal &amp; Evaluation State</td><td><code>required_field_count</code>, <code>required_field_total</code> (= 19), <code>proposal_status</code>, <code>confirmed_version</code>, <code>evaluation_status</code>, <code>evaluation_checks</code> (6 items), <code>evaluation_fix_suggestions</code></td><td>逻辑状态覆盖 collecting → ready to confirm → confirmed / locked → evaluating → evaluation failed / passed → submitted。任一 Q&amp;A 修改必须产生新 Proposal version，并使旧 Confirm 与 Evaluation 失效；BE 必须拒绝未通过最新版本 Evaluation 的 Submit。<span class="en">Logical states cover collecting → ready to confirm → confirmed / locked → evaluating → evaluation failed / passed → submitted. Any Q&amp;A edit creates a new proposal version and invalidates the prior Confirm and Evaluation. The backend must reject Submit unless the latest version has passed Evaluation.</span></td></tr>
+    <tr><td>Embedding Status</td><td><code>rag_status</code>, <code>vector_id</code>, <code>embedding_model</code>, <code>chunk_count</code>, <code>first_indexed_at</code>, <code>last_synced_at</code>, <code>coverage</code>, <code>last_error_code</code>, <code>last_error_message</code></td><td>用于列表、详情页和 failed re-run。<span class="en">Used by the list page, detail page, and failed re-run actions.</span></td></tr>
+  </table>
+
+  <h3>Status &amp; Error Code // 状态与异常码</h3>
+  <table>
+    <tr><th>Code</th><th>含义</th><th>触发时机</th><th>由谁产生</th><th>UX</th></tr>
+    <tr><td><code>AGENT_EVALUATING</code></td><td>Agent 正在评估最新已确认 Proposal<span class="en">The Agent is evaluating the latest confirmed proposal.</span></td><td>用户 Confirm 后点击 <code>Run Skills Evaluation</code><br><span class="en">After Confirm, when the user clicks <code>Run Skills Evaluation</code></span></td><td>Backend / Agent</td><td>保持 Agent Entry modal 打开，显示 6 项检查进度；禁用重复 Evaluation 与 Submit。<span class="en">Keep the Agent Entry modal open, show progress across six checks, and disable duplicate Evaluation and Submit.</span></td></tr>
+    <tr><td><code>EVALUATION_FAILED</code></td><td>至少 1 项 Skills Evaluation 未通过<span class="en">At least one Skills Evaluation check failed.</span></td><td>6 项检查中任一项失败<br><span class="en">Any of the six checks fails</span></td><td>Agent</td><td>逐项返回修改建议，保持 modal 打开；用户回到 Q&amp;A 修改后，旧 Confirm / Evaluation 失效，必须重新 Confirm / Evaluate。<span class="en">Return itemized fixes and keep the modal open. After Q&amp;A changes, invalidate the previous Confirm/Evaluation and require Confirm/Evaluate again.</span></td></tr>
+    <tr><td><code>EVALUATION_PASSED</code></td><td>6/6 Skills Evaluation 全部通过<span class="en">All six Skills Evaluation checks passed.</span></td><td>最新已确认 Proposal 完成 6 项检查且无失败<br><span class="en">The latest confirmed proposal completes all six checks with no failure</span></td><td>Agent</td><td>启用 Submit；此时仍未写入 Feature Platform Meta / Knowledge Library。<span class="en">Enable Submit. Feature Platform Meta / Knowledge Library have not been written yet.</span></td></tr>
+    <tr><td><code>INDEXED</code></td><td>已完成向量化并直接生效，可被 Ask AI 召回<span class="en">Embedding is complete and effective; Ask AI can retrieve it.</span></td><td>Embedding pipeline 成功<br><span class="en">Embedding pipeline succeeds</span></td><td>Backend</td><td>列表展示 Indexed；详情页展示 vector 信息；Ask AI 立即可召回。<span class="en">The list shows Indexed, the detail page shows vector info, and Ask AI can retrieve it immediately.</span></td></tr>
+    <tr><td><code>INDEX_FAILED</code></td><td>向量化失败<span class="en">Indexing failed.</span></td><td>文本拼装、embedding、vector store 写入任一环节失败<br><span class="en">Any failure in text assembly, embedding, or vector-store write.</span></td><td>Backend</td><td>列表展示 Failed；operation 展示 Re-run；详情页展示失败原因。<span class="en">The list shows Failed, operation shows Re-run, and the detail page shows the failure reason.</span></td></tr>
+    <tr><td><code>VALIDATION_FAILED</code></td><td>必填字段缺失或格式错误<span class="en">Required fields are missing or format is invalid.</span></td><td>Agent path 未达到 19/19 即尝试 Confirm，或手动模板提交前 FE / BE 校验失败<br><span class="en">The Agent path attempts Confirm before 19/19, or FE/BE validation fails for the manual template</span></td><td>Frontend / Backend</td><td>字段 inline warning；阻止 Confirm 或手动模板进入 Evaluation。<span class="en">Show inline field warnings and block Confirm or the manual template from entering Evaluation.</span></td></tr>
+    <tr><td><code>PERMISSION_REQUIRED</code></td><td>用户没有 RAG 编辑权限<span class="en">The user does not have RAG edit permission.</span></td><td>无权限用户从 <code>NO_RESULT</code> 点击 Create in F3<br><span class="en">A user without permission clicks Create in F3 from <code>NO_RESULT</code></span></td><td>Backend / Frontend</td><td>展示申请权限 modal；允许 Cancel / Apply for permission，但不得进入 F3 写模式。<span class="en">Show an apply-permission modal with Cancel / Apply for permission; do not enter F3 write mode.</span></td></tr>
+    <tr><td><code>FEATURE_CARDS</code></td><td>正常召回候选<span class="en">Normal retrieved candidates.</span></td><td>语义召回命中，或用户按 code / name 直查<br><span class="en">Semantic retrieval hits, or the user searches by code/name</span></td><td>Backend / Agent</td><td>返回排序卡片；正常卡片可跳 F2，最终决策由业务完成。<span class="en">Return ranked cards. Normal cards may open F2; the business makes the final decision.</span></td></tr>
+    <tr><td><code>LOW_CONFIDENCE</code></td><td>Ask AI 召回低置信<span class="en">Ask AI retrieval confidence is low.</span></td><td>Top result score &lt; 阈值<br><span class="en">Top result score is below threshold.</span></td><td>Backend</td><td>结果打灰，展示 score / threshold 与“参考度低”，提示补充场景；卡片不可跳 F2。<span class="en">Gray out results, show score / threshold and Low confidence, request more context, and disable F2 navigation.</span></td></tr>
+    <tr><td><code>NO_RESULT</code></td><td>无可用 INDEXED 特征结果<span class="en">No usable INDEXED feature result.</span></td><td>检索无命中或无可展示候选<br><span class="en">No retrieval hit or no displayable candidate</span></td><td>Backend</td><td>不编造答案；提供 Rephrase / Create in F3，并按 RAG 编辑权限分流。<span class="en">Do not invent an answer. Offer Rephrase / Create in F3 and route by RAG edit permission.</span></td></tr>
+    <tr><td><code>NEED_CLARIFICATION</code></td><td>问题太泛或候选口径冲突明显<span class="en">The question is too broad or candidate interpretations conflict.</span></td><td>候选特征覆盖多个容易误用的 entity / region / online-offline 口径，且当前 conversation 尚未澄清过<br><span class="en">Candidates span easily confused entity/region/online-offline definitions and the current conversation has not clarified before</span></td><td>Backend / Agent</td><td>最多追问 1 轮选项式澄清；回答或 Skip 后必须返回 Feature Cards。同会话后续模糊问题不得再次追问。<span class="en">Ask at most one option-based clarification round. After an answer or Skip, return Feature Cards. Do not clarify again for later ambiguous queries in the same conversation.</span></td></tr>
+  </table>
+
+  <h3>Structured Text Generation // 结构化文本生成</h3>
+  <ol>
+    <li>系统从 Feature Meta + Knowledge Library Extension 拼装 structured text，字段顺序建议为 FEATURE、TYPE、ENTITY、VALUE、DESCRIPTION、USAGE SCOPE、DATA SOURCE、CODE LOGIC、RATE LIMIT、RISK / LIMITATION；categorization features 额外拼入 OUTPUT SAMPLES（完整 value → meaning），model features 跳过。<span class="en">The system assembles structured text from Feature Meta + Knowledge Library Extension. Recommended order: FEATURE, TYPE, ENTITY, VALUE, DESCRIPTION, USAGE SCOPE, DATA SOURCE, CODE LOGIC, RATE LIMIT, and RISK / LIMITATION. Categorization features additionally include OUTPUT SAMPLES (complete value → meaning); model features skip it.</span></li>
+    <li>Regenerate 只重新生成 structured text，不直接覆盖用户原始填写字段；用户确认后才触发重新 embedding。<span class="en">Regenerate only rebuilds structured text and does not directly overwrite user-entered source fields. Re-embedding is triggered only after user confirmation.</span></li>
+    <li>每次成功 embedding 后更新 <code>vector_id</code>、<code>chunk_count</code>、<code>last_synced_at</code> 与 <code>rag_status</code>。<span class="en">After each successful embedding run, update <code>vector_id</code>, <code>chunk_count</code>, <code>last_synced_at</code>, and <code>rag_status</code>.</span></li>
+  </ol>
+
+  <h3>Permission &amp; Agent Evaluation // 权限与 Agent 评估</h3>
+  <ul>
+    <li>Feature Discovery 读能力面向所有可访问 Ask AI 的用户；新 feature 创建写能力仅面向有 RAG 编辑权限的用户。<span class="en">Feature Discovery read capability is available to all users who can access Ask AI. New feature creation write capability is only available to users with RAG edit permission.</span></li>
+    <li>Agent 路径与手动模板共用 19 个必填字段和同一 Evaluation gate；未达到 19/19 不允许 Confirm / 进入 Evaluation，手动模板不得绕过。<span class="en">The Agent and manual-template paths share the same 19 required fields and Evaluation gate. Before 19/19, Confirm / Evaluation are blocked, and the manual path cannot bypass the gate.</span></li>
+    <li>Confirm 只锁定当前 Proposal version，不写入正式库。任何 Q&amp;A 修改都会产生新 version，并使旧 Confirm 与旧 Evaluation 结果失效。<span class="en">Confirm only locks the current proposal version; it does not write to the production library. Any Q&amp;A edit creates a new version and invalidates the previous Confirm and Evaluation result.</span></li>
+    <li>Skills Evaluation 固定检查 6 类：必填字段完整度、语义清晰度、source / owner 可追溯、usage example 可召回、risk / limitation 覆盖上线边界、classification / region 一致性。失败必须返回逐项修改建议并支持重新评估。<span class="en">Skills Evaluation checks six categories: required-field completeness, semantic clarity, source / owner traceability, usage-example recallability, risk / limitation coverage of launch boundaries, and classification / region consistency. Failures must return itemized fixes and support re-evaluation.</span></li>
+    <li>Evaluation 6/6 只启用 Submit。用户 Submit 后才写入 Feature Platform Meta + Knowledge Library 并进入 embedding queue；embedding 成功后 <code>INDEXED</code> 生效并可被 Ask AI 召回。<span class="en">A 6/6 Evaluation only enables Submit. Feature Platform Meta + Knowledge Library are written and the embedding queue starts only after the user submits. <code>INDEXED</code> becomes effective and retrievable by Ask AI after embedding succeeds.</span></li>
+    <li>批量 Re-index 需要记录操作者、时间、特征数量、成功/失败数量与失败原因。<span class="en">Batch Re-index must log operator, time, feature count, success/failure count, and failure reasons.</span></li>
+  </ul>
+
+  <h2>Rollout Plan // 上线路径</h2>
+  <table>
+    <tr><th>Phase</th><th>Scope</th><th>Exit criteria</th></tr>
+    <tr><td>Phase 1 / P0</td><td>Knowledge Library、Feature Detail、New feature entry · Ask AI、Agent Evaluation、Ask AI Feature Discovery 独立上线。<span class="en">Launch Knowledge Library, Feature Detail, New feature entry · Ask AI, Agent Evaluation, and Ask AI Feature Discovery independently.</span></td><td>Indexed 可用率 ≥ 99%；Ask AI 四类状态均可正确返回；F3 Proposal 达到 19/19 后才可 Confirm；6 项 Evaluation 可返回逐项结果与失败修改建议；仅 6/6 后可 Submit；Submit 后进入 embedding queue；Failed 支持重跑。<span class="en">Indexed availability ≥ 99%; all four Ask AI states return correctly; an F3 proposal can be confirmed only at 19/19; all six Evaluation checks return itemized results and failure fixes; Submit is enabled only at 6/6; submission enters the embedding queue; Failed supports retry.</span></td></tr>
+    <tr><td>Phase 2 / P1</td><td>Ask AI 多轮、记忆、收藏；与 Oncall 团队对齐合并方案。<span class="en">Add multi-turn Ask AI, memory, and favorites; align with the Oncall team on the merge plan.</span></td><td>确认 Oncall 是否并入 Ask AI 或保持独立。<span class="en">Decide whether Oncall should merge into Ask AI or stay independent.</span></td></tr>
+    <tr><td>Phase 3 / P2</td><td>Lark 对话框接入，同一 agent 底座复用。<span class="en">Integrate Lark dialogs using the same agent foundation.</span></td><td>Lark 与平台内 Ask AI 返回一致的 feature discovery 结果。<span class="en">Lark and in-platform Ask AI return consistent feature discovery results.</span></td></tr>
+  </table>
+
+  <h2>Open Questions // 待确认问题</h2>
+  <ol>
+    <li>Embedding model 是否沿用原型中的 <code>bge-m3</code>，还是与 V3.1 提案里的 <code>bge-base-zh-v1.5 / 768 dim</code> 对齐？需要 RD 最终确认。<span class="en">Confirm with RD whether the embedding model should follow the prototype's <code>bge-m3</code> or align with the V3.1 proposal's <code>bge-base-zh-v1.5 / 768 dim</code>.</span></li>
+    <li>Agent Evaluation 具体使用哪些 skills、每项评分阈值和 blocking 条件需要与 RD / PM 对齐。<span class="en">Align with RD / PM on which skills Agent Evaluation uses, scoring thresholds, and blocking conditions.</span></li>
+    <li>Ask AI 低置信阈值、无结果阈值、Top N 返回数量需要与 RD / DA 对齐。<span class="en">Align with RD / DA on Ask AI low-confidence threshold, no-result threshold, and Top N return count.</span></li>
+    <li>Event tracking 需要补齐：Ask AI open / send / suggest click、<code>response_state</code>（NEED_CLARIFICATION / FEATURE_CARDS / LOW_CONFIDENCE / NO_RESULT）、clarification option / skip、feature card expand / click、View detail、Start Agent Entry、Agent Q&amp;A send、required count change、Confirm Proposal、Proposal unlock / edit、Run Skills Evaluation、evaluation failed / passed / retry、Submit New Feature、Start new conversation、Create new feature、permission modal open / apply、Re-index、手动模板 Submit to Agent Evaluation。<span class="en">Event tracking needs to cover: Ask AI open / send / suggest click; <code>response_state</code> (NEED_CLARIFICATION / FEATURE_CARDS / LOW_CONFIDENCE / NO_RESULT); clarification option / skip; feature card expand / click; View detail; Start Agent Entry; Agent Q&amp;A send; required-count change; Confirm Proposal; proposal unlock / edit; Run Skills Evaluation; evaluation failed / passed / retry; Submit New Feature; Start new conversation; Create new feature; permission modal open / apply; Re-index; and manual-template Submit to Agent Evaluation.</span></li>
+  </ol>
+
+  <div class="note">
+    图片说明：页面内截图为历史示意，交互与范围以 <code>特征RAG-原型-v0.3_1.html</code> 及本文正文为准。本 HTML 与截图 PNG 放在同一个目录；用浏览器打开后，截图可直接右键复制图片，或框选后复制到飞书文档。
+  </div>
+</main>
+</body>
+</html>
