@@ -11,7 +11,20 @@ This README is the PRD in full, in English.
 
 ---
 
-## 1. Summary
+## 1. TL;DR
+
+The platform holds thousands of governance features, but a business user knows only the handful
+they requested themselves — so choosing the right feature still means asking a platform owner by
+hand, and the answer is only as good as whoever happens to be free. Meanwhile the Feature List
+shows what exists without showing what is *retrievable*, so nobody can tell which features an
+agent can actually reach.
+
+This turns the inventory into a knowledge layer: embedding-ready structured text per feature,
+index and sync state made visible, an agent that interviews a requester into a complete proposal
+instead of handing them a 19-field form, and an always-on Ask AI that returns cards a user can act
+on — and says so plainly when it has nothing rather than inventing a feature.
+
+Prototype baseline: **7,024 features, 6,683 indexed — 95.1%**.
 
 Four requests, delivered as one product:
 
