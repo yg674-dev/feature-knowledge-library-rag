@@ -51,7 +51,7 @@
   <h2>Related Documents // 相关文档</h2>
   <table>
     <tr><th>Document</th><th>Link</th><th>POC</th></tr>
-    <tr><td>Prototype / 原型</td><td><code>file:///Users/bytedance/Downloads/特征RAG-原型-v0.3_1.html</code></td><td>PM</td></tr>
+    <tr><td>Prototype / 原型</td><td><code>特征RAG-原型-v0.3_2.html</code></td><td>PM</td></tr>
     <tr><td>Feature Platform V3.1 context</td><td>TBD with Feature Platform proposal</td><td>PM / RD</td></tr>
     <tr><td>Event tracking</td><td>TBD with DA</td><td>DA</td></tr>
     <tr><td>Starling copy</td><td>TBD with UX writer</td><td>UX writer</td></tr>
@@ -62,7 +62,7 @@
   <table>
     <tr><th>Date // 日期</th><th>Description // 描述</th><th>修改人 // by</th></tr>
     <tr><td>07/14/2026</td><td>Initial PRD generated from prototype v0.2.</td><td>gaoyueming / Codex</td></tr>
-    <tr><td>07/28/2026</td><td>根据与 Ysabelle Torres（策略/业务方）的评审会更新：① F2 Code Logic 下方新增 Output Samples（仅类目型/枚举型特征，model feature 不需要）；② MVP 不展示 IDSP 侧 hit / not hit，业务方判断"能否用于策略"以特征值为准；③ 列表页 hover 预览 output samples 定为 P2；④ 明确手动模板与 Agent 录入双路径并存（控制 token 成本，Zach）。<span class="en">Updated after review with Ysabelle Torres: ① Add Output Samples under Code Logic on F2 (categorical/enum features only; not needed for model features); ② MVP excludes IDSP-side hit/not-hit — feature values matter most for strategy adoption; ③ Hover preview of output samples on the list page is P2; ④ Manual template and Agent entry remain dual paths (token cost control, Zach).</span></td><td>gaoyueming</td></tr>
+    <tr><td>07/28/2026</td><td>根据与策略/业务方的评审会更新：① F2 Code Logic 下方新增 Output Samples（仅类目型/枚举型特征，model feature 不需要）；② MVP 不展示 IDSP 侧 hit / not hit，业务方判断"能否用于策略"以特征值为准；③ 列表页 hover 预览 output samples 定为 P2；④ 明确手动模板与 Agent 录入双路径并存（控制 token 成本，由平台 RD 提出）。<span class="en">Updated after review with the strategy stakeholder: ① Add Output Samples under Code Logic on F2 (categorical/enum features only; not needed for model features); ② MVP excludes IDSP-side hit/not-hit — feature values matter most for strategy adoption; ③ Hover preview of output samples on the list page is P2; ④ Manual template and Agent entry remain dual paths (token cost control, raised by platform RD).</span></td><td>gaoyueming</td></tr>
     <tr><td>07/28/2026</td><td>Output Samples 口径 clarification：定义为<strong>完整取值枚举表 + 每个值的业务含义</strong>（如 room type 共 10 个枚举值，001 = "Game LIVE room"），仅 categorization features 维护、非必填；新增后端字段 <code>output_samples</code>；Agent Q&amp;A 支持查询特征取值与含义。<span class="en">Output Samples clarification: defined as the complete enum value list + business meaning per value (e.g. room type has 10 enum values, 001 = "Game LIVE room"); categorization features only, optional; added backend field <code>output_samples</code>; Agent Q&amp;A supports querying feature values and meanings.</span></td><td>gaoyueming</td></tr>
     <tr><td>07/29/2026</td><td>同步原型 <code>v0.3_1</code>：① F3 Proposal 明确 19 个必填字段、Confirm 锁定、6 项 Skills Evaluation、失败修改与重新评估闭环；② 修正评估触发时机为 Confirm 后运行，而不是 Submit 后；③ F4 按 NEED_CLARIFICATION / FEATURE_CARDS / LOW_CONFIDENCE / NO_RESULT 四种状态补齐交互与权限分支；④ Featurelist 按 FE / BE 分行。<span class="en">Synced with prototype <code>v0.3_1</code>: ① F3 now specifies 19 required proposal fields, Confirm locking, six Skills Evaluation checks, and the fix/re-evaluation loop; ② corrected evaluation timing to run after Confirm rather than after Submit; ③ completed F4 interactions and permission routing across NEED_CLARIFICATION / FEATURE_CARDS / LOW_CONFIDENCE / NO_RESULT; ④ split Featurelist into FE and BE rows.</span></td><td>gaoyueming / Codex</td></tr>
   </table>
