@@ -84,7 +84,30 @@ back to the detail page to confirm.
 | Output Samples hover | FE | `enum · N` badge beside the feature code for categorization features; hover shows the first five value → meaning pairs, `+N more` opens F2 | P2 |
 | Ask AI / Oncall merge | — | Align with the Oncall team later. P0 does not change the Oncall widget and must not block the RAG launch | P2 |
 
-## 5. User story route
+## 5. User journey
+
+Two flows, one product. **Flow A** is the read capability — any user with Ask AI access finds a
+feature in natural language and confirms it on the detail page. **Flow B** is the write
+capability — a user with RAG edit permission contributes or maintains knowledge through Agent
+Q&A, and it reaches production only through evaluation and embedding.
+
+![Feature RAG user journey — Flow A discovery and Flow B contribution](docs/journey/feature-rag-user-journey.png)
+
+The core principle the diagram encodes: **knowledge maintenance does not go through a manual
+entry journey and does not go through human approval.** The Agent invokes skills to evaluate
+whether a draft meets knowledge-library requirements; passing that evaluation is what makes it
+effective.
+
+### Flow B in detail · Agent Q&A feature entry
+
+![Agent Q&A feature entry journey](docs/journey/agent-qa-feature-entry.png)
+
+`RAG editor → describe the feature in chat → Agent asks for missing context → generated knowledge
+draft → user confirm → evaluation → embedding → indexed and effective`. A read-only user branches
+out at the permission check and keeps discovery only.
+
+### Step by step
+
 
 1. PM/RD opens **Knowledge Library**, checks indexed/failed totals, and filters by name/code, type,
    owner entity, data source extra, and RAG Status.
@@ -106,6 +129,10 @@ back to the detail page to confirm.
 
 ## 6. F1 · Knowledge Library
 
+![F1 · Knowledge Library with the Ask AI widget open](docs/screens/f1-library-management.png)
+
+![F1 · list rows, RAG status, and per-row actions](docs/screens/f1-list-and-status.png)
+
 | Area | Behavior |
 | --- | --- |
 | **KPI** | Total Features, Indexed, Failed. Prototype baseline **7,024 / 6,683 / 341**, indexed 95.1% |
@@ -115,6 +142,10 @@ back to the detail page to confirm.
 | **Output Samples hover** *(P2)* | `enum · N` beside the code, categorization features only. Hover shows the first five value → meaning pairs, `+N more` opens F2. Demonstrated in the prototype; held at P2 by the 07/28 review |
 
 ## 7. F2 · Feature Detail
+
+![F2 · three-column feature detail](docs/screens/f2-feature-detail.png)
+
+![F2 · output samples, value to business meaning](docs/screens/f2-output-samples.png)
 
 | Column | Contents |
 | --- | --- |
@@ -133,6 +164,12 @@ strategy adoption.
 **Boundary:** F2 does not host new-feature creation or backfill. That belongs to F3.
 
 ## 8. F3 · New Feature Entry · Ask AI
+
+![F3 · new feature entry card](docs/screens/f3-entry-card.png)
+
+![F3 · confirm, then six skills evaluation checks](docs/screens/f3-confirm-evaluation.png)
+
+![Manual entry template — the secondary path](docs/screens/manual-entry-template.png)
 
 **Dual path, one gate.** Agent Q&A is the main path; the manual template is retained as a secondary
 path to bound token cost. Both write the same field contract and pass the same Skills Evaluation
@@ -176,6 +213,10 @@ gate — the manual path **cannot** bypass evaluation.
   succeeds. One feature task = one conversation.
 
 ## 9. F4 · Ask AI Widget
+
+![F4 · Ask AI side panel with suggested prompts](docs/screens/f4-ask-ai-panel.png)
+
+![F4 · feature cards with fit labels](docs/screens/f4-feature-cards.png)
 
 Always-on, bottom-right, coexisting with the existing Oncall widget. **Feature Discovery is the
 only P0 mode.**
@@ -265,6 +306,7 @@ same agent foundation.
 | --- | --- | --- | --- |
 | [`特征RAG-原型-v0.3_2.html`](https://htmlpreview.github.io/?https://github.com/yg674-dev/feature-knowledge-library-rag/blob/main/%E7%89%B9%E5%BE%81RAG-%E5%8E%9F%E5%9E%8B-v0.3_2.html) | Prototype | v0.3_2 | 2025-08-04 |
 | [`特征RAG-原型-v0.2.html`](https://htmlpreview.github.io/?https://github.com/yg674-dev/feature-knowledge-library-rag/blob/main/%E7%89%B9%E5%BE%81RAG-%E5%8E%9F%E5%9E%8B-v0.2.html) | Prototype | v0.2 | 2025-07-23 |
+| [`docs/Feature-Knowledge-Library-RAG-PRD.pdf`](docs/Feature-Knowledge-Library-RAG-PRD.pdf) | PRD (PDF, with journey diagrams and UI) | — | 2026-09 |
 | [`Feature Knowledge Library RAG PRD_5.html`](https://htmlpreview.github.io/?https://github.com/yg674-dev/feature-knowledge-library-rag/blob/main/Feature%20Knowledge%20Library%20RAG%20PRD_5.html) | PRD (bilingual) | v5 | 2025-07-30 |
 
 **Changelog highlights** — output samples added under Code Logic and scoped to categorization
