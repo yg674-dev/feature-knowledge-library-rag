@@ -11,18 +11,24 @@ This README is the PRD in full, in English.
 
 ---
 
-## 1. TL;DR
+## 1. Business goal
 
-The platform holds thousands of governance features, but a business user knows only the handful
-they requested themselves — so choosing the right feature still means asking a platform owner by
-hand, and the answer is only as good as whoever happens to be free. Meanwhile the Feature List
-shows what exists without showing what is *retrievable*, so nobody can tell which features an
-agent can actually reach.
+Feature discovery is rate-limited by the platform team. Every strategy author who needs a feature
+they did not personally request has to go ask someone, which makes strategy throughput a function
+of owner availability — and quietly rewards creating a near-duplicate feature over waiting for an
+answer.
 
-This turns the inventory into a knowledge layer: embedding-ready structured text per feature,
-index and sync state made visible, an agent that interviews a requester into a complete proposal
-instead of handing them a 19-field form, and an always-on Ask AI that returns cards a user can act
-on — and says so plainly when it has nothing rather than inventing a feature.
+The goal is to take the platform team out of that loop: cut discovery from minutes of asking a
+person to seconds of asking the system, raise reuse of features that already exist, and turn
+new-feature quality into a gate rather than a review habit.
+
+What that requires: the platform holds thousands of governance features, but a business user knows
+only the handful they requested themselves, and the Feature List shows what *exists* without
+showing what is *retrievable* — so nobody can tell which features an agent can actually reach.
+This turns the inventory into a knowledge layer: embedding-ready structured text per feature, index
+and sync state made visible, an agent that interviews a requester into a complete proposal instead
+of handing them a 19-field form, and an always-on Ask AI that returns cards a user can act on — and
+says so plainly when it has nothing rather than inventing a feature.
 
 Prototype baseline: **7,024 features, 6,683 indexed — 95.1%**.
 
