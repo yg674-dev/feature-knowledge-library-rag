@@ -4,7 +4,12 @@ Turning a feature inventory into a retrievable knowledge layer — so a business
 "which feature should I use, how does it work, how stable is it?" in natural language instead
 of asking a platform owner.
 
-**Prototype:** [`特征RAG-原型-v0.3_2.html`](https://htmlpreview.github.io/?https://github.com/yg674-dev/feature-knowledge-library-rag/blob/main/%E7%89%B9%E5%BE%81RAG-%E5%8E%9F%E5%9E%8B-v0.3_2.html)
+### ▶ [Open the live demo](https://yg674-dev.github.io/feature-knowledge-library-rag/demo/?v=en)
+
+The working prototype with a **13-step guided walkthrough** that runs both flows for you — no setup,
+no login, English by default. Click *Guided workflow* at the bottom right, or drive the UI yourself.
+
+**Static prototype:** [`特征RAG-原型-v0.3_2.html`](https://htmlpreview.github.io/?https://github.com/yg674-dev/feature-knowledge-library-rag/blob/main/%E7%89%B9%E5%BE%81RAG-%E5%8E%9F%E5%9E%8B-v0.3_2.html)
 · **PRD source:** [`Feature Knowledge Library RAG PRD_5.html`](https://htmlpreview.github.io/?https://github.com/yg674-dev/feature-knowledge-library-rag/blob/main/Feature%20Knowledge%20Library%20RAG%20PRD_5.html) (bilingual)
 
 This README is the PRD in full, in English.
@@ -105,6 +110,10 @@ effective.
 `RAG editor → describe the feature in chat → Agent asks for missing context → generated knowledge
 draft → user confirm → evaluation → embedding → indexed and effective`. A read-only user branches
 out at the permission check and keeps discovery only.
+
+Both flows are clickable. The [guided walkthrough](https://yg674-dev.github.io/feature-knowledge-library-rag/demo/?v=en) replays them in
+order — setup, six steps through Flow A, the permission gate where A hands off to B, four steps
+through Flow B, and a close on the six places this system deliberately says less.
 
 ### Step by step
 
@@ -304,6 +313,7 @@ same agent foundation.
 
 | File | Type | Version | Date |
 | --- | --- | --- | --- |
+| [`demo/index.html`](https://yg674-dev.github.io/feature-knowledge-library-rag/demo/?v=en) | **Live demo** — prototype + 13-step guided walkthrough | v0.3 | 2026-09 |
 | [`特征RAG-原型-v0.3_2.html`](https://htmlpreview.github.io/?https://github.com/yg674-dev/feature-knowledge-library-rag/blob/main/%E7%89%B9%E5%BE%81RAG-%E5%8E%9F%E5%9E%8B-v0.3_2.html) | Prototype | v0.3_2 | 2025-08-04 |
 | [`特征RAG-原型-v0.2.html`](https://htmlpreview.github.io/?https://github.com/yg674-dev/feature-knowledge-library-rag/blob/main/%E7%89%B9%E5%BE%81RAG-%E5%8E%9F%E5%9E%8B-v0.2.html) | Prototype | v0.2 | 2025-07-23 |
 | [`docs/Feature-Knowledge-Library-RAG-PRD.pdf`](docs/Feature-Knowledge-Library-RAG-PRD.pdf) | PRD (PDF, with journey diagrams and UI) | — | 2026-09 |
@@ -316,7 +326,7 @@ and 6 evaluation checks specified, four Ask AI states completed (07/29).
 ```bash
 git clone https://github.com/yg674-dev/feature-knowledge-library-rag.git
 cd feature-knowledge-library-rag
-open "特征RAG-原型-v0.3_2.html"
+open demo/index.html
 ```
 
 Self-contained HTML — no build step, no server.
