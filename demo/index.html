@@ -2209,106 +2209,108 @@ async function reset(){
 }
 
 const STEPS=[
-{fl:"Setup", t:"Where a strategy author starts",
- run:async()=>{ await reset(); spot('.tab[data-page="f1"]'); },
+/* ───────── F1 · Knowledge Library ───────── */
+{fl:"F1 · Knowledge Library", t:"What this page manages",
+ run:async()=>{ await reset(); spot('.kpi-row',3000); },
  notes:[
-  {h:"What this page is",p:"The Feature List, upgraded into a <b>Knowledge Library</b>: 7,024 features, 6,683 indexed, 341 failed. The KPI row is the point — it shows what exists <em>and</em> what is actually retrievable."},
-  {h:"Why that distinction matters",p:"The old list showed assets. It never showed embedding state, so nobody could tell whether a feature was reachable by the agent yet. A 95.1% that hides 341 failures is not a status, it is an average."}]},
+  {h:"The upgrade",p:"The existing Feature List becomes a <b>Knowledge Library</b>. Same assets, one new thing on top: whether each feature is actually reachable by the agent."},
+  {h:"Read the KPI row",p:"7,024 total · 6,683 indexed · <b>341 failed</b>. The old list could show the first number. It could not show the other two — so nobody could tell what Ask AI could actually find."}]},
 
-{fl:"Flow A · Discovery", t:"Ask AI is open to everyone",
- run:async()=>{ switchPage('f1'); await wait(150); qaOpen(); spot('#qa-panel',3000); },
+{fl:"F1 · Knowledge Library", t:"Filter and inspect by RAG status",
+ run:async()=>{ switchPage('f1'); await wait(150); spot('.filters, .filter-bar, .page.active .card',3000); },
  notes:[
-  {h:"Design decision",p:"Discovery is a <b>read</b> capability with no permission gate — anyone who can reach the platform can ask. It sits beside the existing Oncall widget rather than replacing it."},
-  {h:"What it replaces",p:"Finding the right feature used to mean asking whoever owns the platform and waiting. Throughput became a function of someone else's calendar."}]},
+  {h:"What is new here",p:"All the existing filters stay — name, code, create time, type, owner, creator, data source. <b>RAG Status</b> is added: All / Indexed / Failed."},
+  {h:"And in the table",p:"Two new columns — <b>RAG Status</b> and <b>Last Synced</b>. Indexed rows offer <em>View RAG</em>; failed rows offer <em>Re-run</em>."}]},
 
-{fl:"Flow A · Discovery", t:"An ambiguous question gets one question back",
- run:async()=>{ qaOpen(); await wait(150); qaAsk('I need a feature about the live room broadcast country'); await wait(1400); spot('#clarify-box',3200); },
- wait:1500,
+{fl:"F1 · Knowledge Library", t:"Fixing what failed, in bulk",
+ run:async()=>{ switchPage('f1'); await wait(150); spot('.page.active .card',2600); },
  notes:[
-  {h:"What just happened",p:"“开播国” maps to three definitions that are easy to confuse — room home country, current broadcast country, audience region. Instead of ranking them, the agent asks once."},
-  {cls:"guard",h:"Guardrail · asking is not free",p:"<b>Exactly one</b> clarification round per conversation, always skippable. After an answer or a skip it must return cards — later ambiguous questions get ranked candidates, never another follow-up."}]},
+  {h:"Three operations",p:"<b>Sync from Meta</b> pulls base fields from Feature Platform Meta. <b>Batch Re-index</b> sends selected features back through the embedding pipeline. Per-row <b>Re-run</b> retries one."},
+  {h:"Failures keep their reason",p:"<code>INDEX_FAILED</code> stores why it failed — text assembly, embedding, or vector-store write — so a retry is informed rather than hopeful. Target: <b>≥99% indexed availability</b>."}]},
 
-{fl:"Flow A · Discovery", t:"Cards carry a fit label, never a recommendation",
- run:async()=>{ if(!click('.clarify-chip')) qaAsk('broadcast country'); await wait(1200); spot('.feat-card',3000); },
- wait:1300,
+/* ───────── F2 · Feature Detail ───────── */
+{fl:"F2 · Feature Detail", t:"Three columns, three questions",
+ run:async()=>{ switchPage('f2'); await wait(250); spot('.page.active .structured-block',3000); },
  notes:[
-  {h:"Design decision",p:"The business definition is explained <em>before</em> the ranking. A direct code or name lookup skips the explanation; a semantic question does not."},
-  {cls:"guard",h:"Guardrail · the system does not decide",p:"No card is ever labelled <b>Recommended</b>. Only <code>Likely suitable</code>, <code>Likely not suitable</code>, <code>Need more context</code>. Each ends at <em>View detail to confirm</em>, never <em>Use this</em>."}]},
+  {h:"What the page answers",p:"Left: <b>what is this feature</b> — read-only meta synced from Feature Platform. Middle: <b>what does retrieval actually see</b> — the embedding-ready structured text. Right: <b>is it reachable right now</b> — vector id, model, chunk count, last synced."},
+  {h:"Why the middle column exists",p:"That text is what gets embedded. If search behaves oddly, this is where you look — and <em>Regenerate</em> rebuilds it without overwriting the fields you wrote."}]},
 
-{fl:"Flow A · Discovery", t:"When it is not sure, it shows the number",
- run:async()=>{ qaOpen(); qaAsk('Is there a replacement for zeta_zero_shot_features?'); await wait(1300); spot('.qa-conversation .feat-card:last-of-type',3000); },
- wait:1400,
+{fl:"F2 · Feature Detail", t:"Output samples, recall test, and the page boundary",
+ run:async()=>{ switchPage('f2'); await wait(200); spot('.page.active .structured-block',2600); },
  notes:[
-  {h:"State",p:"<code>LOW_CONFIDENCE</code> — the top candidate scored below the display threshold. Results render muted and disclose the actual score against the threshold."},
-  {cls:"guard",h:"Guardrail · weak match, no path forward",p:"A low-confidence card <b>cannot open the detail page</b>. The one action that would turn a weak match into a real decision is removed."},
-  {h:"Why show the score",p:"Hiding it makes this read as a failure. Showing it makes it a calibrated answer — the user learns what retrieval can and cannot do, which is how trust gets built."}]},
+  {h:"Output samples",p:"For categorization features only: the full enum list plus each value's business meaning (<span class='mono'>001 → Game LIVE room</span>). It feeds the embedding text, so Ask AI can answer “what values does this have?”."},
+  {h:"Recall test",p:"Runs a real question against this feature and shows the top hit, score, and threshold — read-only, consuming only <code>INDEXED</code> vectors."},
+  {h:"What this page will not do",p:"No creation, no backfill. Those live in F3. A page people trust to read stays read-shaped."}]},
 
-{fl:"Flow A · Discovery", t:"When it has nothing, it says nothing",
- run:async()=>{ qaOpen(); qaAsk('Any features about pet preferences?'); await wait(1300); },
- wait:1400,
+/* ───────── F3 · New Feature ───────── */
+{fl:"F3 · New Feature", t:"Two ways in, one gate",
+ run:async()=>{ switchPage('f3'); await wait(250); spot('.page.active .card, .page.active .panel',2800); },
  notes:[
-  {h:"State",p:"<code>NO_RESULT</code> — nothing usable in indexed knowledge. It offers two ways forward: rephrase, or create the missing feature."},
-  {cls:"guard",h:"Guardrail · no fabrication",p:"The agent states plainly that it <b>will not invent feature logic</b>. A retrieval layer that always returns something confident is worse than one that admits a miss."},
-  {h:"Measured, not assumed",p:"<code>LOW_CONFIDENCE</code> and <code>NO_RESULT</code> rates are guardrail metrics. If they hit zero, the system has started guessing."}]},
+  {h:"Primary path",p:"<b>Start Agent Entry</b> — describe the strategy problem, and the agent asks for the rest. It sits before the manual template on purpose."},
+  {h:"Secondary path",p:"The manual template stays, to bound token cost. It writes the <b>same field contract</b> and passes the <b>same gate</b> — a second path is only safe if it is not a shortcut."}]},
 
-{fl:"Flow A → B", t:"Creating from an empty result is permission-gated",
- run:async()=>{ qaOpen(); if(typeof ragEdit!=='undefined' && ragEdit && typeof togglePerm==='function') togglePerm();
-                await wait(200); if(typeof qaCreateNew==='function') qaCreateNew(); await wait(400); spot('#perm-overlay',3200); },
- wait:700,
+{fl:"F3 · New Feature", t:"The interview fills 19 required fields",
+ run:async()=>{ switchPage('f3'); await wait(200); if(typeof openAgentEntry==='function') openAgentEntry(); await wait(500);
+                for(let k=0;k<6;k++){ if(typeof aeSend==='function') aeSend(); await wait(300); } spot('#ae-chat',2800); },
+ wait:2800,
  notes:[
-  {h:"What just happened",p:"The permission switch in the panel header was flipped to <em>no RAG edit</em>, then <b>Create in F3</b> was clicked. The write path stops here."},
-  {h:"Design decision",p:"<code>PERMISSION_REQUIRED</code> returns a modal offering <em>Apply for permission</em> — it never drops the user into F3 write mode. Read is open to all; write is gated. Two capabilities, one widget, different doors."}]},
+  {h:"What it collects",p:"Feature meaning, entity, data source, owner, usage example, risk / limitation — assembling on the right as <code>Required N/19</code> while the conversation runs on the left."},
+  {h:"The two that matter",p:"<b>Usage example</b> and <b>risk / limitation</b> are required, not optional. They are what make a feature findable later and safe to adopt — and exactly what people skip when a form allows it."}]},
 
-{fl:"Flow A · Discovery", t:"Final confirmation happens on the detail page",
- run:async()=>{ if(typeof closePermModal==='function') closePermModal();
-                if(typeof ragEdit!=='undefined' && !ragEdit && typeof togglePerm==='function') togglePerm();
-                qaShut(); switchPage('f2'); await wait(200); spot('.page.active .col-3, .page.active [class*="rag"]',3000); },
- notes:[
-  {h:"Three columns, three questions",p:"What is it (read-only meta) · what does retrieval actually see (structured text) · is it reachable right now (RAG status, vector id, chunks, last synced)."},
-  {h:"Verifiable, not assertive",p:"The <b>Recall Test</b> runs a real question against this feature and shows the top-N hit, score, and threshold. It reads only <code>INDEXED</code> vectors and cannot change retrieval — a window, not a control."},
-  {h:"Boundary",p:"This page views, confirms, regenerates, re-indexes. It does <b>not</b> host creation or backfill — so a page people trust to read stays read-shaped."}]},
-
-{fl:"Flow B · Contribution", t:"An interview, not a nineteen-field form",
- run:async()=>{ switchPage('f3'); await wait(250); if(typeof openAgentEntry==='function') openAgentEntry(); await wait(500); spot('#ae-chat',3000); },
- wait:800,
- notes:[
-  {h:"Design decision",p:"<b>Start Agent Entry sits before the template button.</b> Ordering is the instruction: begin from the business need, not from a blank form. The proposal assembles live on the right as the conversation runs on the left."},
-  {h:"Why the template survives",p:"The manual path is kept to bound token cost — but it writes the same field contract and passes the same gate. <b>It cannot bypass anything.</b> A second path is only safe if it is not a shortcut."}]},
-
-{fl:"Flow B · Contribution", t:"19 of 19 unlocks a lock, not a submit",
- run:async()=>{ for(let k=0;k<6;k++){ if(typeof aeSend==='function') aeSend(); await wait(320); } await wait(400); spot('#ae-actions',3000); },
- wait:2600,
- notes:[
-  {h:"What just happened",p:"The agent asked for feature meaning, entity, data source, owner, usage example, and risk / limitation. Completion tracks as <code>Required N/19</code>."},
-  {h:"Design decision",p:"Reaching 19/19 enables <b>Confirm</b> — not Submit. Confirm freezes a version so the evaluation has a fixed thing to evaluate."},
-  {cls:"guard",h:"Submission gate · all three",p:"<code>Required 19/19</code> → <code>Confirmed &amp; locked</code> → <code>Evaluation 6/6</code>. Both paths, no exceptions."}]},
-
-{fl:"Flow B · Contribution", t:"Six checks, and the one that fails is the useful one",
+{fl:"F3 · New Feature", t:"Confirm locks it, then six checks run",
  run:async()=>{ if(typeof aeConfirm==='function') aeConfirm(); await wait(600);
-                if(typeof aeEvaluate==='function') aeEvaluate(); await wait(1600); spot('#ae-chat',3000); },
+                if(typeof aeEvaluate==='function') aeEvaluate(); await wait(1600); spot('#ae-chat',2800); },
  wait:2400,
  notes:[
-  {h:"What just happened",p:"Evaluation runs <b>after Confirm</b>, not after Submit — an earlier draft had it backwards, and a check that runs after submission cannot block anything."},
-  {h:"Why this check fails",p:"Risk / limitation is where people write “none.” The check asks for the boundaries that make a feature <em>unsafe</em>: the stability story before launch, what breaks when an upstream version moves, how stale the value can get. Nobody volunteers that."},
-  {h:"Quality as a gate, not a habit",p:"Review culture depends on who is reviewing. A gate does not."}]},
+  {h:"Order matters",p:"19/19 enables <b>Confirm</b>, not Submit. Confirm freezes a version; evaluation runs <b>after</b> it. A check that runs after submission cannot block anything."},
+  {h:"The six checks",p:"Field completeness · semantic clarity · source and owner traceability · usage-example recallability · risk covering launch boundaries · classification and region consistency."},
+  {cls:"guard",h:"Approval is version-scoped",p:"Any later edit creates a new version and <b>invalidates both the confirm and the evaluation</b> — so the reviewed artifact and the submitted one are always the same."}]},
 
-{fl:"Flow B · Contribution", t:"Passing the gate is what makes it real",
- run:async()=>{ if(typeof aeSend==='function') aeSend(); await wait(700);
-                if(typeof aeConfirm==='function') aeConfirm(); await wait(500);
-                if(typeof aeEvaluate==='function') aeEvaluate(); await wait(1700);
-                if(typeof aeSubmit==='function') aeSubmit(); await wait(700); spot('#ae-success',3200); },
- wait:3800,
+{fl:"F3 · New Feature", t:"Submitted, queued, and only then retrievable",
+ run:async()=>{ if(typeof aeSend==='function') aeSend(); await wait(600);
+                if(typeof aeConfirm==='function') aeConfirm(); await wait(450);
+                if(typeof aeEvaluate==='function') aeEvaluate(); await wait(1600);
+                if(typeof aeSubmit==='function') aeSubmit(); await wait(700); spot('#ae-success',3000); },
+ wait:3600,
  notes:[
-  {cls:"guard",h:"Guardrail · approval is not transferable",p:"Any Q&amp;A edit creates a new proposal version and <b>invalidates the previous Confirm and Evaluation</b>. The backend must reject a Submit unless the <em>latest</em> version passed — otherwise reviewed and shipped stop being the same artifact."},
-  {h:"Submitted is not indexed",p:"Submit writes to Meta + Knowledge Library and closes the conversation. The feature becomes retrievable <b>only after embedding succeeds</b> — two separate states, because one can succeed while the other fails."},
-  {h:"The metric that closes the loop",p:"Indexed availability: <b>95.1% today, ≥99% required</b>. A feature that exists but is unreachable is, to the person asking, a feature that does not exist."}]},
+  {h:"What Submit does",p:"Writes to Feature Platform Meta + Knowledge Library, closes the conversation — one feature, one conversation — and enters the embedding queue."},
+  {h:"Submitted is not indexed",p:"The feature becomes <code>INDEXED</code>, and therefore findable by Ask AI, only after embedding succeeds. Two states on purpose, because one can succeed while the other fails."}]},
 
-{fl:"Close", t:"Six places this system chooses to say less",
- run:async()=>{ if(typeof closeAgentEntry==='function') closeAgentEntry(); switchPage('f1'); await wait(200); spot('.kpi-row, .kpis, .page.active .card',2600); },
+/* ───────── F4 · Ask AI ───────── */
+{fl:"F4 · Ask AI", t:"Ask in plain language, get cards you can act on",
+ run:async()=>{ if(typeof closeAgentEntry==='function') closeAgentEntry(); await reset(); switchPage('f4'); qaOpen(); await wait(200);
+                qaAsk('How stable is slice_is_in_battle?'); await wait(1300); spot('.feat-card',2800); },
+ wait:1500,
  notes:[
-  {h:"The pattern",p:"<b>One clarification</b>, never two · <b>never “Recommended”</b> · <b>no path forward from a weak match</b> · <b>no fabrication</b> on empty · <b>approval is version-scoped</b> · <b>submitted ≠ retrievable</b>."},
-  {h:"What they have in common",p:"Every one is a place the product could have produced a confident answer and chose not to. Together they are why a strategy author can trust what comes back — and why the platform team can finally let go of the loop."},
-  {cls:"guard",h:"The metric that would catch this being wrong",p:"<code>LOW_CONFIDENCE</code> and <code>NO_RESULT</code> rates. If they fall to zero, retrieval has stopped admitting misses and started guessing — and every guardrail above has quietly stopped working."}]}
+  {h:"The mode",p:"P0 is <b>Feature Discovery</b> only, and it is a read capability — open to anyone who can reach the platform, no permission needed."},
+  {h:"The card contract",p:"Name, code, why it matched, scope, SLA and freshness, data source, owner, usage example, risk. Every card ends at <em>View detail to confirm</em> — the decision happens in F2, not in the chat."},
+  {cls:"guard",h:"Never “Recommended”",p:"Only <code>Likely suitable</code> / <code>Likely not suitable</code> / <code>Need more context</code>. The system informs the choice; it does not make it."}]},
+
+{fl:"F4 · Ask AI", t:"When the question is ambiguous, it asks once",
+ run:async()=>{ await reset(); switchPage('f4'); qaOpen(); await wait(200);
+                qaAsk('I need a feature about the live room broadcast country'); await wait(1400); spot('#clarify-box',3000); },
+ wait:1500,
+ notes:[
+  {h:"Why ask at all",p:"“Broadcast country” maps to three definitions that are easy to confuse. Ranking them without asking hands the user a plausible wrong feature — which then ships into a rule."},
+  {cls:"guard",h:"Exactly one round",p:"One clarification per conversation, always skippable. After an answer or a skip it must return cards; later ambiguous questions get ranked candidates, never another follow-up."}]},
+
+{fl:"F4 · Ask AI", t:"When it is unsure, and when it has nothing",
+ run:async()=>{ await reset(); switchPage('f4'); qaOpen(); await wait(200);
+                qaAsk('Is there a replacement for zeta_zero_shot_features?'); await wait(1400);
+                qaAsk('Any features about pet preferences?'); await wait(1400); },
+ wait:1600,
+ notes:[
+  {h:"Low confidence",p:"Below the display threshold the cards gray out and disclose the <b>actual score against the threshold</b> — and cannot open the detail page. A weak match must not become a decision."},
+  {cls:"guard",h:"No result means no answer",p:"With nothing indexed to answer from, it says so and <b>will not invent feature logic</b>. It offers rephrase, or creating the feature in F3."},
+  {h:"Tracked deliberately",p:"<code>LOW_CONFIDENCE</code> and <code>NO_RESULT</code> rates are guardrail metrics. If they fall to zero, the system has started guessing."}]},
+
+{fl:"F4 · Ask AI", t:"Reading is open; writing is gated",
+ run:async()=>{ switchPage('f4'); qaOpen(); if(typeof ragEdit!=='undefined' && ragEdit && typeof togglePerm==='function') togglePerm();
+                await wait(250); if(typeof qaCreateNew==='function') qaCreateNew(); await wait(450); spot('#perm-overlay',3000); },
+ wait:800,
+ notes:[
+  {h:"Two capabilities, one widget",p:"Discovery needs no permission. Creating a feature from a no-result needs <b>RAG edit permission</b> — the switch in the panel header simulates a user without it."},
+  {h:"What the gate does",p:"<code>PERMISSION_REQUIRED</code> shows an apply-for-permission dialog and <b>never drops the user into F3 write mode</b>. Discovery keeps working the whole time."}]}
 ];
 
 let i=0, busy=false;
