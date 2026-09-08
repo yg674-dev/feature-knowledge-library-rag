@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>Feature Knowledge Library · 特征知识库 v0.3</title>
+<title>Feature Knowledge Library v0.3</title>
 <style>
 :root{
   --primary:#3B82F6;
@@ -586,7 +586,7 @@ body.lang-en .i-cn{display:none!important}
 <div class="topbar">
   <div>
     <span class="brand">Feature Platform</span>
-    <span class="brand-sub">/ 特征 Agent 应用 / Knowledge Library</span>
+    <span class="brand-sub">/ Feature Agent Apps / Knowledge Library</span>
   </div>
   <div class="tabs">
     <div class="tab active" data-page="f1">F1 · Library Management</div>
@@ -602,8 +602,8 @@ body.lang-en .i-cn{display:none!important}
 <div class="page active" id="page-f1">
   <div class="page-header">
     <div>
-      <div class="crumb">Feature Platform <span class="sep">/</span> 特征 Agent 应用 <span class="sep">/</span> <strong>Knowledge Library 知识库</strong></div>
-      <div class="page-title">Feature Knowledge Library · 特征知识库</div>
+      <div class="crumb">Feature Platform <span class="sep">/</span> Feature Agent Apps <span class="sep">/</span> <strong>Knowledge Library</strong></div>
+      <div class="page-title">Feature Knowledge Library</div>
       <div class="page-sub"><span class="i-cn">现有 Feature List 的升级版：从 FP Meta 同步 + description 校验 + embedding 状态可视化</span><span class="i-en">Upgrade of the existing Feature List: synced from FP Meta + description validation + embedding status visibility</span></div>
     </div>
     <div style="display:flex;gap:8px">
@@ -2190,8 +2190,12 @@ function spot(sel,ms=2600){
 function qaOpen(){ const p=$('qa-panel'); if(p&&!p.classList.contains('open')) toggleQA(); }
 function qaShut(){ const p=$('qa-panel'); if(p&&p.classList.contains('open')) toggleQA(); }
 
+function ensureEN(){
+  try{ if(!document.body.classList.contains('lang-en') && typeof toggleLang==='function') toggleLang(); }catch(e){}
+}
 async function reset(){
   try{
+    ensureEN();
     document.querySelectorAll('.t-spot').forEach(e=>e.classList.remove('t-spot'));
     if(typeof closePermModal==='function') closePermModal();
     if(typeof closeAgentEntry==='function') closeAgentEntry();
@@ -2218,21 +2222,21 @@ const STEPS=[
   {h:"What it replaces",p:"Finding the right feature used to mean asking whoever owns the platform and waiting. Throughput became a function of someone else's calendar."}]},
 
 {fl:"Flow A · Discovery", t:"An ambiguous question gets one question back",
- run:async()=>{ qaOpen(); await wait(150); qaAsk('我想找一个直播间开播国相关的特征'); await wait(1400); spot('#clarify-box',3200); },
+ run:async()=>{ qaOpen(); await wait(150); qaAsk('I need a feature about the live room broadcast country'); await wait(1400); spot('#clarify-box',3200); },
  wait:1500,
  notes:[
   {h:"What just happened",p:"“开播国” maps to three definitions that are easy to confuse — room home country, current broadcast country, audience region. Instead of ranking them, the agent asks once."},
   {cls:"guard",h:"Guardrail · asking is not free",p:"<b>Exactly one</b> clarification round per conversation, always skippable. After an answer or a skip it must return cards — later ambiguous questions get ranked candidates, never another follow-up."}]},
 
 {fl:"Flow A · Discovery", t:"Cards carry a fit label, never a recommendation",
- run:async()=>{ if(!click('.clarify-chip')) qaAsk('开播国'); await wait(1200); spot('.feat-card',3000); },
+ run:async()=>{ if(!click('.clarify-chip')) qaAsk('broadcast country'); await wait(1200); spot('.feat-card',3000); },
  wait:1300,
  notes:[
   {h:"Design decision",p:"The business definition is explained <em>before</em> the ranking. A direct code or name lookup skips the explanation; a semantic question does not."},
   {cls:"guard",h:"Guardrail · the system does not decide",p:"No card is ever labelled <b>Recommended</b>. Only <code>Likely suitable</code>, <code>Likely not suitable</code>, <code>Need more context</code>. Each ends at <em>View detail to confirm</em>, never <em>Use this</em>."}]},
 
 {fl:"Flow A · Discovery", t:"When it is not sure, it shows the number",
- run:async()=>{ qaOpen(); qaAsk('有没有可以替代 zeta_zero_shot_features 的？'); await wait(1300); spot('.qa-conversation .feat-card:last-of-type',3000); },
+ run:async()=>{ qaOpen(); qaAsk('Is there a replacement for zeta_zero_shot_features?'); await wait(1300); spot('.qa-conversation .feat-card:last-of-type',3000); },
  wait:1400,
  notes:[
   {h:"State",p:"<code>LOW_CONFIDENCE</code> — the top candidate scored below the display threshold. Results render muted and disclose the actual score against the threshold."},
@@ -2240,7 +2244,7 @@ const STEPS=[
   {h:"Why show the score",p:"Hiding it makes this read as a failure. Showing it makes it a calibrated answer — the user learns what retrieval can and cannot do, which is how trust gets built."}]},
 
 {fl:"Flow A · Discovery", t:"When it has nothing, it says nothing",
- run:async()=>{ qaOpen(); qaAsk('有没有宠物偏好相关的特征？'); await wait(1300); },
+ run:async()=>{ qaOpen(); qaAsk('Any features about pet preferences?'); await wait(1300); },
  wait:1400,
  notes:[
   {h:"State",p:"<code>NO_RESULT</code> — nothing usable in indexed knowledge. It offers two ways forward: rephrase, or create the missing feature."},
@@ -2258,7 +2262,7 @@ const STEPS=[
 {fl:"Flow A · Discovery", t:"Final confirmation happens on the detail page",
  run:async()=>{ if(typeof closePermModal==='function') closePermModal();
                 if(typeof ragEdit!=='undefined' && !ragEdit && typeof togglePerm==='function') togglePerm();
-                qaShut(); switchPage('f2'); await wait(200); spot('.page.active .structured-block',3000); },
+                qaShut(); switchPage('f2'); await wait(200); spot('.page.active .col-3, .page.active [class*="rag"]',3000); },
  notes:[
   {h:"Three columns, three questions",p:"What is it (read-only meta) · what does retrieval actually see (structured text) · is it reachable right now (RAG status, vector id, chunks, last synced)."},
   {h:"Verifiable, not assertive",p:"The <b>Recall Test</b> runs a real question against this feature and shows the top-N hit, score, and threshold. It reads only <code>INDEXED</code> vectors and cannot change retrieval — a window, not a control."},
@@ -2340,7 +2344,7 @@ addEventListener('keydown',e=>{
   if(e.key==='ArrowRight'){e.preventDefault(); if(i<STEPS.length-1) run(i+1);}
   if(e.key==='ArrowLeft'){e.preventDefault(); $('t-prev').click();}
 });
-setTimeout(()=>run(0),350);
+ensureEN(); setTimeout(()=>{ensureEN(); run(0);},350);
 })();
 </script>
 
