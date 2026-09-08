@@ -314,7 +314,6 @@ same agent foundation.
 | File | Type | Version | Date |
 | --- | --- | --- | --- |
 | [`demo/index.html`](https://yg674-dev.github.io/feature-knowledge-library-rag/demo/?v=en) | **Live demo** — prototype + 13-step guided walkthrough | v0.3 | 2026-09 |
-| [`demo-react/index.html`](https://yg674-dev.github.io/feature-knowledge-library-rag/demo-react/) | The same walkthrough rebuilt in React 19 — no build step | react | 2026-09 |
 | [`特征RAG-原型-v0.3_2.html`](https://htmlpreview.github.io/?https://github.com/yg674-dev/feature-knowledge-library-rag/blob/main/%E7%89%B9%E5%BE%81RAG-%E5%8E%9F%E5%9E%8B-v0.3_2.html) | Prototype | v0.3_2 | 2025-08-04 |
 | [`特征RAG-原型-v0.2.html`](https://htmlpreview.github.io/?https://github.com/yg674-dev/feature-knowledge-library-rag/blob/main/%E7%89%B9%E5%BE%81RAG-%E5%8E%9F%E5%9E%8B-v0.2.html) | Prototype | v0.2 | 2025-07-23 |
 | [`docs/Feature-Knowledge-Library-RAG-PRD.pdf`](docs/Feature-Knowledge-Library-RAG-PRD.pdf) | PRD (PDF, with journey diagrams and UI) | — | 2026-09 |
