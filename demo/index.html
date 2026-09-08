@@ -2159,7 +2159,7 @@ document.addEventListener('keydown', e=>{
 <div id="tour">
   <div class="t-head">
     <span class="dot"></span><b>Guided workflow</b><span class="sp"></span>
-    <span class="cnt"><span id="t-i">1</span>/<span id="t-n">13</span></span>
+    <span class="cnt"><span id="t-i">1</span>/<span id="t-n">14</span></span>
     <button id="t-min" title="Minimise">–</button>
   </div>
   <div class="t-prog"><i id="t-prog"></i></div>
@@ -2310,7 +2310,16 @@ const STEPS=[
  wait:800,
  notes:[
   {h:"Two capabilities, one widget",p:"Discovery needs no permission. Creating a feature from a no-result needs <b>RAG edit permission</b> — the switch in the panel header simulates a user without it."},
-  {h:"What the gate does",p:"<code>PERMISSION_REQUIRED</code> shows an apply-for-permission dialog and <b>never drops the user into F3 write mode</b>. Discovery keeps working the whole time."}]}
+  {h:"What the gate does",p:"<code>PERMISSION_REQUIRED</code> shows an apply-for-permission dialog and <b>never drops the user into F3 write mode</b>. Discovery keeps working the whole time."}]},
+
+{fl:"Close", t:"Six places this system chooses to say less",
+ run:async()=>{ if(typeof closePermModal==='function') closePermModal();
+                if(typeof ragEdit!=='undefined' && !ragEdit && typeof togglePerm==='function') togglePerm();
+                qaShut(); switchPage('f1'); await wait(200); spot('.kpi-row',2400); },
+ notes:[
+  {h:"The pattern",p:"<b>One clarification</b>, never two · <b>never “Recommended”</b> · <b>no path forward from a weak match</b> · <b>no fabrication</b> on empty · <b>approval is version-scoped</b> · <b>submitted ≠ retrievable</b>."},
+  {h:"What they have in common",p:"Every one is a place the product could have produced a confident answer and chose not to. Together they are why a strategy author can trust what comes back — and why the platform team can finally let go of the loop."},
+  {cls:"guard",h:"The metric that would catch this being wrong",p:"<code>LOW_CONFIDENCE</code> and <code>NO_RESULT</code> rates. If they fall to zero, retrieval has stopped admitting misses and started guessing — and every guardrail above has quietly stopped working."}]}
 ];
 
 let i=0, busy=false;
@@ -2336,11 +2345,15 @@ async function run(n){
   await wait(STEPS[i].wait||300);
   busy=false; paint();
 }
-$('t-next').onclick=()=>{ if(i<STEPS.length-1) run(i+1); };
+$('t-next').onclick=()=>{
+  if(i<STEPS.length-1){ run(i+1); return; }
+  document.querySelectorAll('.t-spot').forEach(e=>e.classList.remove('t-spot'));
+  $('tour').style.display='none'; $('tour-open').style.display='block';
+};
 $('t-prev').onclick=async()=>{ const t=i-1; await reset(); for(let k=1;k<=t;k++){ await STEPS[k].run(); await wait(120);} i=t; paint(); };
 $('t-reset').onclick=async()=>{ await reset(); run(0); };
 $('t-min').onclick=()=>{ $('tour').style.display='none'; $('tour-open').style.display='block'; };
-$('tour-open').onclick=()=>{ $('tour').style.display='flex'; $('tour-open').style.display='none'; };
+$('tour-open').onclick=()=>{ $('tour').style.display='flex'; $('tour-open').style.display='none'; paint(); };
 addEventListener('keydown',e=>{
   if(e.target.matches('input,textarea')) return;
   if(e.key==='ArrowRight'){e.preventDefault(); if(i<STEPS.length-1) run(i+1);}
