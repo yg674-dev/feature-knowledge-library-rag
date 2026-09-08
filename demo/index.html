@@ -1,0 +1,589 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Feature Knowledge Library · Guided Walkthrough</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0B0C0E; --panel:#131519; --panel-2:#171A1F; --line:#23272F; --line-2:#2E333C;
+  --fg:#E9E5DD; --fg-dim:#9AA0A9; --fg-faint:#6B717A;
+  --amber:#E5A544; --amber-dim:#7A5A22; --teal:#4FB3A6; --teal-dim:#245049;
+  --red:#D4674F; --red-dim:#5C2B20; --violet:#9B8AC4;
+  --serif:"Instrument Serif",Georgia,"Times New Roman",serif;
+  --sans:"Instrument Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--ink); color:var(--fg); font-family:var(--sans);
+  font-size:15px; line-height:1.6; -webkit-font-smoothing:antialiased;
+  background-image:radial-gradient(ellipse 80% 50% at 50% -10%, rgba(229,165,68,.07), transparent 60%);
+  background-attachment:fixed;
+}
+body::after{
+  content:""; position:fixed; inset:0; pointer-events:none; z-index:99; opacity:.035;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.mono{font-family:var(--mono)}
+
+/* ---------- shell ---------- */
+.shell{display:grid;grid-template-columns:264px 1fr;min-height:100vh}
+@media(max-width:1000px){.shell{grid-template-columns:1fr}}
+
+/* ---------- rail ---------- */
+.rail{
+  border-right:1px solid var(--line); padding:32px 0 40px;
+  position:sticky; top:0; height:100vh; overflow-y:auto;
+  background:linear-gradient(180deg,rgba(19,21,25,.6),transparent 30%);
+}
+@media(max-width:1000px){.rail{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line)}}
+.rail-brand{padding:0 26px 26px;border-bottom:1px solid var(--line);margin-bottom:20px}
+.rail-brand h1{font-family:var(--serif);font-size:25px;line-height:1.15;font-weight:400;letter-spacing:-.01em}
+.rail-brand p{font-size:11.5px;color:var(--fg-faint);margin-top:7px;letter-spacing:.09em;text-transform:uppercase;font-weight:500}
+.flow-head{
+  padding:0 26px;margin:22px 0 9px;font-size:10.5px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--fg-faint);font-weight:600;display:flex;gap:8px;align-items:center
+}
+.flow-head i{width:14px;height:1px;background:var(--line-2);flex:1;font-style:normal}
+.rail a{
+  display:flex;gap:11px;align-items:baseline;padding:7px 26px;color:var(--fg-dim);
+  text-decoration:none;font-size:13.5px;border-left:2px solid transparent;transition:.16s
+}
+.rail a b{font-family:var(--mono);font-size:10.5px;color:var(--fg-faint);font-weight:400;min-width:20px}
+.rail a:hover{color:var(--fg);background:rgba(255,255,255,.022)}
+.rail a.on{color:var(--fg);border-left-color:var(--amber);background:rgba(229,165,68,.05)}
+.rail a.on b{color:var(--amber)}
+
+/* ---------- main ---------- */
+main{padding:44px 52px 96px;max-width:1160px}
+@media(max-width:760px){main{padding:32px 20px 72px}}
+
+.masthead{border-bottom:1px solid var(--line);padding-bottom:34px;margin-bottom:38px}
+.eyebrow{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--amber);font-weight:600}
+.masthead h2{font-family:var(--serif);font-size:clamp(34px,5.2vw,54px);line-height:1.06;font-weight:400;margin:14px 0 0;letter-spacing:-.02em}
+.masthead h2 em{font-style:italic;color:var(--amber)}
+.lede{font-size:17px;color:var(--fg-dim);max-width:60ch;margin-top:16px;line-height:1.62}
+.stats{display:flex;flex-wrap:wrap;gap:30px;margin-top:26px}
+.stat b{display:block;font-family:var(--mono);font-size:22px;color:var(--fg);font-weight:500;letter-spacing:-.02em}
+.stat span{font-size:11px;color:var(--fg-faint);letter-spacing:.06em;text-transform:uppercase}
+
+/* ---------- step ---------- */
+.step{display:none}
+.step.on{display:block;animation:rise .4s cubic-bezier(.2,.7,.3,1)}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.step-head{margin-bottom:22px}
+.step-tag{display:inline-flex;align-items:center;gap:9px;font-family:var(--mono);font-size:11px;color:var(--fg-faint);letter-spacing:.06em}
+.step-tag s{width:26px;height:1px;background:var(--line-2);text-decoration:none}
+.step-head h3{font-family:var(--serif);font-size:31px;font-weight:400;line-height:1.2;margin-top:10px;letter-spacing:-.015em}
+
+.split{display:grid;grid-template-columns:1.15fr .85fr;gap:26px;align-items:start}
+@media(max-width:1080px){.split{grid-template-columns:1fr}}
+
+/* ---------- mock screen ---------- */
+.screen{
+  background:var(--panel);border:1px solid var(--line);border-radius:9px;overflow:hidden;
+  box-shadow:0 20px 50px -22px rgba(0,0,0,.85)
+}
+.screen-bar{
+  display:flex;align-items:center;gap:8px;padding:9px 13px;border-bottom:1px solid var(--line);
+  background:var(--panel-2);font-family:var(--mono);font-size:10.5px;color:var(--fg-faint)
+}
+.screen-bar u{width:8px;height:8px;border-radius:50%;background:var(--line-2);text-decoration:none}
+.screen-body{padding:17px}
+
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:14px}
+.kpi{background:var(--panel-2);border:1px solid var(--line);border-radius:6px;padding:11px 13px}
+.kpi span{font-size:10px;color:var(--fg-faint);letter-spacing:.07em;text-transform:uppercase}
+.kpi b{display:block;font-family:var(--mono);font-size:19px;font-weight:500;margin-top:4px}
+.kpi.ok b{color:var(--teal)} .kpi.bad b{color:var(--red)}
+
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.row:last-child{border-bottom:0}
+.row-main{min-width:0}
+.row-main b{font-family:var(--mono);font-size:12.5px;font-weight:400;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row-main span{font-size:11.5px;color:var(--fg-faint)}
+
+.pill{font-family:var(--mono);font-size:10px;padding:2.5px 8px;border-radius:20px;white-space:nowrap;letter-spacing:.03em}
+.pill.ok{color:var(--teal);background:rgba(79,179,166,.1);border:1px solid var(--teal-dim)}
+.pill.bad{color:var(--red);background:rgba(212,103,79,.1);border:1px solid var(--red-dim)}
+.pill.warn{color:var(--amber);background:rgba(229,165,68,.1);border:1px solid var(--amber-dim)}
+.pill.mute{color:var(--fg-faint);background:rgba(255,255,255,.03);border:1px solid var(--line-2)}
+
+/* chat */
+.chat{display:flex;flex-direction:column;gap:11px}
+.bub{max-width:88%;padding:10px 13px;border-radius:11px;font-size:13.5px;line-height:1.55}
+.bub.me{align-self:flex-end;background:rgba(229,165,68,.12);border:1px solid var(--amber-dim);color:var(--fg)}
+.bub.ai{align-self:flex-start;background:var(--panel-2);border:1px solid var(--line)}
+.bub.ai.warnful{border-color:var(--amber-dim)}
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}
+.chip{font-size:12px;padding:5px 11px;border:1px solid var(--line-2);border-radius:16px;color:var(--fg-dim);background:rgba(255,255,255,.02)}
+.chip.skip{border-style:dashed;color:var(--fg-faint)}
+
+/* feature card */
+.fcard{border:1px solid var(--line);border-radius:7px;padding:12px 13px;background:var(--panel-2);margin-top:9px}
+.fcard.dim{opacity:.5;filter:saturate(.4)}
+.fcard-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.fcard-top b{font-size:13.5px;font-weight:600}
+.fcard code{font-family:var(--mono);font-size:11px;color:var(--fg-faint);display:block;margin-top:2px}
+.fcard p{font-size:12.5px;color:var(--fg-dim);margin-top:8px}
+.fcard .meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+.fcard .meta em{font-style:normal;font-family:var(--mono);font-size:10px;color:var(--fg-faint);border:1px solid var(--line);padding:2px 6px;border-radius:4px}
+.cta{font-size:12px;color:var(--amber);margin-top:10px;display:inline-block;border-bottom:1px solid var(--amber-dim);padding-bottom:1px}
+.cta.dead{color:var(--fg-faint);border-bottom-style:dashed;border-color:var(--line-2)}
+
+/* three column detail */
+.cols3{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+@media(max-width:600px){.cols3{grid-template-columns:1fr}}
+.col{background:var(--panel-2);border:1px solid var(--line);border-radius:6px;padding:11px}
+.col h5{font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--fg-faint);margin-bottom:9px;font-weight:600}
+.kv{display:flex;justify-content:space-between;gap:8px;font-size:11.5px;padding:3.5px 0}
+.kv span{color:var(--fg-faint)} .kv b{font-family:var(--mono);font-size:11px;font-weight:400;text-align:right}
+.stext{font-family:var(--mono);font-size:10.5px;line-height:1.75;color:var(--fg-dim);white-space:pre-wrap}
+.stext u{color:var(--amber);text-decoration:none}
+
+/* progress / gates */
+.gate{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:12.5px}
+.gate:last-child{border-bottom:0}
+.gate i{width:15px;height:15px;border-radius:50%;display:grid;place-items:center;font-size:9px;font-style:normal;flex:none}
+.gate i.y{background:rgba(79,179,166,.15);color:var(--teal);border:1px solid var(--teal-dim)}
+.gate i.n{background:rgba(212,103,79,.15);color:var(--red);border:1px solid var(--red-dim)}
+.gate span{color:var(--fg-dim)}
+.meter{height:5px;background:var(--line);border-radius:3px;overflow:hidden;margin:11px 0 6px}
+.meter i{display:block;height:100%;background:linear-gradient(90deg,var(--amber-dim),var(--amber));border-radius:3px}
+.meter-lbl{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10.5px;color:var(--fg-faint)}
+
+.btn{font-size:12px;padding:6px 13px;border-radius:5px;border:1px solid var(--line-2);color:var(--fg-dim);display:inline-block;background:rgba(255,255,255,.02)}
+.btn.on{background:var(--amber);color:#1A1204;border-color:var(--amber);font-weight:600}
+.btn.off{opacity:.4}
+.btns{display:flex;gap:8px;margin-top:13px;flex-wrap:wrap;align-items:center}
+
+/* ---------- commentary ---------- */
+.notes{display:flex;flex-direction:column;gap:14px;position:sticky;top:30px}
+@media(max-width:1080px){.notes{position:static}}
+.note{border:1px solid var(--line);border-radius:8px;padding:15px 16px;background:linear-gradient(180deg,var(--panel),rgba(19,21,25,.4))}
+.note h4{font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--fg-faint);font-weight:600;margin-bottom:9px}
+.note p{font-size:13.5px;color:var(--fg-dim);line-height:1.62}
+.note p+p{margin-top:9px}
+.note b{color:var(--fg);font-weight:600}
+.note code{font-family:var(--mono);font-size:11.5px;color:var(--amber);background:rgba(229,165,68,.08);padding:1px 5px;border-radius:3px}
+
+.note.guard{border-color:var(--amber-dim);background:linear-gradient(180deg,rgba(229,165,68,.075),rgba(19,21,25,.4))}
+.note.guard h4{color:var(--amber)}
+.note.guard::before{content:"⚠";float:left;margin:-1px 9px 0 0;color:var(--amber);font-size:13px}
+
+.note.state{border-color:var(--line-2)}
+.note.state h4{color:var(--teal)}
+.state-code{font-family:var(--mono);font-size:12px;color:var(--teal);display:block;margin-bottom:7px}
+
+/* ---------- nav ---------- */
+.pager{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-top:38px;padding-top:22px;border-top:1px solid var(--line)}
+.pager button{
+  font-family:var(--sans);font-size:13px;padding:9px 17px;border-radius:6px;cursor:pointer;
+  border:1px solid var(--line-2);background:rgba(255,255,255,.025);color:var(--fg-dim);transition:.16s
+}
+.pager button:hover:not(:disabled){color:var(--fg);border-color:var(--fg-faint)}
+.pager button:disabled{opacity:.28;cursor:default}
+.pager button.next{background:var(--amber);color:#1A1204;border-color:var(--amber);font-weight:600}
+.pager .count{font-family:var(--mono);font-size:11.5px;color:var(--fg-faint)}
+kbd{font-family:var(--mono);font-size:10px;border:1px solid var(--line-2);border-radius:3px;padding:1px 5px;color:var(--fg-faint)}
+
+/* ---------- closing ---------- */
+.close-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin-top:24px}
+.close-card{border:1px solid var(--line);border-radius:8px;padding:16px;background:var(--panel)}
+.close-card b{display:block;font-family:var(--mono);font-size:11.5px;color:var(--amber);margin-bottom:8px}
+.close-card p{font-size:13px;color:var(--fg-dim)}
+.foot{margin-top:44px;padding-top:22px;border-top:1px solid var(--line);font-size:12.5px;color:var(--fg-faint);display:flex;flex-wrap:wrap;gap:8px 20px}
+.foot a{color:var(--fg-dim);text-decoration:none;border-bottom:1px solid var(--line-2)}
+.foot a:hover{color:var(--amber);border-color:var(--amber-dim)}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<nav class="rail">
+  <div class="rail-brand">
+    <h1>Feature Knowledge<br>Library <em style="font-style:italic;color:var(--amber)">RAG</em></h1>
+    <p>Guided walkthrough</p>
+  </div>
+  <div class="flow-head">Flow A · Discovery <i></i> read</div>
+  <a href="#" data-go="0"><b>A1</b> The ask</a>
+  <a href="#" data-go="1"><b>A2</b> One clarification</a>
+  <a href="#" data-go="2"><b>A3</b> Ranked candidates</a>
+  <a href="#" data-go="3"><b>A4</b> Low confidence</a>
+  <a href="#" data-go="4"><b>A5</b> No result</a>
+  <a href="#" data-go="5"><b>A6</b> Confirm in detail</a>
+  <div class="flow-head">Flow B · Contribution <i></i> write</div>
+  <a href="#" data-go="6"><b>B1</b> Permission gate</a>
+  <a href="#" data-go="7"><b>B2</b> Interview, not a form</a>
+  <a href="#" data-go="8"><b>B3</b> 19/19 then lock</a>
+  <a href="#" data-go="9"><b>B4</b> Six checks</a>
+  <a href="#" data-go="10"><b>B5</b> Edit invalidates</a>
+  <a href="#" data-go="11"><b>B6</b> Indexed, effective</a>
+  <div class="flow-head">Close <i></i></div>
+  <a href="#" data-go="12"><b>—</b> What it costs to be wrong</a>
+</nav>
+
+<main>
+  <header class="masthead">
+    <div class="eyebrow">Feature Platform · Governance</div>
+    <h2>The platform team is the <em>bottleneck</em>.<br>This takes them out of the loop.</h2>
+    <p class="lede">
+      Thousands of governance features exist, but a strategy author knows only the handful they
+      requested themselves — so choosing one still means asking a person. This walkthrough follows
+      the two flows that replace that conversation, and stops at each point where the design
+      chose to <em style="color:var(--amber);font-style:normal">say less</em> rather than guess.
+    </p>
+    <div class="stats">
+      <div class="stat"><b>7,024</b><span>features</span></div>
+      <div class="stat"><b>6,683</b><span>indexed · 95.1%</span></div>
+      <div class="stat"><b>≤30s</b><span>to first answer</span></div>
+      <div class="stat"><b>19 / 6</b><span>fields · eval checks</span></div>
+    </div>
+  </header>
+
+  <div id="steps"></div>
+
+  <div class="pager">
+    <button id="prev">← Previous</button>
+    <span class="count"><span id="cur">1</span> / 13 &nbsp;·&nbsp; <kbd>←</kbd> <kbd>→</kbd></span>
+    <button id="next" class="next">Next →</button>
+  </div>
+
+  <div class="foot">
+    <span>Feature Knowledge Library · RAG — guided walkthrough</span>
+    <a href="../README.md">Full PRD</a>
+    <a href="../%E7%89%B9%E5%BE%81RAG-%E5%8E%9F%E5%9E%8B-v0.3_2.html">Interactive prototype v0.3_2</a>
+    <a href="https://github.com/yg674-dev/feature-knowledge-library-rag">Repository</a>
+  </div>
+</main>
+</div>
+
+<script>
+const STEPS = [
+/* ── FLOW A ─────────────────────────────────────────────── */
+{
+ tag:"Flow A · Discovery", n:"A1", title:"Someone needs a feature they have never used",
+ screen:`<div class="screen-bar"><u></u><u></u><u></u> Ask AI · Feature Discovery</div>
+ <div class="screen-body"><div class="chat">
+   <div class="bub ai">Ask about features — I only answer from what is already indexed.</div>
+   <div class="bub me">我想找一个直播间开播国相关的特征</div>
+ </div></div>`,
+ notes:[
+  {h:"What this solves",p:"A strategy author needs a feature for a rule. Today that means finding whoever owns the platform and waiting. Throughput becomes a function of someone else's calendar — and waiting quietly rewards creating a near-duplicate feature instead."},
+  {h:"Design decision",p:"The entry point is <b>always-on and everywhere</b>, sitting beside the existing Oncall widget rather than replacing it. Discovery is a read capability open to <b>anyone</b> who can reach the platform; no permission, no request form."}
+ ]
+},
+{
+ tag:"Flow A · Discovery", n:"A2", title:"It asks once — then never again",
+ screen:`<div class="screen-bar"><u></u><u></u><u></u> Ask AI · <span style="color:var(--amber)">NEED_CLARIFICATION</span></div>
+ <div class="screen-body"><div class="chat">
+   <div class="bub me">我想找一个直播间开播国相关的特征</div>
+   <div class="bub ai warnful">“开播国” maps to three different definitions that are easy to confuse. Which one applies?
+     <div class="chips"><span class="chip">Room · root country</span><span class="chip">Room · broadcast country</span><span class="chip">Anchor · registration country</span><span class="chip skip">Skip</span></div>
+   </div>
+ </div></div>`,
+ notes:[
+  {h:"What this solves",p:"The same phrase covers several business definitions. Returning a ranked list without asking hands the user a plausible wrong feature — the most expensive failure in the whole flow, because it silently ships into a rule."},
+  {h:"Design decision",p:"<b>Exactly one</b> clarification round per conversation, offered as chips, always skippable. After an answer or a skip, the system must return cards. Later ambiguous questions in the same conversation get ranked candidates — never another follow-up.",cls:"guard",lbl:"Guardrail · asking is not free"},
+  {h:"Why the cap",p:"Clarification is the product's core bet, and also its most likely way to die. Abandonment during clarification is tracked as a guardrail metric for exactly this reason."}
+ ]
+},
+{
+ tag:"Flow A · Discovery", n:"A3", title:"Candidates, with the definition explained first",
+ screen:`<div class="screen-bar"><u></u><u></u><u></u> Ask AI · <span style="color:var(--teal)">FEATURE_CARDS</span></div>
+ <div class="screen-body">
+   <div class="bub ai" style="max-width:100%">Room · root country is the country the room belongs to; broadcast country is where this session is streaming from. They diverge on travel and on relayed rooms.</div>
+   <div class="fcard">
+     <div class="fcard-top"><div><b>Room · Root Country</b><code>room_country_root</code></div><span class="pill ok">Likely suitable</span></div>
+     <p>Matched on: room-level attribution, hour-level freshness, used by 14 active rules.</p>
+     <div class="meta"><em>SLA A</em><em>hour level</em><em>live room</em><em>indexed 07-08</em></div>
+     <span class="cta">View detail to confirm →</span>
+   </div>
+   <div class="fcard">
+     <div class="fcard-top"><div><b>Room · Broadcast Country</b><code>room_country_broadcast</code></div><span class="pill mute">Need more context</span></div>
+     <p>Day-level only. Suitable if your rule tolerates a 24h window.</p>
+     <div class="meta"><em>SLA C</em><em>day level</em><em>live room</em></div>
+     <span class="cta">View detail to confirm →</span>
+   </div>
+ </div>`,
+ notes:[
+  {h:"Design decision",p:"The explanation comes <b>before</b> the ranking. A direct code or name lookup skips it — but for a semantic question, telling someone which definition they are choosing between matters more than the order of the list."},
+  {h:"The label that does not exist",p:"No card is ever labelled <b>Recommended</b>. The only labels are <code>Likely suitable</code>, <code>Likely not suitable</code>, and <code>Need more context</code>.",cls:"guard",lbl:"Guardrail · the system does not decide"},
+  {h:"Why it matters",p:"A recommendation invites adoption without reading. These labels invite a decision. The business owner still owns the choice — the card ends at <em>View detail to confirm</em>, not <em>Use this</em>."}
+ ]
+},
+{
+ tag:"Flow A · Discovery", n:"A4", title:"When it is not sure, it says the number",
+ screen:`<div class="screen-bar"><u></u><u></u><u></u> Ask AI · <span style="color:var(--red)">LOW_CONFIDENCE</span></div>
+ <div class="screen-body">
+   <div class="bub ai warnful" style="max-width:100%">Nothing scored above the display threshold. These are the closest, but treat them as leads, not answers — add the scenario and I will retry.</div>
+   <div class="fcard dim">
+     <div class="fcard-top"><div><b>Anchor · Region Tag</b><code>anchor_region_tag_v2</code></div><span class="pill bad">Low confidence</span></div>
+     <p class="mono" style="font-size:11px">score 0.41 · display threshold 0.62</p>
+     <div class="meta"><em>SLA B</em><em>day level</em></div>
+     <span class="cta dead">View detail — unavailable at this confidence</span>
+   </div>
+ </div>`,
+ notes:[
+  {h:"Design decision",p:"Low-confidence cards render grayed, disclose <b>the actual score and the threshold</b>, and ask for more scenario context."},
+  {h:"The link is removed",p:"A low-confidence card <b>cannot navigate to the detail page</b>. The one action that would let a weak match become a real decision is taken away.",cls:"guard",lbl:"Guardrail · weak match, no path forward"},
+  {h:"Why show the number",p:"Hiding the score would make this look like a system failure. Showing it makes it a <em>calibrated</em> answer — the user learns what the retrieval layer can and cannot do, which is how trust in it gets built."}
+ ]
+},
+{
+ tag:"Flow A · Discovery", n:"A5", title:"When it has nothing, it says nothing",
+ screen:`<div class="screen-bar"><u></u><u></u><u></u> Ask AI · <span style="color:var(--red)">NO_RESULT</span></div>
+ <div class="screen-body">
+   <div class="bub ai warnful" style="max-width:100%">
+     No indexed feature covers this. <b>I will not describe a feature that does not exist.</b>
+     <div class="btns"><span class="btn">Rephrase</span><span class="btn on">Create in F3 →</span></div>
+   </div>
+   <div style="margin-top:13px;border:1px dashed var(--line-2);border-radius:7px;padding:12px;background:rgba(255,255,255,.014)">
+     <span class="pill warn">PERMISSION_REQUIRED</span>
+     <p style="font-size:12.5px;color:var(--fg-dim);margin-top:8px">You have discovery access but not RAG edit permission. Creation is blocked here.</p>
+     <div class="btns"><span class="btn">Cancel</span><span class="btn">Apply for permission</span></div>
+   </div>
+ </div>`,
+ notes:[
+  {h:"Design decision",p:"An empty result is a first-class state with its own copy, not a blank panel. It offers two ways forward — rephrase, or create the missing feature — and routes the second by permission."},
+  {h:"The refusal is explicit",p:"The system states plainly that it <b>will not invent feature logic</b>. A retrieval layer that always produces something confident is worse than one that admits a miss.",cls:"guard",lbl:"Guardrail · no fabrication"},
+  {h:"Measured, not assumed",p:"<code>LOW_CONFIDENCE</code> and <code>NO_RESULT</code> rates are tracked as guardrail metrics. If they go to zero, the system has started guessing."}
+ ]
+},
+{
+ tag:"Flow A · Discovery", n:"A6", title:"Confirmation happens on the detail page, not in the chat",
+ screen:`<div class="screen-bar"><u></u><u></u><u></u> F2 · Feature Detail — room_country_root</div>
+ <div class="screen-body"><div class="cols3">
+   <div class="col"><h5>Meta · read-only</h5>
+     <div class="kv"><span>type</span><b>categorization</b></div>
+     <div class="kv"><span>owner</span><b>room-attr</b></div>
+     <div class="kv"><span>stability</span><b>A</b></div>
+     <div class="kv"><span>real-time</span><b>hour</b></div>
+     <div class="kv"><span>config mode</span><b>standard</b></div>
+   </div>
+   <div class="col"><h5>Structured text</h5>
+     <div class="stext"><u>FEATURE</u> Room · Root Country
+<u>ENTITY</u> live room
+<u>USAGE SCOPE</u> attribution
+<u>CODE LOGIC</u> root_country_of(room)
+<u>OUTPUT SAMPLES</u>
+  001 → Game LIVE room
+  002 → Chat room …</div>
+   </div>
+   <div class="col"><h5>RAG status</h5>
+     <div class="kv"><span>status</span><b style="color:var(--teal)">INDEXED</b></div>
+     <div class="kv"><span>model</span><b>bge-m3</b></div>
+     <div class="kv"><span>chunks</span><b>3</b></div>
+     <div class="kv"><span>synced</span><b>07-08 14:22</b></div>
+     <div style="margin-top:10px;padding-top:9px;border-top:1px solid var(--line)">
+       <h5>Recall test · read-only</h5>
+       <div class="kv"><span>top-1 score</span><b style="color:var(--teal)">0.81</b></div>
+     </div>
+   </div>
+ </div></div>`,
+ notes:[
+  {h:"Design decision",p:"Three columns, three questions: <b>what is it</b>, <b>what does the retrieval layer actually see</b>, and <b>is it reachable right now</b>. The middle column is the embedded text itself — the thing that decides whether search works."},
+  {h:"Verifiable, not assertive",p:"The Recall Test runs a real question against this feature and shows the top-N hit, the score, and the threshold. It reads only <code>INDEXED</code> vectors and cannot modify retrieval — a window, not a control."},
+  {h:"Boundary",p:"This page views, confirms, regenerates, re-indexes. It does <b>not</b> host creation or backfill. Those belong to Flow B, so that a page people trust to read stays read-shaped."}
+ ]
+},
+/* ── FLOW B ─────────────────────────────────────────────── */
+{
+ tag:"Flow B · Contribution", n:"B1", title:"The write path forks on permission, immediately",
+ screen:`<div class="screen-bar"><u></u><u></u><u></u> F3 · New Feature — entry</div>
+ <div class="screen-body">
+   <div style="border:1px solid var(--amber-dim);border-radius:8px;padding:15px;background:rgba(229,165,68,.05)">
+     <span class="pill warn">Agent entry</span>
+     <p style="font-size:14px;margin-top:9px;color:var(--fg)">Describe the strategy problem your new feature needs to solve.</p>
+     <p style="font-size:12.5px;color:var(--fg-dim);margin-top:5px">I will ask for feature meaning, entity, data source, owner, usage example, and risk / limitation.</p>
+     <div class="btns"><span class="btn on">Start Agent Entry</span><span class="btn">Start from describing</span></div>
+   </div>
+   <p style="font-size:11.5px;color:var(--fg-faint);margin-top:11px">Manual template — secondary path, same field contract, same gate.</p>
+ </div>`,
+ notes:[
+  {h:"Design decision",p:"<b>Start Agent Entry sits before the template button.</b> Ordering is the instruction: begin from the business need, not from a blank form."},
+  {h:"Why the template survives",p:"The manual path is kept deliberately, to bound token cost. But it writes the same field contract and passes the same evaluation gate — <b>it cannot bypass anything</b>. A second path is only safe if it is not a shortcut."},
+  {h:"Read stays open, write stays gated",p:"Discovery is open to everyone. Contribution requires RAG edit permission. Two capabilities, one widget, different doors."}
+ ]
+},
+{
+ tag:"Flow B · Contribution", n:"B2", title:"An interview, not a nineteen-field form",
+ screen:`<div class="screen-bar"><u></u><u></u><u></u> Agent Entry · collecting</div>
+ <div class="screen-body" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+   <div class="chat">
+     <div class="bub ai">What should this feature tell a rule that existing ones can't?</div>
+     <div class="bub me">Whether a room switched broadcast country mid-session.</div>
+     <div class="bub ai">Which entity does it attach to, and where does the value come from?</div>
+     <div class="bub me">Live room. Session start/end events from the streaming log.</div>
+     <div class="bub ai">Give me one usage example and one limitation you already know about.</div>
+   </div>
+   <div>
+     <h5 style="font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--fg-faint);margin-bottom:9px">Generated proposal</h5>
+     <div class="meter"><i style="width:63%"></i></div>
+     <div class="meter-lbl"><span>Required 12 / 19</span><span>collecting</span></div>
+     <div style="margin-top:10px">
+       <div class="kv"><span>feature name</span><b>room_country_switch</b></div>
+       <div class="kv"><span>entity</span><b>live room</b></div>
+       <div class="kv"><span>data source</span><b>streaming log</b></div>
+       <div class="kv"><span>usage example</span><b style="color:var(--fg-faint)">pending</b></div>
+       <div class="kv"><span>risk / limitation</span><b style="color:var(--fg-faint)">pending</b></div>
+     </div>
+   </div>
+ </div>`,
+ notes:[
+  {h:"What this solves",p:"The old flow asked people to fill nineteen fields before they had described what they wanted. Most gave up, or filled the boxes with words that made the feature unsearchable later."},
+  {h:"Design decision",p:"The proposal renders <b>live, on the right, while the conversation runs on the left</b>. The user watches a document assemble itself out of their answers — completion is visible as <code>Required N/19</code>, so nobody wonders how much is left."},
+  {h:"The fields are the knowledge",p:"Usage example and risk / limitation are required, not optional. They are the fields that make a feature <em>retrievable</em> and <em>safe</em> later — exactly the two people skip when a form lets them."}
+ ]
+},
+{
+ tag:"Flow B · Contribution", n:"B3", title:"19 of 19 unlocks a lock, not a submit",
+ screen:`<div class="screen-bar"><u></u><u></u><u></u> Agent Entry · <span style="color:var(--teal)">ready to confirm</span></div>
+ <div class="screen-body">
+   <div class="meter"><i style="width:100%"></i></div>
+   <div class="meter-lbl"><span style="color:var(--teal)">Required 19 / 19</span><span>complete</span></div>
+   <div class="btns" style="margin-top:16px">
+     <span class="btn on">Confirm Proposal</span>
+     <span class="btn off">Run Skills Evaluation</span>
+     <span class="btn off">Submit</span>
+   </div>
+   <p style="font-size:12px;color:var(--fg-faint);margin-top:13px">Confirm locks this version. Nothing is written to the library yet.</p>
+ </div>`,
+ notes:[
+  {h:"Design decision",p:"Reaching 19/19 enables <b>Confirm</b> — not Submit. Confirm freezes a version so the evaluation has a fixed thing to evaluate."},
+  {h:"Three gates, in order",p:"<code>Required 19/19</code> → <code>Confirmed &amp; locked</code> → <code>Evaluation 6/6</code>. All three, both paths, no exceptions.",cls:"state",lbl:"Submission gate"},
+  {h:"Evaluation runs after Confirm",p:"An earlier draft ran it after Submit. That was corrected: evaluating something already submitted means the check cannot block anything. The gate has to sit <em>before</em> the door, not behind it."}
+ ]
+},
+{
+ tag:"Flow B · Contribution", n:"B4", title:"Six checks, and the one that fails is the useful one",
+ screen:`<div class="screen-bar"><u></u><u></u><u></u> <span style="color:var(--red)">EVALUATION_FAILED</span> · 5 of 6</div>
+ <div class="screen-body">
+   <div class="gate"><i class="y">✓</i><span>Required-field completeness</span></div>
+   <div class="gate"><i class="y">✓</i><span>Semantic clarity</span></div>
+   <div class="gate"><i class="y">✓</i><span>Source / owner traceability</span></div>
+   <div class="gate"><i class="y">✓</i><span>Usage-example recallability</span></div>
+   <div class="gate"><i class="n">✕</i><span style="color:var(--fg)">Risk / limitation covers launch boundaries</span></div>
+   <div class="gate"><i class="y">✓</i><span>Classification / region consistency</span></div>
+   <div style="margin-top:13px;border:1px solid var(--red-dim);border-radius:7px;padding:12px;background:rgba(212,103,79,.055)">
+     <p style="font-size:12.5px;color:var(--fg-dim)">Add: pre-launch stability assessment · failure modes when the upstream version changes · the latency window after a PK ends.</p>
+   </div>
+   <div class="btns"><span class="btn on">Back to Q&amp;A</span><span class="btn off">Submit</span></div>
+ </div>`,
+ notes:[
+  {h:"Design decision",p:"Failure keeps the window open and returns <b>itemized fixes</b>, not a score. The user is told what to add, in the words of the check that failed."},
+  {h:"Why this check fails most",p:"Risk and limitation is where people write “none.” The check asks for the boundaries that make a feature <em>unsafe</em> — the stability story before launch, what breaks when an upstream version moves, how stale the value can get. Nobody volunteers that."},
+  {h:"Quality as a gate, not a habit",p:"Review culture depends on who is reviewing. A gate does not. This is what converts new-feature quality from something people mean to do into something the system requires."}
+ ]
+},
+{
+ tag:"Flow B · Contribution", n:"B5", title:"Editing anything throws the approval away",
+ screen:`<div class="screen-bar"><u></u><u></u><u></u> Agent Entry · version invalidated</div>
+ <div class="screen-body">
+   <div class="bub me" style="max-width:100%">Actually — change the data source to the room-events topic.</div>
+   <div style="margin-top:13px;border:1px solid var(--amber-dim);border-radius:7px;padding:13px;background:rgba(229,165,68,.055)">
+     <span class="pill warn">Proposal v2 created</span>
+     <div style="margin-top:10px">
+       <div class="gate"><i class="n">✕</i><span>Confirm — invalidated</span></div>
+       <div class="gate"><i class="n">✕</i><span>Evaluation 6/6 — invalidated</span></div>
+     </div>
+     <p style="font-size:12.5px;color:var(--fg-dim);margin-top:10px">Confirm and evaluate again before Submit becomes available.</p>
+   </div>
+   <div class="btns"><span class="btn on">Confirm Proposal</span><span class="btn off">Submit</span></div>
+ </div>`,
+ notes:[
+  {h:"The rule",p:"<b>Any Q&amp;A edit creates a new proposal version and invalidates the previous Confirm and Evaluation.</b> The backend must reject a Submit unless the <em>latest</em> version passed.",cls:"guard",lbl:"Guardrail · approval is not transferable"},
+  {h:"What it prevents",p:"Pass evaluation, then quietly change the data source, then submit. Without version-scoped approval that is a one-line exploit — and the reviewed artifact and the shipped artifact are no longer the same thing."},
+  {h:"Cost of the rule",p:"It makes late edits expensive on purpose. That friction is the point: it pushes correction into the Q&A, where it is cheap, rather than after approval, where it is invisible."}
+ ]
+},
+{
+ tag:"Flow B · Contribution", n:"B6", title:"Submitted is not indexed, and indexed is not automatic",
+ screen:`<div class="screen-bar"><u></u><u></u><u></u> Pipeline</div>
+ <div class="screen-body">
+   <div class="gate"><i class="y">✓</i><span>Submit → written to Meta + Knowledge Library</span></div>
+   <div class="gate"><i class="y">✓</i><span>Conversation closed — one feature, one conversation</span></div>
+   <div class="gate"><i class="y">✓</i><span>Entered embedding queue</span></div>
+   <div class="gate"><i class="y">✓</i><span><span class="mono" style="color:var(--teal)">INDEXED</span> — retrievable by Ask AI</span></div>
+   <div class="kpis" style="margin-top:15px">
+     <div class="kpi"><span>Total</span><b>7,025</b></div>
+     <div class="kpi ok"><span>Indexed</span><b>6,684</b></div>
+     <div class="kpi bad"><span>Failed</span><b>341</b></div>
+   </div>
+   <div class="row" style="margin-top:11px">
+     <div class="row-main"><b>anchor_account_punish_count…</b><span>text assembly failed · 07-08 03:15</span></div>
+     <div style="display:flex;gap:7px;align-items:center"><span class="pill bad">INDEX_FAILED</span><span class="btn" style="font-size:11px;padding:4px 10px">Re-run</span></div>
+   </div>
+ </div>`,
+ notes:[
+  {h:"Design decision",p:"Submit writes the record and closes the conversation. The feature becomes retrievable <b>only after embedding succeeds</b> — the two are deliberately separate states, because one can succeed while the other fails."},
+  {h:"Failure is legible",p:"<code>INDEX_FAILED</code> keeps the reason and offers a re-run, individually or in bulk. 341 failures are visible in the KPI row rather than hidden behind a 95.1% that looks like success.",cls:"state",lbl:"INDEX_FAILED"},
+  {h:"The metric that closes the loop",p:"Indexed availability is the target — <b>95.1% today, ≥99% required</b> — because a feature that exists but is unreachable is, to the person asking, a feature that does not exist."}
+ ]
+},
+/* ── CLOSE ──────────────────────────────────────────────── */
+{
+ tag:"Close", n:"—", title:"Six places this system chooses to say less",
+ close:true,
+ notes:[]
+}
+];
+
+const wrap = document.getElementById('steps');
+wrap.innerHTML = STEPS.map((s,i)=>{
+  if(s.close) return `<section class="step" data-i="${i}">
+    <div class="step-head"><div class="step-tag"><s></s>${s.tag}</div><h3>${s.title}</h3></div>
+    <p class="lede" style="margin-top:0">Every one of these is a place the product could have produced a confident answer and chose not to. Together they are the reason a strategy author can trust what comes back — and the reason the platform team can let go of the loop.</p>
+    <div class="close-grid">
+      <div class="close-card"><b>ONE CLARIFICATION</b><p>Asks at most once per conversation, always skippable. Asking is the bet; asking twice is the failure.</p></div>
+      <div class="close-card"><b>NEVER "RECOMMENDED"</b><p>Only <em>likely suitable</em> / <em>likely not</em> / <em>need more context</em>. The system informs the decision, it does not make it.</p></div>
+      <div class="close-card"><b>NO PATH FROM A WEAK MATCH</b><p>Low-confidence cards show the score and the threshold, and cannot open the detail page.</p></div>
+      <div class="close-card"><b>NO FABRICATION</b><p>Empty means empty. It offers rephrase or create, and routes creation by permission.</p></div>
+      <div class="close-card"><b>APPROVAL IS VERSION-SCOPED</b><p>Any edit invalidates the prior confirm and evaluation. Reviewed and shipped are the same artifact or nothing ships.</p></div>
+      <div class="close-card"><b>SUBMITTED ≠ RETRIEVABLE</b><p>Indexing is its own state with its own failures, surfaced and re-runnable rather than averaged away.</p></div>
+    </div>
+    <div class="note" style="margin-top:22px"><h4>The metric that would catch this being wrong</h4>
+      <p><code>LOW_CONFIDENCE</code> and <code>NO_RESULT</code> rates. If they fall to zero, the retrieval layer has stopped admitting misses and started guessing — and every guardrail above has quietly stopped working.</p></div>
+  </section>`;
+  return `<section class="step" data-i="${i}">
+    <div class="step-head"><div class="step-tag"><s></s>${s.tag} &nbsp;·&nbsp; ${s.n}</div><h3>${s.title}</h3></div>
+    <div class="split">
+      <div class="screen">${s.screen}</div>
+      <div class="notes">${s.notes.map(n=>`
+        <div class="note ${n.cls||''}">
+          <h4>${n.lbl||n.h}</h4>
+          ${n.cls==='state'&&n.lbl?'':''}
+          <p>${n.p}</p>
+        </div>`).join('')}
+      </div>
+    </div>
+  </section>`;
+}).join('');
+
+const secs=[...document.querySelectorAll('.step')], links=[...document.querySelectorAll('.rail a')];
+const prev=document.getElementById('prev'), next=document.getElementById('next'), cur=document.getElementById('cur');
+let i=0;
+function go(n){
+  i=Math.max(0,Math.min(STEPS.length-1,n));
+  secs.forEach((s,k)=>s.classList.toggle('on',k===i));
+  links.forEach((a,k)=>a.classList.toggle('on',k===i));
+  prev.disabled=i===0; next.disabled=i===STEPS.length-1;
+  next.textContent=i===STEPS.length-1?'End':'Next →';
+  cur.textContent=i+1;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+links.forEach(a=>a.addEventListener('click',e=>{e.preventDefault();go(+a.dataset.go)}));
+prev.onclick=()=>go(i-1); next.onclick=()=>go(i+1);
+addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();go(i+1)}
+  if(e.key==='ArrowLeft'){e.preventDefault();go(i-1)}
+});
+go(0);
+</script>
+</body>
+</html>
