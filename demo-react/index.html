@@ -1,0 +1,636 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Feature Knowledge Library · React build</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --primary:#1B6CF3; --primary-hover:#1257CE; --primary-light:#EAF2FF; --primary-soft:#F4F8FF;
+  --danger:#E5484D; --danger-light:#FDECEC; --warn:#E8912B; --warn-light:#FDF3E4;
+  --success:#12A56A; --success-light:#E4F6EE; --purple:#9333EA; --required:#F97316;
+  --text-1:#0D1526; --text-2:#3D475C; --text-3:#6B7488; --text-4:#98A0B0;
+  --border:#ECEEF2; --border-strong:#DDE1E8;
+  --bg:#FFFFFF; --bg-soft:#F6F7F9; --bg-hover:#F1F3F6;
+  --radius:8px; --radius-lg:14px;
+  --shadow-sm:0 1px 2px rgba(16,24,40,.05); --shadow-md:0 4px 16px rgba(16,24,40,.08);
+  --shadow-lg:0 18px 48px rgba(16,24,40,.16);
+  --abh:60px; --mono:"SF Mono",Consolas,ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg-soft);
+  color:var(--text-1);font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.mono{font-family:var(--mono)}
+
+.appbar{height:var(--abh);background:var(--bg);border-bottom:1px solid var(--border);display:flex;
+  align-items:center;gap:14px;padding:0 20px;position:sticky;top:0;z-index:40}
+.appbar .logo{font-weight:700;font-size:15px;letter-spacing:-.01em;white-space:nowrap}
+.appbar .crumb{font-size:13px;color:var(--text-3);white-space:nowrap}
+.tabs{display:flex;gap:2px;margin-left:10px}
+.tab{padding:7px 14px;border-radius:7px;font-size:13.5px;color:var(--text-2);cursor:pointer;white-space:nowrap}
+.tab:hover{background:var(--bg-hover)}
+.tab.on{background:var(--primary-light);color:var(--primary);font-weight:600}
+.appbar .sp{flex:1}
+.chipver{font-family:var(--mono);font-size:11px;color:#7A4E00;background:#FFF3D6;border:1px solid #F2D9A0;
+  padding:4px 10px;border-radius:20px;white-space:nowrap}
+
+main{padding:22px 26px 90px;max-width:1400px}
+@media(max-width:700px){main{padding:16px 14px 80px}}
+.page-header h1{font-size:22px;font-weight:700;letter-spacing:-.02em}
+.page-header p{color:var(--text-3);font-size:13.5px;margin-top:4px}
+.page-head-row{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.hdr-btns{display:flex;gap:8px;flex-wrap:wrap}
+
+.kpirow{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin:16px 0}
+.kpicard{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px 16px;box-shadow:var(--shadow-sm)}
+.kpicard span{font-size:12px;color:var(--text-3);display:flex;align-items:center;gap:6px}
+.kpicard span i{width:7px;height:7px;border-radius:50%;font-style:normal;display:inline-block}
+.kpicard b{display:block;font-size:26px;font-weight:700;margin-top:5px;letter-spacing:-.03em}
+.kpicard small{font-size:12px;color:var(--text-4);font-weight:500;margin-left:5px}
+
+.card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm)}
+.card-hd{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.card-hd b{font-size:13.5px;font-weight:600}
+.card-hd .hint{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--text-4)}
+.card-bd{padding:16px}
+
+.filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+.field label{display:block;font-size:12.5px;color:var(--text-2);margin-bottom:5px;font-weight:500}
+.field .inp{border:1px solid var(--border-strong);border-radius:var(--radius);padding:8px 11px;font-size:13px;
+  color:var(--text-4);background:var(--bg)}
+.field.new label{color:var(--primary)}
+.tag-new{font-size:10px;background:var(--primary-light);color:var(--primary);padding:1px 6px;border-radius:4px;margin-left:6px;font-weight:600}
+
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--text-4);
+  font-weight:600;padding:9px 12px;border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:11px 12px;border-bottom:1px solid var(--border);vertical-align:top}
+tr:last-child td{border-bottom:0}
+tbody tr:hover{background:var(--bg-soft)}
+td .code{font-family:var(--mono);font-size:12px}
+td .sub{font-size:11.5px;color:var(--text-4)}
+.lvl{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:700}
+.lvl.A{background:var(--success-light);color:var(--success)}
+.lvl.B{background:var(--warn-light);color:var(--warn)}
+.lvl.C{background:var(--danger-light);color:var(--danger)}
+.link{color:var(--primary);cursor:pointer;font-size:12.5px;font-weight:500}
+.link+.link{margin-left:10px}
+
+.pill{font-family:var(--mono);font-size:10.5px;padding:3px 8px;border-radius:5px;white-space:nowrap;font-weight:500;display:inline-flex;align-items:center;gap:5px}
+.pill i{width:6px;height:6px;border-radius:50%;font-style:normal}
+.pill.ok{color:var(--success);background:var(--success-light)} .pill.ok i{background:var(--success)}
+.pill.bad{color:var(--danger);background:var(--danger-light)} .pill.bad i{background:var(--danger)}
+.pill.warn{color:var(--warn);background:var(--warn-light)} .pill.warn i{background:var(--warn)}
+.pill.pri{color:var(--primary);background:var(--primary-light)} .pill.pri i{background:var(--primary)}
+.pill.mute{color:var(--text-3);background:var(--bg-hover)} .pill.mute i{background:var(--text-4)}
+
+.btn{font:inherit;font-size:12.5px;font-weight:500;padding:7px 14px;border-radius:var(--radius);cursor:pointer;
+  border:1px solid var(--border-strong);background:var(--bg);color:var(--text-2)}
+.btn:hover:not(:disabled){border-color:var(--primary);color:var(--primary)}
+.btn.pri{background:var(--primary);color:#fff;border-color:var(--primary)}
+.btn.pri:hover:not(:disabled){background:var(--primary-hover);color:#fff}
+.btn:disabled{opacity:.4;cursor:default}
+.btns{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:14px}
+
+/* ask ai */
+.fab{position:fixed;right:22px;bottom:22px;z-index:60;background:#0D1526;color:#fff;border:0;border-radius:24px;
+  padding:12px 18px;font:inherit;font-size:13px;font-weight:600;cursor:pointer;box-shadow:var(--shadow-lg);
+  display:flex;align-items:center;gap:8px}
+.fab i{width:8px;height:8px;border-radius:50%;background:#3DDC97;font-style:normal}
+.qa{position:fixed;right:22px;bottom:22px;width:412px;max-width:calc(100vw - 44px);height:min(76vh,660px);
+  z-index:70;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-lg);display:flex;flex-direction:column;overflow:hidden}
+.qa-hd{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;gap:10px;align-items:flex-start}
+.qa-hd b{font-size:14.5px;font-weight:700;display:block}
+.qa-hd p{font-size:11.5px;color:var(--text-3);margin-top:3px;line-height:1.45}
+.qa-perm{font-size:11px;font-weight:600;padding:5px 9px;border-radius:14px;cursor:pointer;white-space:nowrap;border:1px solid transparent}
+.qa-perm.on{background:var(--success-light);color:var(--success);border-color:#BFE7D5}
+.qa-perm.off{background:var(--bg-hover);color:var(--text-3);border-color:var(--border-strong)}
+.qa-x{border:1px solid var(--border-strong);background:var(--bg);border-radius:6px;width:26px;height:26px;
+  cursor:pointer;color:var(--text-3);flex:none;font-size:14px;line-height:1}
+.qa-mode{display:flex;border-bottom:1px solid var(--border)}
+.qa-mode div{flex:1;text-align:center;padding:10px;font-size:13px;color:var(--text-3);cursor:default}
+.qa-mode div.on{color:var(--primary);font-weight:600;box-shadow:inset 0 -2px 0 var(--primary)}
+.qa-bd{flex:1;overflow-y:auto;padding:14px}
+.qa-try{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-4);font-weight:600;margin-bottom:9px}
+.qa-sug{border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;font-size:13px;
+  cursor:pointer;margin-bottom:8px;background:var(--bg)}
+.qa-sug:hover{border-color:var(--primary);background:var(--primary-soft)}
+.qa-sug em{font-style:normal;font-size:11px;color:var(--text-4);background:var(--bg-hover);padding:2px 7px;border-radius:4px;margin-left:7px}
+.bub{max-width:88%;padding:10px 13px;border-radius:11px;font-size:13.5px;line-height:1.55;margin-bottom:10px}
+.bub.me{margin-left:auto;background:var(--primary);color:#fff}
+.bub.ai{background:var(--bg-soft);border:1px solid var(--border)}
+.bub.ai.warn{background:var(--warn-light);border-color:#F5DFBC}
+.bub.wide{max-width:100%}
+.typing{display:flex;gap:4px;padding:12px 14px}
+.typing i{width:6px;height:6px;border-radius:50%;background:var(--text-4);animation:bl 1.2s infinite}
+.typing i:nth-child(2){animation-delay:.2s} .typing i:nth-child(3){animation-delay:.4s}
+@keyframes bl{0%,60%,100%{opacity:.25}30%{opacity:1}}
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
+.chip{font-size:12.5px;padding:6px 12px;border:1px solid var(--border-strong);border-radius:16px;
+  color:var(--text-2);background:var(--bg);cursor:pointer}
+.chip:hover{border-color:var(--primary);color:var(--primary)}
+.chip.skip{border-style:dashed;color:var(--text-4)}
+.fcard{border:1px solid var(--border);border-radius:var(--radius);padding:12px;background:var(--bg);margin-top:9px;box-shadow:var(--shadow-sm)}
+.fcard.dim{background:var(--bg-soft);opacity:.7}
+.fcard-top{display:flex;justify-content:space-between;gap:9px;align-items:flex-start}
+.fcard-top b{font-size:13.5px;font-weight:600}
+.fcard code{font-family:var(--mono);font-size:11px;color:var(--text-3);display:block;margin-top:2px}
+.fcard p{font-size:12.5px;color:var(--text-3);margin-top:7px}
+.fmeta{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.fmeta em{font-style:normal;font-family:var(--mono);font-size:10px;color:var(--text-3);background:var(--bg-soft);
+  border:1px solid var(--border);padding:2px 6px;border-radius:4px}
+.fcta{font-size:12.5px;color:var(--primary);margin-top:9px;display:inline-block;font-weight:500;cursor:pointer}
+.fcta.dead{color:var(--text-4);cursor:not-allowed;text-decoration:line-through}
+.qa-guard{padding:9px 14px;border-top:1px solid var(--border);background:var(--bg-soft);font-size:11.5px;color:var(--text-3)}
+.qa-in{padding:11px 14px;border-top:1px solid var(--border);display:flex;gap:8px}
+.qa-in input{flex:1;border:1px solid var(--border-strong);border-radius:var(--radius);padding:9px 11px;font:inherit;font-size:13px}
+.qa-in input:focus{outline:0;border-color:var(--primary)}
+
+/* detail */
+.cols3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media(max-width:820px){.cols3{grid-template-columns:1fr}}
+.col{background:var(--bg-soft);border:1px solid var(--border);border-radius:var(--radius);padding:13px}
+.col h5{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-4);font-weight:600;margin-bottom:10px}
+.kv{display:flex;justify-content:space-between;gap:10px;font-size:12.5px;padding:3.5px 0}
+.kv span{color:var(--text-3)} .kv b{font-family:var(--mono);font-size:11.5px;font-weight:500;text-align:right}
+.stext{font-family:var(--mono);font-size:11px;line-height:1.85;color:var(--text-2);white-space:pre-wrap}
+.stext u{color:var(--primary);text-decoration:none;font-weight:600}
+
+/* agent entry */
+.ae{display:grid;grid-template-columns:1.05fr .95fr;gap:16px}
+@media(max-width:900px){.ae{grid-template-columns:1fr}}
+.ae-chat{border:1px solid var(--border);border-radius:var(--radius);padding:13px;background:var(--bg-soft);
+  max-height:400px;overflow-y:auto}
+.meter{height:8px;background:var(--bg-hover);border-radius:5px;overflow:hidden}
+.meter i{display:block;height:100%;background:var(--primary);border-radius:5px;transition:width .45s cubic-bezier(.2,.7,.3,1)}
+.meter i.full{background:var(--success)}
+.meter-lbl{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11.5px;color:var(--text-3);margin-top:7px}
+.gate{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
+.gate:last-child{border-bottom:0}
+.gate i{width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-size:10px;font-style:normal;flex:none;font-weight:700}
+.gate i.y{background:var(--success-light);color:var(--success)}
+.gate i.n{background:var(--danger-light);color:var(--danger)}
+.gate i.w{background:var(--bg-hover);color:var(--text-4)}
+.gate span{color:var(--text-2)}
+.gate.fail span{color:var(--text-1);font-weight:600}
+.banner{border-radius:var(--radius);padding:12px 13px;margin-top:12px;font-size:12.5px;line-height:1.55}
+.banner.bad{background:var(--danger-light);border:1px solid #F3C9C9;color:var(--text-2)}
+.banner.warn{background:var(--warn-light);border:1px solid #F5DFBC;color:var(--text-2)}
+.banner.ok{background:var(--success-light);border:1px solid #BFE7D5;color:var(--text-2)}
+
+/* modal */
+.ovl{position:fixed;inset:0;background:rgba(13,21,38,.45);z-index:90;display:grid;place-items:center;padding:20px}
+.modal{background:var(--bg);border-radius:var(--radius-lg);max-width:420px;width:100%;box-shadow:var(--shadow-lg);overflow:hidden}
+.modal-hd{padding:16px;border-bottom:1px solid var(--border)}
+.modal-hd b{font-size:15px;font-weight:700}
+.modal-bd{padding:16px;font-size:13px;color:var(--text-2)}
+.modal-ft{padding:13px 16px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end}
+
+/* tour */
+.tour{position:fixed;left:20px;bottom:20px;width:376px;max-width:calc(100vw - 40px);z-index:80;background:var(--bg);
+  border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);
+  display:flex;flex-direction:column;max-height:min(78vh,640px)}
+.tour-hd{display:flex;align-items:center;gap:9px;padding:11px 14px;border-bottom:1px solid var(--border)}
+.tour-hd .dot{width:7px;height:7px;border-radius:50%;background:var(--primary);flex:none}
+.tour-hd b{font-size:12.5px;font-weight:700}
+.tour-hd .sp{flex:1}
+.tour-hd .cnt{font-family:var(--mono);font-size:11px;color:var(--text-4)}
+.tour-hd button{border:1px solid var(--border-strong);background:var(--bg);border-radius:6px;width:24px;height:24px;
+  cursor:pointer;color:var(--text-3);font-size:13px;line-height:1;padding:0}
+.tour-prog{height:3px;background:var(--bg-hover)}
+.tour-prog i{display:block;height:100%;background:var(--primary);transition:width .35s ease}
+.tour-bd{padding:14px;overflow-y:auto}
+.tour-fl{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--text-4);font-weight:600}
+.tour-t{font-size:15.5px;font-weight:700;letter-spacing:-.015em;margin:5px 0 11px;line-height:1.35}
+.note{border-left:3px solid var(--border-strong);padding-left:11px;margin-bottom:11px}
+.note:last-child{margin-bottom:0}
+.note h5{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--text-4);font-weight:600;margin-bottom:4px}
+.note p{font-size:12.8px;color:var(--text-2);line-height:1.58}
+.note b{color:var(--text-1)}
+.note code{font-family:var(--mono);font-size:11.5px;color:var(--primary);background:var(--primary-light);padding:1px 5px;border-radius:4px}
+.note.guard{border-left-color:var(--warn);background:linear-gradient(90deg,var(--warn-light),transparent 72%);
+  padding:8px 0 8px 11px;border-radius:0 6px 6px 0}
+.note.guard h5{color:var(--warn)}
+.tour-ft{display:flex;gap:8px;align-items:center;padding:11px 14px;border-top:1px solid var(--border)}
+.tour-ft .rs{font-size:11.5px;color:var(--text-4);cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+.tour-ft .next{margin-left:auto}
+.tour-min{position:fixed;left:20px;bottom:20px;z-index:80;font:inherit;font-size:12.5px;font-weight:600;padding:9px 15px;
+  border-radius:22px;border:1px solid var(--primary);background:var(--primary);color:#fff;cursor:pointer;box-shadow:var(--shadow-lg)}
+@media(max-width:820px){.tour{left:12px;right:12px;width:auto;bottom:12px;max-height:50vh}}
+.badge{position:fixed;right:22px;top:74px;z-index:50;font-family:var(--mono);font-size:10.5px;color:var(--primary);
+  border:1px solid #D5E4FD;background:var(--primary-light);padding:5px 11px;border-radius:20px}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="module">
+import { createElement, useState, useMemo, useEffect, useRef, useCallback } from "https://esm.sh/react@19.2.8";
+import { createRoot } from "https://esm.sh/react-dom@19.2.8/client";
+import htm from "https://esm.sh/htm@3.1.1";
+const h = htm.bind(createElement);
+const Raw = ({t,as="p",...r}) => h`<${as} ...${r} dangerouslySetInnerHTML=${{__html:t}} />`;
+
+/* ═══════════ data ═══════════ */
+const FEATURES = [
+  {code:"slice_is_in_battle", cn:"切片是否在 PK 中", en:"Slice · In Battle", lvl:"A", rt:"Second level", ent:"Video Slice", rag:"INDEXED", sync:"07-08 14:22"},
+  {code:"account_eco_enforce_cnt_room_level_1_day", cn:"房间层级经济处罚计数 · 1 天", en:"Account · Eco Enforce Cnt · Room · 1 Day", lvl:"A", rt:"Second level", ent:"Live room", rag:"INDEXED", sync:"07-08 14:22"},
+  {code:"anchor_account_punish_count_365_day", cn:"主播账号处罚计数 · 365 天", en:"Anchor · Account Punish Count · 365 Day", lvl:"B", rt:"Minute level", ent:"User · live room", rag:"FAILED", sync:"07-08 03:15", err:"text assembly failed"},
+  {code:"room_country_root", cn:"房间归属根国家", en:"Room · Root Country", lvl:"A", rt:"Hour level", ent:"Live room", rag:"INDEXED", sync:"07-08 14:22"},
+  {code:"room_country_broadcast", cn:"直播开播国", en:"Room · Broadcast Country", lvl:"C", rt:"Day level", ent:"Live room", rag:"INDEXED", sync:"07-08 14:22"},
+];
+const CARDS = {
+  root:{name:"Room · Root Country", code:"room_country_root", fit:"suit",
+    why:"Matches “live room + country”; semantically the room home country.",
+    meta:["SLA A","Hour level","Live room","INDEXED"],
+    risk:"Not the current broadcast location; compare broadcast country for real-time needs."},
+  broadcast:{name:"Room · Broadcast Country", code:"room_country_broadcast", fit:"ctx",
+    why:"Reflects the current broadcast location; drifts when the anchor travels.",
+    meta:["SLA C","Day level","Live room","INDEXED"],
+    risk:"Day-level freshness — unsuitable if the rule needs an intra-day signal."},
+  zeta:{name:"Zeta · Zero-shot Features", code:"zeta_zero_shot_features", fit:"low", score:0.41, thr:0.62,
+    why:"Spans several zero-shot / prompt-inference interpretations.",
+    meta:["SLA B","Day level"], risk:"Below display threshold — treat as a lead, not an answer."},
+};
+const FIT = {suit:["ok","Likely suitable"], ctx:["mute","Need more context"], low:["bad","Low confidence"], not:["bad","Likely not suitable"]};
+
+const AE_TURNS = [
+  {q:"What should this feature tell a rule that existing ones can't?", a:"Whether a room switched broadcast country mid-session.", fills:["Feature English name","Short description","Feature type"]},
+  {q:"Which entity does it attach to, and where does the value come from?", a:"Live room. Session start/end events from the streaming log.", fills:["Owner entity","Data source","Source","Freshness"]},
+  {q:"Who owns it, and which regions should it cover?", a:"Live Governance Feature Platform. Global, all 16 moderation markets.", fills:["Owner team","Supported regions","Scope","Feature code","Data type","Real-time level","Usage","Feature Chinese name","Feature description","Coding"]},
+  {q:"Give me one usage example and one limitation you already know about.", a:"Route mid-session country switches to manual review. Limitation: the value lags the switch by up to 90s.", fills:["Usage example","Risk / limitation"]},
+];
+const CHECKS = ["Required-field completeness","Semantic clarity","Source / owner traceability","Usage-example recallability","Risk / limitation covers launch boundaries","Classification / region consistency"];
+const FIX = "Add: pre-launch stability assessment · failure modes when the upstream version changes · the latency window after a PK ends.";
+
+/* ═══════════ leaf components ═══════════ */
+const Pill = ({t="mute",children}) => h`<span class="pill ${t}"><i/>${children}</span>`;
+const Btn = ({pri,disabled,onClick,children}) => h`<button class="btn ${pri?"pri":""}" disabled=${disabled} onClick=${onClick}>${children}</button>`;
+const Gate = ({label,state}) => h`<div class="gate ${state==="n"?"fail":""}"><i class=${state}>${state==="y"?"✓":state==="n"?"✕":"·"}</i><span>${label}</span></div>`;
+const Meter = ({n,total=19,label}) => h`<div>
+  <div class="meter"><i class=${n>=total?"full":""} style=${{width:(n/total*100)+"%"}}/></div>
+  <div class="meter-lbl"><span style=${n>=total?{color:"var(--success)",fontWeight:600}:null}>Required ${n} / ${total}</span><span>${label}</span></div></div>`;
+const KV = ({k,v,c}) => h`<div class="kv"><span>${k}</span><b style=${c?{color:`var(--${c})`}:null}>${v}</b></div>`;
+
+const FeatureCard = ({c,onOpen}) => {
+  const [tone,label]=FIT[c.fit];
+  const dead=c.fit==="low";
+  return h`<div class="fcard ${dead?"dim":""}">
+    <div class="fcard-top"><div><b>${c.name}</b><code>${c.code}</code></div><${Pill} t=${tone}>${label}<//></div>
+    <p>${c.why}</p>
+    ${c.score!==undefined && h`<p class="mono" style=${{fontSize:"11px"}}>score ${c.score} · display threshold ${c.thr}</p>`}
+    <div class="fmeta">${c.meta.map(m=>h`<em key=${m}>${m}</em>`)}</div>
+    <p style=${{fontSize:"11.5px",color:"var(--text-4)",marginTop:"7px"}}>Risk · ${c.risk}</p>
+    <span class="fcta ${dead?"dead":""}" onClick=${dead?null:onOpen}>
+      ${dead?"View detail — unavailable at this confidence":"View detail to confirm →"}</span>
+  </div>`;
+};
+
+/* ═══════════ Ask AI — one reducer-ish state machine ═══════════ */
+function AskAI({open,onClose,perm,setPerm,goDetail,onNoResultCreate,log,setLog,clarified,setClarified}){
+  const [busy,setBusy]=useState(false);
+  const [input,setInput]=useState("");
+  const bodyRef=useRef(null);
+  useEffect(()=>{ const b=bodyRef.current; if(b) b.scrollTop=b.scrollHeight; },[log,busy]);
+
+  const push=e=>setLog(l=>[...l,e]);
+  const classify=q=>{
+    const s=q.toLowerCase();
+    if(/values|enum|取值/.test(s)||s.includes("room status")) return "ENUM";
+    if(s.includes("slice_is_in_battle")||/stab|稳定/.test(s)) return "DIRECT";
+    if(/country|开播国/.test(s)) return clarified?"CARDS":"NEED_CLARIFICATION";
+    if(/zeta|replace|替代/.test(s)) return "LOW_CONFIDENCE";
+    return "NO_RESULT";
+  };
+  const ask=useCallback(q=>{
+    push({role:"me",text:q}); setBusy(true);
+    setTimeout(()=>{ setBusy(false); push({role:"ai",state:classify(q)}); },900);
+  },[clarified]);
+
+  if(!open) return null;
+  return h`<div class="qa">
+    <div class="qa-hd">
+      <div style=${{flex:1}}>
+        <b>Feature Discovery Agent</b>
+        <p>RAG-powered · 6,683 features INDEXED · answers only from indexed knowledge</p>
+      </div>
+      <span class="qa-perm ${perm?"on":"off"}" onClick=${()=>setPerm(!perm)}
+        title="Demo switch: whether this user has RAG edit permission">RAG edit ${perm?"✓":"✕"}</span>
+      <button class="qa-x" onClick=${onClose}>×</button>
+    </div>
+    <div class="qa-mode"><div class="on">Feature Discovery</div><div>Platform Oncall <${Pill} t="mute">P2<//></div></div>
+    <div class="qa-bd" ref=${bodyRef}>
+      ${log.length===0 && h`<div>
+        <div class="qa-try">Try asking</div>
+        ${[["I need a feature about the live room broadcast country","clarification"],
+           ["How stable is slice_is_in_battle?","direct code lookup"],
+           ["Is there a replacement for zeta_zero_shot_features?","low confidence"],
+           ["Any features about pet preferences?","no result"]]
+          .map(([q,tag])=>h`<div class="qa-sug" key=${q} onClick=${()=>ask(q)}>${q}<em>demo: ${tag}</em></div>`)}
+      </div>`}
+      ${log.map((e,i)=>{
+        if(e.role==="me") return h`<div class="bub me" key=${i}>${e.text}</div>`;
+        const S=e.state;
+        if(S==="NEED_CLARIFICATION") return h`<div class="bub ai warn wide" key=${i}>
+          “Broadcast country” maps to <b>several easily-confused interpretations</b>: room home country (stable) / current broadcast country (drifts) / audience region (a different feature set). Confirming once:
+          <div class="chips">
+            ${[["Room home (root) country","root"],["Current broadcast country","broadcast"]].map(([t,k])=>
+              h`<span class="chip" key=${k} onClick=${()=>{setClarified(true);push({role:"ai",state:"CARDS",only:k});}}>${t}</span>`)}
+            <span class="chip skip" onClick=${()=>{setClarified(true);push({role:"ai",state:"CARDS"});}}>Skip · show results</span>
+          </div></div>`;
+        if(S==="CARDS") return h`<div key=${i}>
+          <div class="bub ai wide">Root country is where the room belongs; broadcast country is where this session streams from. They diverge on travel and relayed rooms.</div>
+          ${(e.only?[e.only]:["root","broadcast"]).map(k=>h`<${FeatureCard} key=${k} c=${CARDS[k]} onOpen=${()=>goDetail(k)}/>`)}
+        </div>`;
+        if(S==="DIRECT") return h`<div key=${i}>
+          <div class="bub ai wide">Feature code hit — returning directly, no interpretation for code lookups.</div>
+          <${FeatureCard} c=${{...CARDS.root,name:"Slice · In Battle",code:"slice_is_in_battle",why:"Direct code match. SLA A, second-level, INDEXED.",meta:["SLA A","Second level","Video slice","INDEXED"]}} onOpen=${()=>goDetail("root")}/>
+        </div>`;
+        if(S==="ENUM") return h`<div class="bub ai wide" key=${i}>
+          <b>treco_room_status</b> is a categorization feature with <b>4 enum values</b>:
+          <div class="mono" style=${{fontSize:"11.5px",marginTop:"8px",lineHeight:1.9}}>
+            RoomStatusEnum_Prepare → preparing<br/>RoomStatusEnum_Living → live<br/>RoomStatusEnum_Pause → paused (PK / co-host)<br/>RoomStatusEnum_Finish → ended</div>
+          <p style=${{fontSize:"11.5px",color:"var(--text-4)",marginTop:"8px"}}>Only categorization features carry output samples; model features have fixed score ranges.</p></div>`;
+        if(S==="LOW_CONFIDENCE") return h`<div key=${i}>
+          <div class="bub ai warn wide">Overall recall confidence is <b>below the display threshold</b> — the result below is for reference only, and cannot be opened.</div>
+          <${FeatureCard} c=${CARDS.zeta}/>
+        </div>`;
+        return h`<div class="bub ai warn wide" key=${i}>
+          No usable feature retrieved (<b>NO_RESULT</b>). I answer only from INDEXED Feature Knowledge and <b>never invent</b> feature logic.
+          <div class="chips">
+            <span class="chip" onClick=${()=>setLog(l=>l.slice(0,-1))}>Rephrase</span>
+            <span class="chip" onClick=${onNoResultCreate}>Create in F3 →</span>
+          </div></div>`;
+      })}
+      ${busy && h`<div class="bub ai typing"><i/><i/><i/></div>`}
+    </div>
+    <div class="qa-guard">Guardrail · answers only from INDEXED Feature Knowledge, never invents feature logic · final confirmation in the F2 detail page</div>
+    <form class="qa-in" onSubmit=${e=>{e.preventDefault(); if(input.trim()){ask(input.trim());setInput("");}}}>
+      <input value=${input} placeholder="Ask about features…" onChange=${e=>setInput(e.target.value)}/>
+      <${Btn} pri>Send<//>
+    </form>
+  </div>`;
+}
+
+/* ═══════════ F3 · Agent Entry — the state machine React actually helps with ═══════════ */
+const AE_INIT={turn:0, filled:0, msgs:[{role:"ai",t:AE_TURNS[0].q}], version:1, confirmed:false, evalState:"idle", round:0, submitted:false};
+function AgentEntry({st,set}){
+  const total=19, done=st.filled>=total;
+  const send=()=>{
+    const t=AE_TURNS[st.turn]; if(!t) return;
+    set(s=>({...s, msgs:[...s.msgs,{role:"me",t:t.a},...(AE_TURNS[s.turn+1]?[{role:"ai",t:AE_TURNS[s.turn+1].q}]:[])],
+      turn:s.turn+1, filled:Math.min(total,s.filled+t.fills.length),
+      // any edit after confirmation invalidates approval
+      ...(s.confirmed?{confirmed:false, evalState:"idle", version:s.version+1}:{}) }));
+  };
+  const results = st.evalState==="failed" ? CHECKS.map((c,i)=>i===4?"n":"y")
+                : st.evalState==="passed" ? CHECKS.map(()=>"y") : CHECKS.map(()=>"w");
+  return h`<div class="ae">
+    <div>
+      <div class="ae-chat">
+        ${st.msgs.map((m,i)=>h`<div class="bub ${m.role==="me"?"me":"ai"}" key=${i}>${m.t}</div>`)}
+      </div>
+      <div class="btns">
+        <${Btn} pri onClick=${send} disabled=${st.turn>=AE_TURNS.length||st.submitted}>
+          ${st.turn>=AE_TURNS.length?"All questions answered":"Answer the agent →"}<//>
+        ${st.confirmed===false && st.version>1 && h`<${Pill} t="warn">Proposal v${st.version}<//>`}
+      </div>
+    </div>
+    <div>
+      <${Meter} n=${st.filled} label=${done?"complete":"collecting"}/>
+      <div style=${{marginTop:"14px"}}>
+        <div class="gate"><i class=${done?"y":"w"}>${done?"✓":"·"}</i><span>Required ${st.filled}/19</span></div>
+        <div class="gate"><i class=${st.confirmed?"y":"w"}>${st.confirmed?"✓":"·"}</i><span>Confirmed &amp; locked${st.version>1?` (v${st.version})`:""}</span></div>
+        <div class="gate"><i class=${st.evalState==="passed"?"y":st.evalState==="failed"?"n":"w"}>
+          ${st.evalState==="passed"?"✓":st.evalState==="failed"?"✕":"·"}</i>
+          <span>Skills Evaluation ${st.evalState==="passed"?"6/6":st.evalState==="failed"?"5/6":"— not run"}</span></div>
+      </div>
+      ${st.evalState!=="idle" && h`<div style=${{marginTop:"14px",borderTop:"1px solid var(--border)",paddingTop:"10px"}}>
+        ${CHECKS.map((c,i)=>h`<${Gate} key=${c} label=${c} state=${st.evalState==="running"?"w":results[i]}/>`)}
+      </div>`}
+      ${st.evalState==="failed" && h`<div class="banner bad">${FIX}</div>`}
+      ${st.submitted && h`<div class="banner ok"><b>Submitted.</b> Written to Meta + Knowledge Library, conversation closed, entered the embedding queue. It becomes <span class="mono">INDEXED</span> — and retrievable — only after embedding succeeds.</div>`}
+      <div class="btns">
+        <${Btn} pri disabled=${!done||st.confirmed||st.submitted}
+          onClick=${()=>set(s=>({...s,confirmed:true,evalState:"idle"}))}>Confirm Proposal<//>
+        <${Btn} disabled=${!st.confirmed||st.evalState==="running"||st.submitted}
+          onClick=${()=>{ set(s=>({...s,evalState:"running"}));
+            setTimeout(()=>set(s=>({...s,evalState:s.round===0?"failed":"passed",round:s.round+1})),1100); }}>
+          ${st.evalState==="running"?"Evaluating…":"Run Skills Evaluation"}<//>
+        <${Btn} disabled=${st.evalState!=="passed"||st.submitted}
+          onClick=${()=>set(s=>({...s,submitted:true}))}>Submit<//>
+      </div>
+      <p style=${{fontSize:"11.5px",color:"var(--text-4)",marginTop:"10px"}}>
+        Any answer given after Confirm creates a new version and invalidates both the confirm and the evaluation.</p>
+    </div>
+  </div>`;
+}
+
+/* ═══════════ tour ═══════════ */
+const STEPS=[
+{fl:"Setup", t:"Where a strategy author starts", go:a=>a.reset(),
+ notes:[{h:"What this page is",p:"The Feature List upgraded into a <b>Knowledge Library</b>: 7,024 features, 6,683 indexed, 341 failed. The KPI row shows what exists <em>and</em> what is actually retrievable."},
+        {h:"Why that matters",p:"The old list showed assets, never embedding state — so nobody could tell whether a feature was reachable by the agent. A 95.1% that hides 341 failures is an average, not a status."}]},
+{fl:"Flow A · Discovery", t:"Ask AI is open to everyone", go:a=>{a.reset();a.setQa(true);},
+ notes:[{h:"Design decision",p:"Discovery is a <b>read</b> capability with no permission gate. It sits beside the existing Oncall widget rather than replacing it."},
+        {h:"What it replaces",p:"Finding the right feature used to mean asking whoever owns the platform and waiting — throughput became a function of someone else's calendar."}]},
+{fl:"Flow A · Discovery", t:"An ambiguous question gets one question back",
+ go:a=>{a.reset();a.setQa(true);a.ask("I need a feature about the live room broadcast country");},
+ notes:[{h:"What just happened",p:"“Broadcast country” maps to three definitions that are easy to confuse. Instead of ranking them, the agent asks once."},
+        {cls:"guard",h:"Guardrail · asking is not free",p:"<b>Exactly one</b> clarification round per conversation, always skippable. Later ambiguous questions get ranked candidates — never another follow-up."}]},
+{fl:"Flow A · Discovery", t:"Cards carry a fit label, never a recommendation",
+ go:a=>{a.reset();a.setQa(true);a.setClarified(true);a.setLog([{role:"me",text:"I need a feature about the live room broadcast country"},{role:"ai",state:"CARDS"}]);},
+ notes:[{h:"Design decision",p:"The business definition is explained <em>before</em> the ranking. A direct code lookup skips it; a semantic question does not."},
+        {cls:"guard",h:"Guardrail · the system does not decide",p:"No card is ever labelled <b>Recommended</b>. Only <code>Likely suitable</code>, <code>Likely not suitable</code>, <code>Need more context</code> — each ends at <em>View detail to confirm</em>."}]},
+{fl:"Flow A · Discovery", t:"When it is not sure, it shows the number",
+ go:a=>{a.reset();a.setQa(true);a.setLog([{role:"me",text:"Is there a replacement for zeta_zero_shot_features?"},{role:"ai",state:"LOW_CONFIDENCE"}]);},
+ notes:[{h:"State",p:"<code>LOW_CONFIDENCE</code> — the top candidate scored below the display threshold. The card is muted and discloses the score against the threshold."},
+        {cls:"guard",h:"Guardrail · weak match, no path forward",p:"A low-confidence card <b>cannot open the detail page</b>. The one action that would turn a weak match into a decision is removed."},
+        {h:"Why show the score",p:"Hiding it reads as failure. Showing it makes the answer <em>calibrated</em> — the user learns what retrieval can and cannot do."}]},
+{fl:"Flow A · Discovery", t:"When it has nothing, it says nothing",
+ go:a=>{a.reset();a.setQa(true);a.setLog([{role:"me",text:"Any features about pet preferences?"},{role:"ai",state:"NO_RESULT"}]);},
+ notes:[{h:"State",p:"<code>NO_RESULT</code> — nothing usable in indexed knowledge. Two ways forward: rephrase, or create the missing feature."},
+        {cls:"guard",h:"Guardrail · no fabrication",p:"The agent states plainly it <b>will not invent feature logic</b>. A retrieval layer that always returns something confident is worse than one that admits a miss."}]},
+{fl:"Flow A → B", t:"Creating from an empty result is permission-gated",
+ go:a=>{a.reset();a.setQa(true);a.setPerm(false);a.setLog([{role:"me",text:"Any features about pet preferences?"},{role:"ai",state:"NO_RESULT"}]);a.setModal(true);},
+ notes:[{h:"What just happened",p:"The permission switch was flipped to <em>no RAG edit</em>, then <b>Create in F3</b> was clicked. The write path stops here."},
+        {h:"Design decision",p:"<code>PERMISSION_REQUIRED</code> offers <em>Apply for permission</em> — it never drops the user into F3 write mode. Read is open to all; write is gated."}]},
+{fl:"Flow A · Discovery", t:"Final confirmation happens on the detail page",
+ go:a=>{a.reset();a.setPage("f2");},
+ notes:[{h:"Three columns, three questions",p:"What is it · what does retrieval actually see · is it reachable right now."},
+        {h:"Verifiable, not assertive",p:"The Recall Test runs a real question and shows the top hit, score, and threshold. It reads only <code>INDEXED</code> vectors and cannot change retrieval — a window, not a control."},
+        {h:"Boundary",p:"This page views, confirms, regenerates, re-indexes. It does <b>not</b> host creation — so a page people trust to read stays read-shaped."}]},
+{fl:"Flow B · Contribution", t:"An interview, not a nineteen-field form",
+ go:a=>{a.reset();a.setPage("f3");},
+ notes:[{h:"Design decision",p:"The proposal assembles live on the right as the conversation runs on the left. Completion shows as <code>Required N/19</code>."},
+        {h:"The fields are the knowledge",p:"Usage example and risk / limitation are required, not optional — exactly the two people skip when a form lets them."}]},
+{fl:"Flow B · Contribution", t:"19 of 19 unlocks a lock, not a submit",
+ go:a=>{a.reset();a.setPage("f3");a.setAe(s=>({...AE_INIT,turn:AE_TURNS.length,filled:19,
+   msgs:AE_TURNS.flatMap(t=>[{role:"ai",t:t.q},{role:"me",t:t.a}])}));},
+ notes:[{h:"Design decision",p:"Reaching 19/19 enables <b>Confirm</b> — not Submit. Confirm freezes a version so the evaluation has a fixed thing to evaluate."},
+        {cls:"guard",h:"Submission gate · all three",p:"<code>Required 19/19</code> → <code>Confirmed &amp; locked</code> → <code>Evaluation 6/6</code>. Both paths, no exceptions."}]},
+{fl:"Flow B · Contribution", t:"Six checks, and the one that fails is the useful one",
+ go:a=>{a.reset();a.setPage("f3");a.setAe(s=>({...AE_INIT,turn:AE_TURNS.length,filled:19,confirmed:true,evalState:"failed",round:1,
+   msgs:AE_TURNS.flatMap(t=>[{role:"ai",t:t.q},{role:"me",t:t.a}])}));},
+ notes:[{h:"Design decision",p:"Failure keeps the window open and returns <b>itemized fixes</b>, not a score."},
+        {h:"Why this check fails",p:"Risk / limitation is where people write “none.” The check asks for the boundaries that make a feature <em>unsafe</em>. Nobody volunteers that."},
+        {h:"Order matters",p:"Evaluation runs <b>after Confirm</b>, not after Submit — a check that runs after submission cannot block anything."}]},
+{fl:"Flow B · Contribution", t:"Editing anything throws the approval away",
+ go:a=>{a.reset();a.setPage("f3");a.setAe(s=>({...AE_INIT,turn:AE_TURNS.length-1,filled:17,confirmed:false,version:2,evalState:"idle",round:1,
+   msgs:[...AE_TURNS.slice(0,3).flatMap(t=>[{role:"ai",t:t.q},{role:"me",t:t.a}]),{role:"ai",t:AE_TURNS[3].q}]}));},
+ notes:[{cls:"guard",h:"Guardrail · approval is not transferable",p:"Any answer given after Confirm creates a <b>new proposal version</b> and invalidates the previous Confirm and Evaluation. The backend must reject a Submit unless the <em>latest</em> version passed."},
+        {h:"What it prevents",p:"Pass evaluation, quietly change the data source, submit. Without version-scoped approval the reviewed and shipped artifacts stop being the same thing."},
+        {h:"Try it",p:"Click <b>Answer the agent</b> after confirming — the confirm and evaluation gates reset themselves, live."}]},
+{fl:"Close", t:"Six places this system chooses to say less", go:a=>{a.reset();a.setPage("f1");},
+ notes:[{h:"The pattern",p:"<b>One clarification</b>, never two · <b>never “Recommended”</b> · <b>no path forward from a weak match</b> · <b>no fabrication</b> on empty · <b>approval is version-scoped</b> · <b>submitted ≠ retrievable</b>."},
+        {cls:"guard",h:"The metric that would catch this being wrong",p:"<code>LOW_CONFIDENCE</code> and <code>NO_RESULT</code> rates. If they fall to zero, retrieval has stopped admitting misses and started guessing."}]}
+];
+
+/* ═══════════ app ═══════════ */
+function App(){
+  const [page,setPage]=useState("f1");
+  const [qa,setQa]=useState(false);
+  const [perm,setPerm]=useState(true);
+  const [log,setLog]=useState([]);
+  const [clarified,setClarified]=useState(false);
+  const [modal,setModal]=useState(false);
+  const [ae,setAe]=useState(AE_INIT);
+  const [step,setStep]=useState(0);
+  const [minim,setMinim]=useState(false);
+  const askRef=useRef(null);
+
+  const api=useMemo(()=>({
+    setPage,setQa,setPerm,setLog,setClarified,setModal,setAe,
+    ask:q=>{ setLog([{role:"me",text:q}]); setTimeout(()=>setLog(l=>[...l,{role:"ai",state:/country/i.test(q)?"NEED_CLARIFICATION":"NO_RESULT"}]),700); },
+    reset:()=>{ setPage("f1");setQa(false);setPerm(true);setLog([]);setClarified(false);setModal(false);setAe(AE_INIT); }
+  }),[]);
+  const goStep=useCallback(n=>{ const i=Math.max(0,Math.min(STEPS.length-1,n)); setStep(i); STEPS[i].go(api); window.scrollTo({top:0,behavior:"smooth"}); },[api]);
+  useEffect(()=>{ goStep(0); },[]);
+  useEffect(()=>{ const k=e=>{ if(e.target.matches("input,textarea"))return;
+    if(e.key==="ArrowRight"){e.preventDefault();goStep(step+1);} if(e.key==="ArrowLeft"){e.preventDefault();goStep(step-1);} };
+    addEventListener("keydown",k); return()=>removeEventListener("keydown",k); },[step,goStep]);
+
+  const s=STEPS[step];
+  const TABS=[["f1","F1 · Library Management"],["f2","F2 · Feature Detail"],["f3","F3 · New Feature"],["f4","F4 · Q&A Widget (always on)"]];
+
+  return h`<div>
+    <div class="appbar">
+      <span class="logo">Feature Platform</span>
+      <span class="crumb">/ Feature Agent Apps / Knowledge Library</span>
+      <div class="tabs">${TABS.map(([k,t])=>h`<div key=${k} class="tab ${page===k?"on":""}" onClick=${()=>{setPage(k); if(k==="f4")setQa(true);}}>${t}</div>`)}</div>
+      <span class="sp"/>
+      <a href="../demo/" style=${{textDecoration:"none"}}><span class="chipver">React 19 · esm.sh · no build — see vanilla ↗</span></a>
+    </div>
+
+    <main>
+      ${page==="f1" && h`<div>
+        <div class="page-head-row">
+          <div class="page-header"><h1>Feature Knowledge Library</h1>
+            <p>Upgrade of the existing Feature List: synced from FP Meta + description validation + embedding status visibility</p></div>
+          <div class="hdr-btns"><${Btn}>Sync from Meta<//><${Btn}>Batch Re-index<//><${Btn} pri>+ New Feature<//></div>
+        </div>
+        <div class="kpirow">
+          <div class="kpicard"><span>Total Features</span><b>7,024</b></div>
+          <div class="kpicard"><span><i style=${{background:"var(--success)"}}/>Indexed</span><b>6,683<small>/ 95.1%</small></b></div>
+          <div class="kpicard"><span><i style=${{background:"var(--danger)"}}/>Failed</span><b>341</b></div>
+        </div>
+        <div class="card" style=${{marginBottom:"14px"}}><div class="card-bd"><div class="filters">
+          ${[["Feature name / code","Enter to search"],["Create time (UTC+8)","Start date ~ End date"],["Feature type","All"],["Owner entity","All"],["Creator","Select creator"],["Data Source Extra","All"]]
+            .map(([l,p])=>h`<div class="field" key=${l}><label>${l}</label><div class="inp">${p}</div></div>`)}
+          <div class="field new"><label>RAG Status<span class="tag-new">new</span></label><div class="inp">All</div></div>
+        </div></div></div>
+        <div class="card"><div class="card-hd"><b>7,024 features</b><span class="hint">3 selected</span></div>
+          <div style=${{overflowX:"auto"}}><table>
+            <thead><tr><th>Feature code</th><th>CN / EN name</th><th>Stability</th><th>Real-time</th><th>Entity</th><th>RAG status</th><th>Last synced</th><th>Operation</th></tr></thead>
+            <tbody>${FEATURES.map(f=>h`<tr key=${f.code}>
+              <td><span class="code">${f.code}</span></td>
+              <td><div>${f.cn}</div><div class="sub">${f.en}</div></td>
+              <td><span class="lvl ${f.lvl}">${f.lvl}</span></td><td>${f.rt}</td><td>${f.ent}</td>
+              <td>${f.rag==="INDEXED"?h`<${Pill} t="ok">Indexed<//>`:h`<div><${Pill} t="bad">Failed<//><div class="sub" style=${{marginTop:"4px"}}>${f.err}</div></div>`}</td>
+              <td class="mono" style=${{fontSize:"11.5px"}}>${f.sync}</td>
+              <td>${f.rag==="INDEXED"
+                ? h`<span class="link" onClick=${()=>setPage("f2")}>View RAG</span>`
+                : h`<span class="link">Re-run</span>`}</td>
+            </tr>`)}</tbody></table></div></div>
+      </div>`}
+
+      ${page==="f2" && h`<div>
+        <div class="page-header"><h1>Room · Root Country</h1>
+          <p class="mono" style=${{fontSize:"12.5px"}}>room_country_root</p></div>
+        <div class="card" style=${{marginTop:"14px"}}><div class="card-hd"><b>F2 · Feature Detail</b><${Pill} t="ok">INDEXED<//><span class="hint">read-only</span></div>
+          <div class="card-bd"><div class="cols3">
+            <div class="col"><h5>Meta · read-only</h5>
+              ${[["type","categorization"],["owner entity","room-attr"],["stability","A"],["real-time","hour"],["validity","permanent"],["config mode","standard"]].map(([k,v])=>h`<${KV} key=${k} k=${k} v=${v}/>`)}</div>
+            <div class="col"><h5>Structured text · what retrieval sees</h5>
+              <div class="stext"><u>FEATURE</u> Room · Root Country
+<u>ENTITY</u> live room
+<u>USAGE SCOPE</u> attribution
+<u>DATA SOURCE</u> Room profile service
+<u>CODE LOGIC</u> root_country_of(room)
+<u>OUTPUT SAMPLES</u>
+  001 → Game LIVE room
+  002 → Chat room …</div></div>
+            <div class="col"><h5>RAG status</h5>
+              ${[["status","INDEXED","success"],["vector id","vec_8842f1"],["model","bge-m3"],["chunks","3"],["last synced","07-08 14:22"],["coverage","100%"]].map(([k,v,c])=>h`<${KV} key=${k} k=${k} v=${v} c=${c}/>`)}
+              <div style=${{marginTop:"12px",paddingTop:"10px",borderTop:"1px solid var(--border)"}}>
+                <h5>Recall test · read-only</h5>
+                <${KV} k="query" v="room country"/><${KV} k="top-1 score" v="0.81" c="success"/><${KV} k="threshold" v="0.62"/>
+              </div></div>
+          </div></div></div>
+      </div>`}
+
+      ${page==="f3" && h`<div>
+        <div class="page-header"><h1>New Feature · Agent Entry</h1>
+          <p>Describe the strategy problem first — the agent asks for the rest.</p></div>
+        <div class="card" style=${{marginTop:"14px"}}>
+          <div class="card-hd"><b>F3 · New Feature</b>
+            ${ae.submitted?h`<${Pill} t="ok">Submitted<//>`:ae.evalState==="failed"?h`<${Pill} t="bad">EVALUATION_FAILED<//>`
+              :ae.confirmed?h`<${Pill} t="pri">Confirmed &amp; locked<//>`:h`<${Pill} t="mute">collecting<//>`}
+            <span class="hint">v${ae.version}</span></div>
+          <div class="card-bd"><${AgentEntry} st=${ae} set=${setAe}/></div></div>
+      </div>`}
+
+      ${page==="f4" && h`<div class="page-header"><h1>Q&amp;A Widget</h1>
+        <p>The Ask AI panel is always on — open it from the button in the lower right.</p></div>`}
+    </main>
+
+    ${!qa && h`<button class="fab" onClick=${()=>setQa(true)}><i/>Ask AI · Features</button>`}
+    <${AskAI} open=${qa} onClose=${()=>setQa(false)} perm=${perm} setPerm=${setPerm}
+      log=${log} setLog=${setLog} clarified=${clarified} setClarified=${setClarified}
+      goDetail=${()=>{setQa(false);setPage("f2");}}
+      onNoResultCreate=${()=>{ perm ? (setQa(false),setPage("f3")) : setModal(true); }}/>
+
+    ${modal && h`<div class="ovl" onClick=${()=>setModal(false)}>
+      <div class="modal" onClick=${e=>e.stopPropagation()}>
+        <div class="modal-hd"><${Pill} t="warn">PERMISSION_REQUIRED<//><b style=${{display:"block",marginTop:"8px"}}>RAG edit permission required</b></div>
+        <div class="modal-bd">You have discovery access but not RAG edit permission, so feature creation is blocked. Discovery stays open — only the write path is gated.</div>
+        <div class="modal-ft"><${Btn} onClick=${()=>setModal(false)}>Cancel<//><${Btn} pri onClick=${()=>setModal(false)}>Apply for permission<//></div>
+      </div></div>`}
+
+    ${minim
+      ? h`<button class="tour-min" onClick=${()=>setMinim(false)}>▸ Guided workflow</button>`
+      : h`<div class="tour">
+      <div class="tour-hd"><span class="dot"/><b>Guided workflow</b><span class="sp"/>
+        <span class="cnt">${step+1}/${STEPS.length}</span>
+        <button onClick=${()=>setMinim(true)}>–</button></div>
+      <div class="tour-prog"><i style=${{width:((step+1)/STEPS.length*100)+"%"}}/></div>
+      <div class="tour-bd">
+        <div class="tour-fl">${s.fl}</div>
+        <div class="tour-t">${s.t}</div>
+        ${s.notes.map((n,i)=>h`<div class="note ${n.cls||""}" key=${i}><h5>${n.h}</h5><${Raw} t=${n.p}/></div>`)}
+      </div>
+      <div class="tour-ft">
+        <${Btn} disabled=${step===0} onClick=${()=>goStep(step-1)}>← Back<//>
+        <span class="rs" onClick=${()=>goStep(0)}>Restart</span>
+        <span class="next"><${Btn} pri disabled=${step===STEPS.length-1} onClick=${()=>goStep(step+1)}>
+          ${step===STEPS.length-1?"Done":"Next step →"}<//></span>
+      </div></div>`}
+  </div>`;
+}
+createRoot(document.getElementById("root")).render(h`<${App}/>`);
+</script>
+</body>
+</html>
