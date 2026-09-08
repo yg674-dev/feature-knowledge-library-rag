@@ -1,589 +1,2348 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="zh-CN">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Feature Knowledge Library · Guided Walkthrough</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<title>Feature Knowledge Library · 特征知识库 v0.3</title>
 <style>
 :root{
-  --ink:#0B0C0E; --panel:#131519; --panel-2:#171A1F; --line:#23272F; --line-2:#2E333C;
-  --fg:#E9E5DD; --fg-dim:#9AA0A9; --fg-faint:#6B717A;
-  --amber:#E5A544; --amber-dim:#7A5A22; --teal:#4FB3A6; --teal-dim:#245049;
-  --red:#D4674F; --red-dim:#5C2B20; --violet:#9B8AC4;
-  --serif:"Instrument Serif",Georgia,"Times New Roman",serif;
-  --sans:"Instrument Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --primary:#3B82F6;
+  --primary-hover:#2563EB;
+  --primary-light:#EFF6FF;
+  --danger:#EF4444;
+  --warn:#F59E0B;
+  --success:#10B981;
+  --success-light:#D1FAE5;
+  --required:#F97316;
+  --text-1:#111827;
+  --text-2:#374151;
+  --text-3:#6B7280;
+  --text-4:#9CA3AF;
+  --border:#E5E7EB;
+  --border-strong:#D1D5DB;
+  --bg:#FFFFFF;
+  --bg-soft:#F9FAFB;
+  --bg-hover:#F3F4F6;
+  --radius:6px;
+  --radius-lg:10px;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:0 4px 12px rgba(0,0,0,.08);
+  --shadow-lg:0 12px 32px rgba(0,0,0,.12);
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
 body{
-  background:var(--ink); color:var(--fg); font-family:var(--sans);
-  font-size:15px; line-height:1.6; -webkit-font-smoothing:antialiased;
-  background-image:radial-gradient(ellipse 80% 50% at 50% -10%, rgba(229,165,68,.07), transparent 60%);
-  background-attachment:fixed;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  color:var(--text-1);
+  background:var(--bg-soft);
+  font-size:14px;
+  line-height:1.5;
 }
-body::after{
-  content:""; position:fixed; inset:0; pointer-events:none; z-index:99; opacity:.035;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+
+/* ---------- Top nav ---------- */
+.topbar{
+  background:#fff;
+  border-bottom:1px solid var(--border);
+  padding:0 24px;
+  height:56px;
+  display:flex;
+  align-items:center;
+  gap:32px;
+  position:sticky;top:0;z-index:100;
 }
-.mono{font-family:var(--mono)}
-
-/* ---------- shell ---------- */
-.shell{display:grid;grid-template-columns:264px 1fr;min-height:100vh}
-@media(max-width:1000px){.shell{grid-template-columns:1fr}}
-
-/* ---------- rail ---------- */
-.rail{
-  border-right:1px solid var(--line); padding:32px 0 40px;
-  position:sticky; top:0; height:100vh; overflow-y:auto;
-  background:linear-gradient(180deg,rgba(19,21,25,.6),transparent 30%);
+.brand{font-weight:700;font-size:16px;color:var(--text-1)}
+.brand-sub{color:var(--text-3);font-weight:400;font-size:13px;margin-left:6px}
+.tabs{display:flex;gap:4px;flex:1}
+.tab{
+  padding:8px 14px;border-radius:var(--radius);cursor:pointer;
+  color:var(--text-2);font-weight:500;
+  transition:all .15s;
 }
-@media(max-width:1000px){.rail{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line)}}
-.rail-brand{padding:0 26px 26px;border-bottom:1px solid var(--line);margin-bottom:20px}
-.rail-brand h1{font-family:var(--serif);font-size:25px;line-height:1.15;font-weight:400;letter-spacing:-.01em}
-.rail-brand p{font-size:11.5px;color:var(--fg-faint);margin-top:7px;letter-spacing:.09em;text-transform:uppercase;font-weight:500}
-.flow-head{
-  padding:0 26px;margin:22px 0 9px;font-size:10.5px;letter-spacing:.14em;
-  text-transform:uppercase;color:var(--fg-faint);font-weight:600;display:flex;gap:8px;align-items:center
+.tab:hover{background:var(--bg-hover)}
+.tab.active{background:var(--primary-light);color:var(--primary)}
+.env-badge{
+  padding:4px 10px;background:#FEF3C7;color:#92400E;
+  border-radius:var(--radius);font-size:12px;font-weight:600;
 }
-.flow-head i{width:14px;height:1px;background:var(--line-2);flex:1;font-style:normal}
-.rail a{
-  display:flex;gap:11px;align-items:baseline;padding:7px 26px;color:var(--fg-dim);
-  text-decoration:none;font-size:13.5px;border-left:2px solid transparent;transition:.16s
+
+/* ---------- Page shell ---------- */
+.page{display:none;padding:24px 32px;max-width:1440px;margin:0 auto}
+.page.active{display:block}
+.page-header{margin-bottom:20px;display:flex;align-items:flex-end;justify-content:space-between;gap:16px}
+.page-title{font-size:22px;font-weight:700;color:var(--text-1)}
+.page-sub{color:var(--text-3);margin-top:4px;font-size:13px}
+.crumb{color:var(--text-3);font-size:12px;margin-bottom:6px}
+.crumb .sep{margin:0 6px;color:var(--text-4)}
+
+/* ---------- Buttons ---------- */
+.btn{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:8px 14px;border-radius:var(--radius);
+  border:1px solid transparent;cursor:pointer;
+  font-size:13px;font-weight:600;
+  transition:all .15s;
+  background:#fff;color:var(--text-2);border-color:var(--border);
 }
-.rail a b{font-family:var(--mono);font-size:10.5px;color:var(--fg-faint);font-weight:400;min-width:20px}
-.rail a:hover{color:var(--fg);background:rgba(255,255,255,.022)}
-.rail a.on{color:var(--fg);border-left-color:var(--amber);background:rgba(229,165,68,.05)}
-.rail a.on b{color:var(--amber)}
+.btn:hover{background:var(--bg-hover)}
+.btn-primary{background:var(--primary);color:#fff;border-color:var(--primary)}
+.btn-primary:hover{background:var(--primary-hover);border-color:var(--primary-hover)}
+.btn-ghost{background:transparent;border-color:transparent;color:var(--primary);padding:6px 8px}
+.btn-ghost:hover{background:var(--primary-light)}
+.btn-danger-ghost{color:var(--danger);background:transparent;border-color:transparent}
+.btn-danger-ghost:hover{background:#FEE2E2}
+.btn-sm{padding:5px 10px;font-size:12px}
+.icon{display:inline-block;width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 
-/* ---------- main ---------- */
-main{padding:44px 52px 96px;max-width:1160px}
-@media(max-width:760px){main{padding:32px 20px 72px}}
-
-.masthead{border-bottom:1px solid var(--line);padding-bottom:34px;margin-bottom:38px}
-.eyebrow{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--amber);font-weight:600}
-.masthead h2{font-family:var(--serif);font-size:clamp(34px,5.2vw,54px);line-height:1.06;font-weight:400;margin:14px 0 0;letter-spacing:-.02em}
-.masthead h2 em{font-style:italic;color:var(--amber)}
-.lede{font-size:17px;color:var(--fg-dim);max-width:60ch;margin-top:16px;line-height:1.62}
-.stats{display:flex;flex-wrap:wrap;gap:30px;margin-top:26px}
-.stat b{display:block;font-family:var(--mono);font-size:22px;color:var(--fg);font-weight:500;letter-spacing:-.02em}
-.stat span{font-size:11px;color:var(--fg-faint);letter-spacing:.06em;text-transform:uppercase}
-
-/* ---------- step ---------- */
-.step{display:none}
-.step.on{display:block;animation:rise .4s cubic-bezier(.2,.7,.3,1)}
-@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-.step-head{margin-bottom:22px}
-.step-tag{display:inline-flex;align-items:center;gap:9px;font-family:var(--mono);font-size:11px;color:var(--fg-faint);letter-spacing:.06em}
-.step-tag s{width:26px;height:1px;background:var(--line-2);text-decoration:none}
-.step-head h3{font-family:var(--serif);font-size:31px;font-weight:400;line-height:1.2;margin-top:10px;letter-spacing:-.015em}
-
-.split{display:grid;grid-template-columns:1.15fr .85fr;gap:26px;align-items:start}
-@media(max-width:1080px){.split{grid-template-columns:1fr}}
-
-/* ---------- mock screen ---------- */
-.screen{
-  background:var(--panel);border:1px solid var(--line);border-radius:9px;overflow:hidden;
-  box-shadow:0 20px 50px -22px rgba(0,0,0,.85)
+/* ---------- KPI bar ---------- */
+.kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px}
+.kpi{
+  background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);
+  padding:14px 16px;cursor:pointer;transition:all .15s;
 }
-.screen-bar{
-  display:flex;align-items:center;gap:8px;padding:9px 13px;border-bottom:1px solid var(--line);
-  background:var(--panel-2);font-family:var(--mono);font-size:10.5px;color:var(--fg-faint)
+.kpi:hover{border-color:var(--primary);box-shadow:var(--shadow-sm)}
+.kpi-label{font-size:12px;color:var(--text-3);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.kpi-value{font-size:22px;font-weight:700;color:var(--text-1)}
+.kpi-value .unit{font-size:12px;color:var(--text-3);font-weight:400;margin-left:4px}
+.dot{width:6px;height:6px;border-radius:50%;display:inline-block}
+.dot.blue{background:var(--primary)}
+.dot.green{background:var(--success)}
+.dot.amber{background:var(--warn)}
+.dot.red{background:var(--danger)}
+.dot.gray{background:var(--text-4)}
+
+/* ---------- Filter panel ---------- */
+.filter-card{
+  background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);
+  padding:16px 20px;margin-bottom:16px;
 }
-.screen-bar u{width:8px;height:8px;border-radius:50%;background:var(--line-2);text-decoration:none}
-.screen-body{padding:17px}
-
-.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:14px}
-.kpi{background:var(--panel-2);border:1px solid var(--line);border-radius:6px;padding:11px 13px}
-.kpi span{font-size:10px;color:var(--fg-faint);letter-spacing:.07em;text-transform:uppercase}
-.kpi b{display:block;font-family:var(--mono);font-size:19px;font-weight:500;margin-top:4px}
-.kpi.ok b{color:var(--teal)} .kpi.bad b{color:var(--red)}
-
-.row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
-.row:last-child{border-bottom:0}
-.row-main{min-width:0}
-.row-main b{font-family:var(--mono);font-size:12.5px;font-weight:400;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.row-main span{font-size:11.5px;color:var(--fg-faint)}
-
-.pill{font-family:var(--mono);font-size:10px;padding:2.5px 8px;border-radius:20px;white-space:nowrap;letter-spacing:.03em}
-.pill.ok{color:var(--teal);background:rgba(79,179,166,.1);border:1px solid var(--teal-dim)}
-.pill.bad{color:var(--red);background:rgba(212,103,79,.1);border:1px solid var(--red-dim)}
-.pill.warn{color:var(--amber);background:rgba(229,165,68,.1);border:1px solid var(--amber-dim)}
-.pill.mute{color:var(--fg-faint);background:rgba(255,255,255,.03);border:1px solid var(--line-2)}
-
-/* chat */
-.chat{display:flex;flex-direction:column;gap:11px}
-.bub{max-width:88%;padding:10px 13px;border-radius:11px;font-size:13.5px;line-height:1.55}
-.bub.me{align-self:flex-end;background:rgba(229,165,68,.12);border:1px solid var(--amber-dim);color:var(--fg)}
-.bub.ai{align-self:flex-start;background:var(--panel-2);border:1px solid var(--line)}
-.bub.ai.warnful{border-color:var(--amber-dim)}
-.chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}
-.chip{font-size:12px;padding:5px 11px;border:1px solid var(--line-2);border-radius:16px;color:var(--fg-dim);background:rgba(255,255,255,.02)}
-.chip.skip{border-style:dashed;color:var(--fg-faint)}
-
-/* feature card */
-.fcard{border:1px solid var(--line);border-radius:7px;padding:12px 13px;background:var(--panel-2);margin-top:9px}
-.fcard.dim{opacity:.5;filter:saturate(.4)}
-.fcard-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
-.fcard-top b{font-size:13.5px;font-weight:600}
-.fcard code{font-family:var(--mono);font-size:11px;color:var(--fg-faint);display:block;margin-top:2px}
-.fcard p{font-size:12.5px;color:var(--fg-dim);margin-top:8px}
-.fcard .meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
-.fcard .meta em{font-style:normal;font-family:var(--mono);font-size:10px;color:var(--fg-faint);border:1px solid var(--line);padding:2px 6px;border-radius:4px}
-.cta{font-size:12px;color:var(--amber);margin-top:10px;display:inline-block;border-bottom:1px solid var(--amber-dim);padding-bottom:1px}
-.cta.dead{color:var(--fg-faint);border-bottom-style:dashed;border-color:var(--line-2)}
-
-/* three column detail */
-.cols3{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
-@media(max-width:600px){.cols3{grid-template-columns:1fr}}
-.col{background:var(--panel-2);border:1px solid var(--line);border-radius:6px;padding:11px}
-.col h5{font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--fg-faint);margin-bottom:9px;font-weight:600}
-.kv{display:flex;justify-content:space-between;gap:8px;font-size:11.5px;padding:3.5px 0}
-.kv span{color:var(--fg-faint)} .kv b{font-family:var(--mono);font-size:11px;font-weight:400;text-align:right}
-.stext{font-family:var(--mono);font-size:10.5px;line-height:1.75;color:var(--fg-dim);white-space:pre-wrap}
-.stext u{color:var(--amber);text-decoration:none}
-
-/* progress / gates */
-.gate{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:12.5px}
-.gate:last-child{border-bottom:0}
-.gate i{width:15px;height:15px;border-radius:50%;display:grid;place-items:center;font-size:9px;font-style:normal;flex:none}
-.gate i.y{background:rgba(79,179,166,.15);color:var(--teal);border:1px solid var(--teal-dim)}
-.gate i.n{background:rgba(212,103,79,.15);color:var(--red);border:1px solid var(--red-dim)}
-.gate span{color:var(--fg-dim)}
-.meter{height:5px;background:var(--line);border-radius:3px;overflow:hidden;margin:11px 0 6px}
-.meter i{display:block;height:100%;background:linear-gradient(90deg,var(--amber-dim),var(--amber));border-radius:3px}
-.meter-lbl{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10.5px;color:var(--fg-faint)}
-
-.btn{font-size:12px;padding:6px 13px;border-radius:5px;border:1px solid var(--line-2);color:var(--fg-dim);display:inline-block;background:rgba(255,255,255,.02)}
-.btn.on{background:var(--amber);color:#1A1204;border-color:var(--amber);font-weight:600}
-.btn.off{opacity:.4}
-.btns{display:flex;gap:8px;margin-top:13px;flex-wrap:wrap;align-items:center}
-
-/* ---------- commentary ---------- */
-.notes{display:flex;flex-direction:column;gap:14px;position:sticky;top:30px}
-@media(max-width:1080px){.notes{position:static}}
-.note{border:1px solid var(--line);border-radius:8px;padding:15px 16px;background:linear-gradient(180deg,var(--panel),rgba(19,21,25,.4))}
-.note h4{font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--fg-faint);font-weight:600;margin-bottom:9px}
-.note p{font-size:13.5px;color:var(--fg-dim);line-height:1.62}
-.note p+p{margin-top:9px}
-.note b{color:var(--fg);font-weight:600}
-.note code{font-family:var(--mono);font-size:11.5px;color:var(--amber);background:rgba(229,165,68,.08);padding:1px 5px;border-radius:3px}
-
-.note.guard{border-color:var(--amber-dim);background:linear-gradient(180deg,rgba(229,165,68,.075),rgba(19,21,25,.4))}
-.note.guard h4{color:var(--amber)}
-.note.guard::before{content:"⚠";float:left;margin:-1px 9px 0 0;color:var(--amber);font-size:13px}
-
-.note.state{border-color:var(--line-2)}
-.note.state h4{color:var(--teal)}
-.state-code{font-family:var(--mono);font-size:12px;color:var(--teal);display:block;margin-bottom:7px}
-
-/* ---------- nav ---------- */
-.pager{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-top:38px;padding-top:22px;border-top:1px solid var(--line)}
-.pager button{
-  font-family:var(--sans);font-size:13px;padding:9px 17px;border-radius:6px;cursor:pointer;
-  border:1px solid var(--line-2);background:rgba(255,255,255,.025);color:var(--fg-dim);transition:.16s
+.filter-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px 20px}
+.field-label{font-weight:700;font-size:13px;color:var(--text-1);margin-bottom:6px;display:block}
+.req{color:var(--required);margin-left:2px}
+.input,.select{
+  width:100%;padding:8px 10px;
+  border:1px solid var(--border);border-radius:var(--radius);
+  font-size:13px;color:var(--text-1);background:#fff;
+  transition:border-color .15s;
 }
-.pager button:hover:not(:disabled){color:var(--fg);border-color:var(--fg-faint)}
-.pager button:disabled{opacity:.28;cursor:default}
-.pager button.next{background:var(--amber);color:#1A1204;border-color:var(--amber);font-weight:600}
-.pager .count{font-family:var(--mono);font-size:11.5px;color:var(--fg-faint)}
-kbd{font-family:var(--mono);font-size:10px;border:1px solid var(--line-2);border-radius:3px;padding:1px 5px;color:var(--fg-faint)}
+.input:focus,.select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(59,130,246,.12)}
+.input::placeholder{color:var(--text-4)}
+.select{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%239CA3AF' stroke-width='2'><path d='M6 9l6 6 6-6'/></svg>");background-repeat:no-repeat;background-position:right 10px center;appearance:none;padding-right:28px}
+.filter-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
 
-/* ---------- closing ---------- */
-.close-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin-top:24px}
-.close-card{border:1px solid var(--line);border-radius:8px;padding:16px;background:var(--panel)}
-.close-card b{display:block;font-family:var(--mono);font-size:11.5px;color:var(--amber);margin-bottom:8px}
-.close-card p{font-size:13px;color:var(--fg-dim)}
-.foot{margin-top:44px;padding-top:22px;border-top:1px solid var(--line);font-size:12.5px;color:var(--fg-faint);display:flex;flex-wrap:wrap;gap:8px 20px}
-.foot a{color:var(--fg-dim);text-decoration:none;border-bottom:1px solid var(--line-2)}
-.foot a:hover{color:var(--amber);border-color:var(--amber-dim)}
+/* ---------- Table ---------- */
+.table-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.table-toolbar{
+  padding:12px 20px;border-bottom:1px solid var(--border);
+  display:flex;justify-content:space-between;align-items:center;
+}
+.table-toolbar .left{display:flex;align-items:center;gap:12px;color:var(--text-3);font-size:13px}
+.table-toolbar .right{display:flex;gap:8px}
+table{width:100%;border-collapse:collapse}
+th{
+  background:var(--bg-soft);text-align:left;
+  font-size:12px;font-weight:600;color:var(--text-3);
+  padding:11px 16px;border-bottom:1px solid var(--border);
+  text-transform:uppercase;letter-spacing:.02em;white-space:nowrap;
+}
+td{padding:14px 16px;border-bottom:1px solid var(--border);vertical-align:middle;font-size:13px}
+tbody tr:hover{background:var(--primary-light)}
+.code{font-family:"SF Mono",Consolas,monospace;font-size:12px;color:var(--text-2);background:var(--bg-soft);padding:2px 6px;border-radius:4px}
+.cell-name{display:flex;flex-direction:column;gap:2px}
+.cell-name .en{color:var(--text-1);font-weight:500}
+.cell-name .cn{color:var(--text-3);font-size:12px}
+
+/* ---------- Chip / Badge ---------- */
+.chip{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:2px 8px;border-radius:12px;
+  font-size:11px;font-weight:600;
+}
+.chip.type-ord{background:#DBEAFE;color:#1E40AF}
+.chip.type-metric{background:#EDE9FE;color:#5B21B6}
+.chip.type-model{background:#FCE7F3;color:#9D174D}
+.chip.sla-a{background:var(--success-light);color:#065F46}
+.chip.sla-b{background:#FEF3C7;color:#92400E}
+.chip.sla-c{background:#FEE2E2;color:#991B1B}
+.chip.status-indexed{background:var(--success-light);color:#065F46}
+.chip.status-pending{background:#FEF3C7;color:#92400E}
+.chip.status-failed{background:#FEE2E2;color:#991B1B}
+.chip.status-neligible{background:#F3F4F6;color:var(--text-3)}
+.quality{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600}
+.quality-bar{width:60px;height:5px;background:var(--bg-hover);border-radius:3px;overflow:hidden}
+.quality-bar > i{display:block;height:100%;border-radius:3px}
+.q-good{color:#047857}.q-good > i,.q-good ~ .quality-bar > i{background:var(--success)}
+.q-mid{color:#B45309}
+.q-bad{color:#991B1B}
+
+/* ---------- F2 · 3-col detail ---------- */
+.detail-grid{display:grid;grid-template-columns:340px 1fr 380px;gap:16px}
+.panel{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.panel-header{
+  padding:12px 16px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--bg-soft);
+}
+.panel-title{font-weight:700;font-size:13px;color:var(--text-1)}
+.panel-hint{font-size:11px;color:var(--text-3);font-weight:400}
+.panel-body{padding:16px}
+.meta-item{padding:8px 0;border-bottom:1px dashed var(--border)}
+.meta-item:last-child{border-bottom:0}
+.meta-key{font-size:11px;color:var(--text-3);text-transform:uppercase;letter-spacing:.03em;margin-bottom:3px}
+.meta-val{font-size:13px;color:var(--text-1);font-weight:500}
+.meta-val.mono{font-family:"SF Mono",monospace;font-size:12px;word-break:break-all}
+.readonly-lock{display:inline-flex;align-items:center;gap:3px;font-size:11px;color:var(--text-4);margin-left:6px}
+
+/* Structured text preview */
+.structured-block{
+  background:var(--bg-soft);border:1px solid var(--border);
+  border-radius:var(--radius);padding:14px;
+  font-family:"SF Mono",Consolas,monospace;font-size:12.5px;line-height:1.7;
+  color:var(--text-2);white-space:pre-wrap;
+}
+.structured-block .k{color:#7C2D12;font-weight:600}
+.structured-block .v{color:var(--text-1)}
+.section-hd{
+  font-size:12px;color:var(--text-3);font-weight:700;
+  text-transform:uppercase;letter-spacing:.04em;
+  margin:18px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--border);
+}
+.section-hd:first-child{margin-top:0}
+.desc-issues{background:#FFFBEB;border:1px solid #FDE68A;border-radius:var(--radius);padding:12px;margin-top:10px}
+.desc-issues-title{font-size:12px;font-weight:700;color:#92400E;margin-bottom:6px}
+.desc-issues ul{margin-left:18px;color:#78350F;font-size:12px}
+.embed-row{display:flex;justify-content:space-between;padding:6px 0;font-size:12px}
+.embed-row .k{color:var(--text-3)}
+.embed-row .v{color:var(--text-1);font-weight:500}
+
+/* Try Ask box */
+.try-box{background:linear-gradient(135deg,#EFF6FF 0%,#F5F3FF 100%);border:1px solid #C7D2FE;border-radius:var(--radius);padding:14px;margin-top:12px}
+.try-hint{font-size:11px;color:var(--text-3);margin-bottom:8px}
+.try-input{
+  width:100%;padding:9px 12px;border:1px solid #C7D2FE;background:#fff;
+  border-radius:var(--radius);font-size:13px;
+}
+.try-btn{margin-top:8px;width:100%}
+.try-answer{margin-top:12px;padding:10px;background:#fff;border-radius:var(--radius);font-size:12px;color:var(--text-2)}
+
+/* Agent knowledge entry task */
+.agent-task-box{background:linear-gradient(135deg,#ECFEFF 0%,#F0F9FF 100%);border:1px solid #A5F3FC;border-radius:var(--radius);padding:14px;margin-top:12px}
+.agent-task-title{font-size:13px;font-weight:800;color:var(--text-1);display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+.agent-task-tag{font-size:10px;font-weight:800;color:#0E7490;background:#CFFAFE;border:1px solid #67E8F9;border-radius:999px;padding:3px 8px;white-space:nowrap}
+.agent-dialog{display:flex;flex-direction:column;gap:8px;margin:10px 0}
+.agent-msg{border-radius:var(--radius);padding:9px 10px;font-size:12px;line-height:1.45}
+.agent-msg.user{background:#fff;border:1px solid #BAE6FD;color:var(--text-2);margin-left:22px}
+.agent-msg.agent{background:#F8FAFC;border:1px solid var(--border);color:var(--text-2);margin-right:22px}
+.agent-draft{background:#fff;border:1px solid #BAE6FD;border-radius:var(--radius);padding:10px;margin-top:10px;font-size:12px;color:var(--text-2)}
+.agent-draft-hd{font-size:11px;font-weight:800;color:#0369A1;text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px}
+.agent-draft-row{padding:4px 0;border-bottom:1px dashed #E0F2FE}
+.agent-draft-row:last-child{border-bottom:0}
+.agent-draft-row b{color:var(--text-1)}
+.agent-actions{display:grid;grid-template-columns:1fr;gap:8px;margin-top:10px}
+.agent-step{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:8px}
+.agent-step-copy{font-size:12px;color:var(--text-2)}
+.agent-step-copy b{display:block;color:var(--text-1);margin-bottom:2px}
+.agent-complete{display:none;margin-top:10px;background:var(--success-light);border:1px solid #6EE7B7;border-radius:var(--radius);padding:10px;font-size:12px;color:#065F46}
+.agent-complete.show{display:block}
+.agent-note{font-size:11px;color:var(--text-3);line-height:1.45;margin-top:8px}
+.agent-window-mock{margin-top:16px;background:rgba(15,23,42,.05);border:1px dashed #CBD5E1;border-radius:var(--radius-lg);padding:18px}
+.agent-window{
+  width:860px;max-width:100%;margin:0 auto;background:#fff;border:1px solid var(--border);
+  border-radius:14px;box-shadow:0 18px 48px rgba(15,23,42,.18);overflow:hidden;
+}
+.agent-window-head{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border);background:#F8FAFC}
+.agent-window-title{font-size:15px;font-weight:800;color:var(--text-1)}
+.agent-window-sub{font-size:12px;color:var(--text-3);margin-top:3px}
+.agent-window-close{width:28px;height:28px;border:1px solid var(--border);border-radius:8px;background:#fff;color:var(--text-3);font-weight:800}
+.agent-window-body{display:grid;grid-template-columns:1.15fr .85fr;min-height:420px}
+.agent-window-chat{padding:16px;border-right:1px solid var(--border);background:#FBFDFF}
+.agent-window-side{padding:16px;background:#fff}
+.agent-window-label{font-size:11px;font-weight:800;color:var(--text-3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:10px}
+.agent-window-input{display:flex;gap:8px;margin-top:12px;border-top:1px solid var(--border);padding-top:12px}
+.agent-window-input input{flex:1;border:1px solid var(--border);border-radius:var(--radius);padding:9px 10px;font-size:12px}
+.agent-eval-list{margin-top:10px;display:grid;gap:7px}
+.agent-eval-item{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text-2)}
+.agent-eval-dot{width:16px;height:16px;border-radius:999px;background:var(--success-light);color:#047857;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;flex-shrink:0}
+.agent-window-footer{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 16px;border-top:1px solid var(--border);background:#F8FAFC}
+.agent-window-footer .hint{font-size:11px;color:var(--text-3)}
+
+/* ---------- F3 · New feature form ---------- */
+.form-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;max-width:900px;margin:0 auto}
+.form-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:20px}
+.form-tab{padding:10px 18px;color:var(--text-3);cursor:pointer;font-weight:600;font-size:13px;border-bottom:2px solid transparent}
+.form-tab.active{color:var(--primary);border-bottom-color:var(--primary)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:14px}
+.form-field{display:flex;flex-direction:column}
+.form-field.full{grid-column:1 / -1}
+textarea.input{resize:vertical;min-height:110px;font-family:inherit}
+.desc-check{
+  display:flex;align-items:center;gap:12px;margin-top:8px;
+  padding:10px 12px;border-radius:var(--radius);
+  font-size:12px;
+}
+.desc-check.warn{background:#FFFBEB;border:1px solid #FDE68A;color:#92400E}
+.desc-check.pass{background:var(--success-light);border:1px solid #6EE7B7;color:#065F46}
+.desc-check.block{background:#FEE2E2;border:1px solid #FCA5A5;color:#991B1B}
+.desc-check .score{font-weight:700;font-size:14px;padding:2px 8px;border-radius:12px;background:rgba(255,255,255,.6)}
+.checklist{margin-top:8px;font-size:12px;color:var(--text-3)}
+.checklist li{padding:3px 0;display:flex;align-items:center;gap:6px;list-style:none}
+.checklist .ok{color:var(--success)}
+.checklist .miss{color:var(--danger)}
+.form-info-banner{background:var(--primary-light);border:1px solid #BFDBFE;border-radius:var(--radius);padding:12px 14px;margin-bottom:20px;color:#1E40AF;font-size:12.5px;display:flex;gap:10px}
+.form-actions{display:flex;justify-content:flex-end;gap:8px;padding-top:20px;margin-top:20px;border-top:1px solid var(--border)}
+.toggle{position:relative;display:inline-block;width:38px;height:22px}
+.toggle input{display:none}
+.toggle-slider{position:absolute;inset:0;background:#D1D5DB;border-radius:22px;cursor:pointer;transition:.2s}
+.toggle-slider::before{content:"";position:absolute;height:16px;width:16px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}
+.toggle input:checked + .toggle-slider{background:var(--success)}
+.toggle input:checked + .toggle-slider::before{transform:translateX(16px)}
+.radio-group{display:flex;gap:8px}
+.radio-chip{
+  padding:6px 12px;border:1px solid var(--border);border-radius:var(--radius);
+  cursor:pointer;font-size:12px;color:var(--text-2);background:#fff;
+}
+.radio-chip.on{border-color:var(--primary);background:var(--primary-light);color:var(--primary);font-weight:600}
+
+/* ---------- F4 · Floating widget ---------- */
+.fab{
+  position:fixed;right:24px;bottom:24px;z-index:200;
+  padding:12px 18px;background:var(--text-1);color:#fff;
+  border-radius:24px;font-weight:600;font-size:13px;
+  box-shadow:var(--shadow-lg);cursor:pointer;
+  display:flex;align-items:center;gap:8px;
+}
+.fab:hover{background:#000}
+.fab-dot{width:8px;height:8px;background:var(--success);border-radius:50%;box-shadow:0 0 0 3px rgba(16,185,129,.25)}
+.qa-panel{
+  position:fixed;right:24px;bottom:84px;z-index:200;
+  width:420px;height:560px;
+  background:#fff;border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-lg);
+  display:none;flex-direction:column;overflow:hidden;
+}
+.qa-panel.open{display:flex}
+.qa-head{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.qa-head-title{font-weight:700;font-size:14px}
+.qa-head-sub{font-size:11px;color:var(--text-3);margin-top:2px}
+.qa-mode{display:flex;gap:0;border-bottom:1px solid var(--border);background:var(--bg-soft)}
+.qa-mode > div{flex:1;padding:9px;text-align:center;font-size:12px;color:var(--text-3);cursor:pointer;font-weight:600;border-bottom:2px solid transparent}
+.qa-mode > div.active{background:#fff;color:var(--primary);border-bottom-color:var(--primary)}
+.qa-body{flex:1;overflow-y:auto;padding:16px}
+.qa-suggest{margin-bottom:14px}
+.qa-suggest-hint{font-size:11px;color:var(--text-3);text-transform:uppercase;letter-spacing:.03em;margin-bottom:8px}
+.qa-suggest-card{
+  padding:9px 12px;background:var(--bg-soft);border:1px solid var(--border);
+  border-radius:var(--radius);margin-bottom:6px;font-size:12.5px;color:var(--text-2);
+  cursor:pointer;transition:all .15s;
+}
+.qa-suggest-card:hover{background:var(--primary-light);border-color:var(--primary);color:var(--primary)}
+.qa-suggest-card.active{background:var(--primary-light);border-color:var(--primary);color:var(--primary);font-weight:600}
+.qa-suggest-card.static{cursor:default}
+.qa-suggest-card.static:hover{background:var(--bg-soft);border-color:var(--border);color:var(--text-2)}
+.bubble{margin-bottom:14px;max-width:88%}
+.bubble.user{margin-left:auto;background:var(--primary);color:#fff;padding:9px 12px;border-radius:12px 12px 3px 12px;font-size:13px}
+.bubble.ai{background:var(--bg-soft);padding:10px 12px;border-radius:12px 12px 12px 3px;font-size:13px;color:var(--text-2)}
+.feat-card{margin-top:10px;padding:10px;background:#fff;border:1px solid var(--border);border-radius:var(--radius);cursor:pointer}
+.feat-card:hover{border-color:var(--primary)}
+.feat-card-name{font-weight:600;font-size:12.5px;color:var(--text-1);display:flex;align-items:center;gap:6px}
+.feat-card-code{font-family:"SF Mono",monospace;font-size:11px;color:var(--text-3);margin-top:3px}
+.feat-card-meta{margin-top:6px;font-size:11px;color:var(--text-3);display:flex;gap:10px}
+.feat-card-row{margin-top:7px;font-size:11.5px;color:var(--text-2);line-height:1.45}
+.feat-card-row b{color:var(--text-1)}
+.fit-pill{display:inline-flex;align-items:center;padding:1px 6px;border-radius:10px;background:var(--success-light);color:#065F46;font-size:10.5px;font-weight:700;margin-left:auto;white-space:nowrap}
+.fit-pill.context{background:#FEF3C7;color:#92400E}
+.feat-more{margin-top:7px;padding-top:7px;border-top:1px dashed var(--border);font-size:11.5px;color:var(--text-2);line-height:1.45}
+.feat-card-cta{margin-top:8px;color:var(--primary);font-size:11px;font-weight:600}
+.qa-input-row{padding:12px 14px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:flex-end}
+.qa-input{flex:1;border:1px solid var(--border);border-radius:var(--radius);padding:8px 10px;font-size:13px;resize:none;font-family:inherit}
+.qa-send{padding:8px 12px;background:var(--primary);color:#fff;border-radius:var(--radius);cursor:pointer;font-weight:600;font-size:13px;border:none}
+
+/* Utilities */
+.mono{font-family:"SF Mono",monospace;font-size:12px}
+.mt-2{margin-top:8px}.mt-3{margin-top:12px}
+.muted{color:var(--text-3)}
+.tag-inline{display:inline-block;padding:1px 6px;background:var(--bg-hover);color:var(--text-3);border-radius:3px;font-size:11px;margin-left:6px}
+.divider-lbl{display:flex;align-items:center;gap:8px;margin:20px 0 12px;color:var(--text-3);font-size:11px;text-transform:uppercase;letter-spacing:.05em;font-weight:700}
+.divider-lbl::after{content:"";flex:1;height:1px;background:var(--border)}
+
+/* ---------- F3 · New feature (v0.2 rebuild) ---------- */
+.entry-mode{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
+.entry-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 18px;cursor:pointer;transition:all .15s}
+.entry-card:hover{border-color:var(--primary);box-shadow:var(--shadow-sm)}
+.entry-card.active{border-color:var(--primary);background:linear-gradient(135deg,var(--primary-light) 0%,#F5F3FF 100%)}
+.entry-card-hd{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.entry-icon{width:34px;height:34px;border-radius:8px;background:var(--primary);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:15px;font-weight:700}
+.entry-title{font-weight:700;font-size:14px;color:var(--text-1);display:flex;align-items:center;gap:6px}
+.entry-sub{font-size:11px;color:var(--text-3);margin-top:1px}
+.entry-desc{font-size:12.5px;color:var(--text-3);line-height:1.5}
+
+.section-nav{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:8px 12px;margin-bottom:16px;display:flex;flex-wrap:wrap;gap:2px;position:sticky;top:56px;z-index:50}
+.section-nav a{padding:6px 10px;color:var(--text-2);text-decoration:none;font-size:12px;border-radius:var(--radius);font-weight:500;white-space:nowrap}
+.section-nav a:hover{background:var(--bg-hover);color:var(--primary)}
+
+.form-section{padding:18px 22px;border:1px solid var(--border);border-left-width:4px;border-radius:var(--radius);margin-bottom:14px;background:#fff}
+.form-section.role-user{border-left-color:var(--primary)}
+.form-section.role-rd{border-left-color:var(--warn);background:linear-gradient(90deg,#FFFBEB 0%,#fff 12%)}
+.form-section.role-system{border-left-color:var(--text-4);background:linear-gradient(90deg,var(--bg-hover) 0%,#fff 12%)}
+.section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.section-title{font-weight:700;font-size:14.5px;color:var(--text-1);display:flex;align-items:center;gap:8px}
+.section-role{font-size:10.5px;padding:3px 8px;border-radius:12px;background:var(--primary-light);color:var(--primary);font-weight:700;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
+.section-role.rd{background:#FEF3C7;color:#92400E}
+.section-role.sys{background:var(--bg-hover);color:var(--text-3)}
+
+.chip-multi{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
+.chip-check{padding:6px 11px;border:1px solid var(--border);border-radius:14px;background:#fff;color:var(--text-2);cursor:pointer;font-size:12px;transition:all .15s;user-select:none}
+.chip-check:hover{border-color:var(--primary)}
+.chip-check.on{border-color:var(--primary);background:var(--primary-light);color:var(--primary);font-weight:600}
+.chip-check.on::before{content:"✓ ";font-weight:700}
+
+.form-actions.sticky{position:sticky;bottom:0;background:#fff;border-top:1px solid var(--border);padding:14px 24px;display:flex;justify-content:space-between;align-items:center;margin-top:0;box-shadow:0 -4px 12px rgba(0,0,0,.04);z-index:60}
+.form-actions.sticky .left{font-size:12px;color:var(--text-3)}
+.form-actions.sticky .right{display:flex;gap:8px;padding-top:0;border:0;margin:0}
+
+.role-hint{background:#F5F3FF;border:1px solid #DDD6FE;border-radius:var(--radius);padding:10px 12px;font-size:12px;color:#5B21B6;margin-bottom:14px;display:flex;gap:10px;align-items:flex-start}
+.role-legend{display:flex;gap:14px;font-size:11.5px;margin-top:4px}
+.role-legend span{display:flex;align-items:center;gap:5px}
+.role-legend .lbl{width:14px;height:14px;border-radius:3px}
+
+/* ================= v0.3 additions ================= */
+.btn[disabled],.btn.disabled{opacity:.45;cursor:not-allowed;pointer-events:none}
+
+/* ---- F3 · Ask AI empty-state entry ---- */
+.ai-entry-card{
+  background:linear-gradient(135deg,#EFF6FF 0%,#F5F3FF 55%,#ECFEFF 100%);
+  border:1px solid #C7D2FE;border-radius:var(--radius-lg);
+  padding:26px 28px;margin:0 auto 16px;max-width:900px;
+  position:relative;overflow:hidden;
+}
+.ai-entry-card::after{content:"";position:absolute;right:-60px;top:-60px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(59,130,246,.10),transparent 70%)}
+.ai-entry-eyebrow{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:800;color:#0E7490;background:#CFFAFE;border:1px solid #67E8F9;border-radius:999px;padding:3px 10px;margin-bottom:10px}
+.ai-entry-title{font-size:19px;font-weight:800;color:var(--text-1)}
+.ai-entry-sub{font-size:13px;color:var(--text-2);margin-top:6px;max-width:620px;line-height:1.6}
+.ai-entry-actions{display:flex;align-items:center;gap:12px;margin-top:16px}
+.ai-entry-btn{padding:11px 22px;font-size:14px;border-radius:8px}
+.ai-entry-hint{font-size:12px;color:var(--text-3)}
+.ai-entry-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px}
+.ai-entry-step{background:rgba(255,255,255,.75);border:1px solid #DBEAFE;border-radius:var(--radius);padding:10px 12px;font-size:12px;color:var(--text-2);line-height:1.5}
+.ai-entry-step b{display:block;color:var(--text-1);margin-bottom:2px;font-size:12.5px}
+.manual-toggle-bar{max-width:900px;margin:0 auto 14px;display:flex;align-items:center;gap:10px;color:var(--text-3);font-size:12px}
+.manual-toggle-bar::before,.manual-toggle-bar::after{content:"";flex:1;height:1px;background:var(--border)}
+
+/* ---- Agent Entry modal ---- */
+.modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,.48);z-index:300;display:none;align-items:center;justify-content:center;padding:24px 20px;overflow-y:auto}
+.modal-overlay.open{display:flex}
+.ae-window{width:1020px;max-width:100%;max-height:calc(100vh - 48px);background:#fff;border-radius:14px;box-shadow:0 24px 64px rgba(15,23,42,.32);overflow:hidden;display:flex;flex-direction:column}
+.ae-head{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--border);background:#F8FAFC}
+.ae-title{font-size:15px;font-weight:800;color:var(--text-1);display:flex;align-items:center;gap:8px}
+.ae-sub{font-size:12px;color:var(--text-3);margin-top:3px}
+.ae-task-chip{font-size:10.5px;font-weight:800;color:#0E7490;background:#CFFAFE;border:1px solid #67E8F9;border-radius:999px;padding:3px 9px}
+.ae-body{display:grid;grid-template-columns:1.1fr .9fr;flex:1;min-height:320px;overflow:hidden}
+.ae-chat{display:flex;flex-direction:column;border-right:1px solid var(--border);background:#FBFDFF;min-height:0}
+.ae-chat-scroll{flex:1;overflow-y:auto;padding:16px;min-height:0}
+.ae-side{padding:16px;background:#fff;overflow-y:auto;min-height:0}
+.ae-next{margin:2px 0 12px}
+.ae-next .hint{font-size:10.5px;color:var(--text-4);margin-bottom:5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+/* ---- F1 · pagination ---- */
+.pagination{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;border-top:1px solid var(--border);background:var(--bg-soft);font-size:12.5px;color:var(--text-3)}
+.pagination .pages{display:flex;align-items:center;gap:4px}
+.page-btn{min-width:28px;height:28px;padding:0 8px;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:var(--radius);background:#fff;color:var(--text-2);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s}
+.page-btn:hover{border-color:var(--primary);color:var(--primary)}
+.page-btn.on{background:var(--primary);border-color:var(--primary);color:#fff}
+.page-btn.nav{color:var(--text-3)}
+.page-ellipsis{padding:0 4px;color:var(--text-4)}
+.page-size{display:flex;align-items:center;gap:6px}
+.page-size select{border:1px solid var(--border);border-radius:var(--radius);padding:4px 6px;font-size:12px;color:var(--text-2);background:#fff}
+#page-f1 .table-card table{min-width:1180px}
+#page-f1 .table-card{overflow-x:auto}
+#page-f1 td:last-child{white-space:nowrap}
+
+/* ---- F1 · enum values badge + hover popover ---- */
+.enum-badge{position:relative;display:inline-flex;align-items:center;gap:4px;margin-left:6px;padding:2px 8px;border-radius:999px;background:#EDE9FE;color:#5B21B6;font-size:10.5px;font-weight:700;cursor:pointer;white-space:nowrap;vertical-align:middle}
+.enum-badge:hover{background:#DDD6FE}
+.enum-pop{display:none;position:fixed;z-index:250;width:300px;background:#fff;border:1px solid var(--border);border-radius:10px;box-shadow:var(--shadow-lg);padding:12px 14px;cursor:default;font-weight:400;text-align:left}
+.enum-pop-hd{font-size:11px;font-weight:800;color:var(--text-2);margin-bottom:6px;display:flex;justify-content:space-between;align-items:center}
+.enum-pop-hd .n{color:var(--text-4);font-weight:600}
+.enum-pop-row{display:flex;justify-content:space-between;gap:10px;padding:4px 0;border-bottom:1px dashed var(--border);font-size:11.5px}
+.enum-pop-row:last-of-type{border-bottom:0}
+.enum-pop-row .ev{font-family:"SF Mono",monospace;color:var(--text-2);font-size:11px}
+.enum-pop-row .em{color:var(--text-1);text-align:right}
+.enum-pop-more{margin-top:8px;padding-top:8px;border-top:1px solid var(--border);font-size:11px;color:var(--primary);font-weight:600;cursor:pointer}
+.ae-input-row{display:flex;gap:8px;border-top:1px solid var(--border);padding:12px 16px;background:#fff}
+.ae-input-row textarea{flex:1;border:1px solid var(--border);border-radius:var(--radius);padding:9px 10px;font-size:12.5px;font-family:inherit;resize:none;line-height:1.5}
+.ae-input-row textarea:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(59,130,246,.12)}
+.ae-msg{border-radius:var(--radius);padding:9px 11px;font-size:12.5px;line-height:1.55;margin-bottom:10px;max-width:92%;white-space:pre-wrap}
+.ae-msg.user{background:var(--primary);color:#fff;margin-left:auto;border-radius:12px 12px 3px 12px}
+.ae-msg.agent{background:#fff;border:1px solid var(--border);color:var(--text-2);border-radius:12px 12px 12px 3px}
+.ae-msg.sys{background:#F1F5F9;border:1px dashed #CBD5E1;color:var(--text-3);font-size:11.5px;max-width:100%;text-align:center}
+.ae-msg.agent .ask-list{margin:6px 0 0 16px}
+.ae-msg.agent .ask-list li{margin:2px 0}
+.typing{display:inline-flex;gap:4px;padding:10px 12px;background:#fff;border:1px solid var(--border);border-radius:12px 12px 12px 3px;margin-bottom:10px}
+.typing i{width:6px;height:6px;border-radius:50%;background:var(--text-4);animation:blink 1.2s infinite}
+.typing i:nth-child(2){animation-delay:.2s}
+.typing i:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,80%,100%{opacity:.25}40%{opacity:1}}
+
+/* proposal (right side) */
+.prop-progress{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.prop-progress .bar{flex:1;height:6px;background:var(--bg-hover);border-radius:3px;overflow:hidden}
+.prop-progress .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--primary),#8B5CF6);border-radius:3px;transition:width .5s}
+.prop-progress .num{font-size:11px;font-weight:700;color:var(--text-3);white-space:nowrap}
+.prop-section{border:1px solid var(--border);border-radius:var(--radius);margin-bottom:10px;overflow:hidden}
+.prop-section-hd{display:flex;align-items:center;justify-content:space-between;padding:7px 11px;background:var(--bg-soft);border-bottom:1px solid var(--border);font-size:11px;font-weight:800;color:var(--text-2);text-transform:uppercase;letter-spacing:.04em}
+.prop-section-hd .cnt{font-size:10.5px;font-weight:700;color:var(--text-4)}
+.prop-section-hd .cnt.done{color:#047857}
+.prop-row{display:flex;justify-content:space-between;gap:10px;padding:6px 11px;border-bottom:1px dashed var(--border);font-size:12px}
+.prop-row:last-child{border-bottom:0}
+.prop-row .pk{color:var(--text-3);white-space:nowrap}
+.prop-row .pk .req{color:var(--required)}
+.prop-row .pv{color:var(--text-1);font-weight:500;text-align:right;max-width:64%}
+.prop-row.pending .pv{color:var(--text-4);font-weight:400;font-style:italic}
+.prop-row.flash{animation:flashbg 1.6s ease-out}
+@keyframes flashbg{0%{background:#FEF9C3}100%{background:transparent}}
+.prop-locked{display:none;align-items:center;gap:6px;font-size:11px;color:#065F46;background:var(--success-light);border:1px solid #6EE7B7;border-radius:var(--radius);padding:6px 10px;margin-bottom:10px}
+.prop-locked.show{display:flex}
+
+/* skills evaluation */
+.eval-box{border:1px solid var(--border);border-radius:var(--radius);padding:11px;margin-top:6px}
+.eval-idle{font-size:11.5px;color:var(--text-4)}
+.eval-running{display:none;align-items:center;gap:8px;font-size:12px;color:var(--text-2)}
+.eval-running.show{display:flex}
+.spinner{width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+.eval-list{display:none;grid-template-columns:1fr;gap:7px}
+.eval-list.show{display:grid}
+.eval-item{display:flex;align-items:flex-start;gap:7px;font-size:12px;color:var(--text-2)}
+.eval-dot{width:16px;height:16px;border-radius:999px;background:var(--success-light);color:#047857;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;flex-shrink:0;margin-top:1px}
+.eval-dot.fail{background:#FEE2E2;color:#B91C1C}
+.eval-dot.pend{background:var(--bg-hover);color:var(--text-4)}
+.eval-fix{margin-top:8px;background:#FFFBEB;border:1px solid #FDE68A;border-radius:var(--radius);padding:9px 10px;font-size:11.5px;color:#78350F;line-height:1.5;display:none}
+.eval-fix.show{display:block}
+.eval-fix b{color:#92400E}
+
+/* footer stepper */
+.ae-footer{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:12px 20px;border-top:1px solid var(--border);background:#F8FAFC}
+.ae-steps{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.ae-step{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-4);font-weight:600}
+.ae-step .n{width:20px;height:20px;border-radius:50%;background:var(--bg-hover);color:var(--text-4);display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:800}
+.ae-step.active{color:var(--primary)}
+.ae-step.active .n{background:var(--primary);color:#fff}
+.ae-step.done{color:#047857}
+.ae-step.done .n{background:var(--success-light);color:#047857}
+.ae-step.fail{color:#B91C1C}
+.ae-step.fail .n{background:#FEE2E2;color:#B91C1C}
+.ae-step-sep{width:18px;height:1px;background:var(--border-strong)}
+.ae-actions{display:flex;gap:8px;flex-shrink:0}
+
+/* submit success */
+.ae-success{display:none;padding:14px 16px;background:var(--success-light);border:1px solid #6EE7B7;border-radius:var(--radius);margin:0 16px 12px;font-size:12.5px;color:#065F46;line-height:1.6}
+.ae-success.show{display:block}
+.ae-success b{display:block;font-size:13px;margin-bottom:4px}
+
+/* ---- Ask AI widget · v0.3 ---- */
+.qa-perm{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:700;padding:3px 8px;border-radius:999px;cursor:pointer;user-select:none;border:1px solid}
+.qa-perm.on{background:var(--success-light);color:#065F46;border-color:#6EE7B7}
+.qa-perm.off{background:var(--bg-hover);color:var(--text-3);border-color:var(--border-strong)}
+.qa-guardrail{padding:6px 14px;font-size:10.5px;color:var(--text-4);background:var(--bg-soft);border-top:1px solid var(--border);text-align:center}
+.clarify-box{margin-top:10px;padding:10px;background:#fff;border:1px solid #C7D2FE;border-radius:var(--radius)}
+.clarify-hd{font-size:11px;font-weight:800;color:#4338CA;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.clarify-hd .once{font-size:10px;font-weight:700;color:var(--text-4);background:var(--bg-hover);border-radius:999px;padding:1px 7px}
+.clarify-chips{display:flex;flex-wrap:wrap;gap:6px}
+.clarify-chip{padding:6px 11px;border:1px solid var(--border);border-radius:14px;background:#fff;color:var(--text-2);cursor:pointer;font-size:12px;transition:all .15s}
+.clarify-chip:hover{border-color:var(--primary);color:var(--primary)}
+.clarify-chip.skip{border-style:dashed;color:var(--text-3)}
+.clarify-box.answered .clarify-chip{opacity:.45;pointer-events:none}
+.clarify-box.answered .clarify-chip.picked{opacity:1;border-color:var(--primary);background:var(--primary-light);color:var(--primary);font-weight:700}
+.feat-card.low{background:var(--bg-soft);border-style:dashed;opacity:.8}
+.feat-card.low .feat-card-name,.feat-card.low .feat-card-row b{color:var(--text-3)}
+.low-pill{display:inline-flex;align-items:center;padding:1px 6px;border-radius:10px;background:#F3F4F6;color:var(--text-3);border:1px solid var(--border-strong);font-size:10.5px;font-weight:700;margin-left:auto;white-space:nowrap}
+.qa-empty{margin-top:10px;padding:14px;background:var(--bg-soft);border:1px dashed var(--border-strong);border-radius:var(--radius);text-align:center}
+.qa-empty-icon{font-size:20px;margin-bottom:6px}
+.qa-empty-t{font-size:12.5px;font-weight:700;color:var(--text-1);margin-bottom:4px}
+.qa-empty-s{font-size:11.5px;color:var(--text-3);line-height:1.5;margin-bottom:10px}
+.qa-empty-actions{display:flex;gap:8px;justify-content:center}
+.interp{margin-bottom:6px}
+.interp b{color:var(--text-1)}
+.perm-overlay{position:fixed;inset:0;background:rgba(15,23,42,.4);z-index:400;display:none;align-items:center;justify-content:center;padding:20px}
+.perm-overlay.open{display:flex}
+.perm-modal{width:380px;background:#fff;border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);padding:22px;text-align:center}
+.perm-icon{width:40px;height:40px;border-radius:50%;background:#FEF3C7;color:#92400E;display:inline-flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:10px}
+.perm-t{font-size:14.5px;font-weight:800;color:var(--text-1);margin-bottom:6px}
+.perm-s{font-size:12.5px;color:var(--text-3);line-height:1.6;margin-bottom:16px}
+.perm-actions{display:flex;gap:8px;justify-content:center}
+
+/* F4 state gallery */
+.state-gallery{display:grid;gap:14px}
+.state-card{border:1px solid var(--border);border-radius:var(--radius-lg);background:#fff;overflow:hidden}
+.state-card-hd{padding:9px 14px;background:var(--bg-soft);border-bottom:1px solid var(--border);font-size:12px;font-weight:800;color:var(--text-1);display:flex;align-items:center;gap:8px}
+.state-code{font-size:10px;font-weight:800;font-family:"SF Mono",monospace;padding:2px 7px;border-radius:999px;background:var(--bg-hover);color:var(--text-3)}
+.state-card-bd{padding:14px}
+/* ---- i18n toggle ---- */
+.i-en{display:none!important}
+body.lang-en .i-en{display:revert!important}
+body.lang-en .i-cn{display:none!important}
 </style>
 </head>
 <body>
-<div class="shell">
 
-<nav class="rail">
-  <div class="rail-brand">
-    <h1>Feature Knowledge<br>Library <em style="font-style:italic;color:var(--amber)">RAG</em></h1>
-    <p>Guided walkthrough</p>
+<!-- ================= TOP NAV ================= -->
+<div class="topbar">
+  <div>
+    <span class="brand">Feature Platform</span>
+    <span class="brand-sub">/ 特征 Agent 应用 / Knowledge Library</span>
   </div>
-  <div class="flow-head">Flow A · Discovery <i></i> read</div>
-  <a href="#" data-go="0"><b>A1</b> The ask</a>
-  <a href="#" data-go="1"><b>A2</b> One clarification</a>
-  <a href="#" data-go="2"><b>A3</b> Ranked candidates</a>
-  <a href="#" data-go="3"><b>A4</b> Low confidence</a>
-  <a href="#" data-go="4"><b>A5</b> No result</a>
-  <a href="#" data-go="5"><b>A6</b> Confirm in detail</a>
-  <div class="flow-head">Flow B · Contribution <i></i> write</div>
-  <a href="#" data-go="6"><b>B1</b> Permission gate</a>
-  <a href="#" data-go="7"><b>B2</b> Interview, not a form</a>
-  <a href="#" data-go="8"><b>B3</b> 19/19 then lock</a>
-  <a href="#" data-go="9"><b>B4</b> Six checks</a>
-  <a href="#" data-go="10"><b>B5</b> Edit invalidates</a>
-  <a href="#" data-go="11"><b>B6</b> Indexed, effective</a>
-  <div class="flow-head">Close <i></i></div>
-  <a href="#" data-go="12"><b>—</b> What it costs to be wrong</a>
-</nav>
+  <div class="tabs">
+    <div class="tab active" data-page="f1">F1 · Library Management</div>
+    <div class="tab" data-page="f2">F2 · Feature Detail</div>
+    <div class="tab" data-page="f3">F3 · New Feature</div>
+    <div class="tab" data-page="f4">F4 · Q&amp;A Widget (always on)</div>
+  </div>
+  <button class="btn btn-sm" id="lang-toggle" onclick="toggleLang()" style="margin-right:8px" title="切换界面语言 / Switch language">EN</button>
+  <span class="env-badge">v0.3 · interactive</span>
+</div>
 
-<main>
-  <header class="masthead">
-    <div class="eyebrow">Feature Platform · Governance</div>
-    <h2>The platform team is the <em>bottleneck</em>.<br>This takes them out of the loop.</h2>
-    <p class="lede">
-      Thousands of governance features exist, but a strategy author knows only the handful they
-      requested themselves — so choosing one still means asking a person. This walkthrough follows
-      the two flows that replace that conversation, and stops at each point where the design
-      chose to <em style="color:var(--amber);font-style:normal">say less</em> rather than guess.
-    </p>
-    <div class="stats">
-      <div class="stat"><b>7,024</b><span>features</span></div>
-      <div class="stat"><b>6,683</b><span>indexed · 95.1%</span></div>
-      <div class="stat"><b>≤30s</b><span>to first answer</span></div>
-      <div class="stat"><b>19 / 6</b><span>fields · eval checks</span></div>
+<!-- ================= F1 · LIBRARY MANAGEMENT ================= -->
+<div class="page active" id="page-f1">
+  <div class="page-header">
+    <div>
+      <div class="crumb">Feature Platform <span class="sep">/</span> 特征 Agent 应用 <span class="sep">/</span> <strong>Knowledge Library 知识库</strong></div>
+      <div class="page-title">Feature Knowledge Library · 特征知识库</div>
+      <div class="page-sub"><span class="i-cn">现有 Feature List 的升级版：从 FP Meta 同步 + description 校验 + embedding 状态可视化</span><span class="i-en">Upgrade of the existing Feature List: synced from FP Meta + description validation + embedding status visibility</span></div>
     </div>
-  </header>
-
-  <div id="steps"></div>
-
-  <div class="pager">
-    <button id="prev">← Previous</button>
-    <span class="count"><span id="cur">1</span> / 13 &nbsp;·&nbsp; <kbd>←</kbd> <kbd>→</kbd></span>
-    <button id="next" class="next">Next →</button>
+    <div style="display:flex;gap:8px">
+      <button class="btn">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M21 12a9 9 0 11-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
+        Sync from Meta
+      </button>
+      <button class="btn">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M12 20v-6M6 20V10M18 20V4"/></svg>
+        Batch Re-index
+      </button>
+      <button class="btn btn-primary" onclick="switchPage('f3')">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+        New Feature
+      </button>
+    </div>
   </div>
 
-  <div class="foot">
-    <span>Feature Knowledge Library · RAG — guided walkthrough</span>
-    <a href="../README.md">Full PRD</a>
-    <a href="../%E7%89%B9%E5%BE%81RAG-%E5%8E%9F%E5%9E%8B-v0.3_2.html">Interactive prototype v0.3_2</a>
-    <a href="https://github.com/yg674-dev/feature-knowledge-library-rag">Repository</a>
+  <!-- KPI row -->
+  <div class="kpi-row" style="grid-template-columns:repeat(3,1fr)">
+    <div class="kpi">
+      <div class="kpi-label">Total Features</div>
+      <div class="kpi-value">7,024</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label"><span class="dot green"></span> Indexed</div>
+      <div class="kpi-value">6,683 <span class="unit">/ 95.1%</span></div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label"><span class="dot red"></span> Failed</div>
+      <div class="kpi-value">341</div>
+    </div>
   </div>
-</main>
+
+  <!-- Filter -->
+  <div class="filter-card">
+    <div class="filter-grid">
+      <div>
+        <label class="field-label">Feature name / code</label>
+        <input class="input" placeholder="Enter to search"/>
+      </div>
+      <div>
+        <label class="field-label">Create time (UTC+8)</label>
+        <input class="input" placeholder="Start date  ~  End date"/>
+      </div>
+      <div>
+        <label class="field-label">Feature type</label>
+        <select class="select">
+          <option>All</option><option>Ordinary feature</option><option>Metric feature</option><option>Model feature</option>
+        </select>
+      </div>
+      <div>
+        <label class="field-label">Owner entity</label>
+        <select class="select"><option>All</option><option>Live room</option><option>User</option><option>User-User</option><option>User-live room</option><option>Device</option><option>Video Slice</option></select>
+      </div>
+      <div>
+        <label class="field-label">Creator</label>
+        <input class="input" placeholder="Select creator"/>
+      </div>
+      <div>
+        <label class="field-label">Data Source Extra</label>
+        <select class="select"><option>All</option><option>RPC</option><option>Abase</option><option>JUNO</option><option>DAG</option><option>Slice</option></select>
+      </div>
+      <div style="border-left:2px solid var(--primary-light);padding-left:14px">
+        <label class="field-label" style="color:var(--primary)">RAG Status <span class="tag-inline">new</span></label>
+        <select class="select"><option>All</option><option>Indexed</option><option>Failed</option></select>
+      </div>
+    </div>
+    <div class="filter-actions">
+      <button class="btn">Reset</button>
+      <button class="btn btn-primary">Query</button>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="table-card">
+    <div class="table-toolbar">
+      <div class="left"><span>7,024 features</span><span>·</span><span>3 selected</span></div>
+      <div class="right">
+        <button class="btn btn-sm">Re-index (3)</button>
+        <button class="btn btn-sm">Export</button>
+      </div>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:36px"><input type="checkbox"/></th>
+          <th style="width:48px">#</th>
+          <th>Feature code</th>
+          <th>Feature Chinese/English name</th>
+          <th>Stability level</th>
+          <th>Real-time level</th>
+          <th>Entity</th>
+          <th style="color:var(--primary)">RAG Status</th>
+          <th style="color:var(--primary)">Last Synced</th>
+          <th>Operation</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><input type="checkbox" checked/></td>
+          <td class="muted mono">1</td>
+          <td><span class="code">slice_is_in_battle</span></td>
+          <td><div class="cell-name"><span class="cn">CN name: 切片是否在 PK 中</span><span class="cn">EN name: Slice · In Battle</span></div></td>
+          <td><span class="chip sla-a">A</span></td>
+          <td>Second level</td>
+          <td>Video Slice</td>
+          <td><span class="chip status-indexed"><span class="dot green"></span>Indexed</span></td>
+          <td class="muted mono">07-08 14:22</td>
+          <td>
+            <button class="btn-ghost btn-sm">Feature Monitor</button>
+            <button class="btn-ghost btn-sm">Go to Grafana</button>
+            <button class="btn-ghost btn-sm" onclick="switchPage('f2')">View RAG</button>
+          </td>
+        </tr>
+        <tr>
+          <td><input type="checkbox" checked/></td>
+          <td class="muted mono">2</td>
+          <td><span class="code">account_eco_enforce_cnt_room_level_135833c4_1_day</span></td>
+          <td><div class="cell-name"><span class="cn">CN name: 房间层级经济处罚计数 · 1 天</span><span class="cn">EN name: Account · Eco Enforce Cnt · Room · 1 Day</span></div></td>
+          <td><span class="chip sla-a">A</span></td>
+          <td>Second level</td>
+          <td>Live room</td>
+          <td><span class="chip status-indexed"><span class="dot green"></span>Indexed</span></td>
+          <td class="muted mono">07-08 14:22</td>
+          <td>
+            <button class="btn-ghost btn-sm">Feature Monitor</button>
+            <button class="btn-ghost btn-sm">Go to Grafana</button>
+            <button class="btn-ghost btn-sm">View RAG</button>
+          </td>
+        </tr>
+        <tr>
+          <td><input type="checkbox" checked/></td>
+          <td class="muted mono">3</td>
+          <td><span class="code">account_policy_human_detected_cnt_135833c4_30_day</span></td>
+          <td><div class="cell-name"><span class="cn">CN name: 策略人工识别计数 · 30 天</span><span class="cn">EN name: Account · Policy Human Detected · 30 Day</span></div></td>
+          <td><span class="chip sla-a">A</span></td>
+          <td>Second level</td>
+          <td>User</td>
+          <td><span class="chip status-indexed"><span class="dot green"></span>Indexed</span></td>
+          <td class="muted mono">07-08 14:22</td>
+          <td>
+            <button class="btn-ghost btn-sm">Feature Monitor</button>
+            <button class="btn-ghost btn-sm">Go to Grafana</button>
+            <button class="btn-ghost btn-sm">View RAG</button>
+          </td>
+        </tr>
+        <tr>
+          <td><input type="checkbox"/></td>
+          <td class="muted mono">4</td>
+          <td><span class="code">anchor_account_punish_count_135833c4_lmg_365_day</span></td>
+          <td><div class="cell-name"><span class="cn">CN name: 主播账号处罚计数 · 365 天</span><span class="cn">EN name: Anchor · Account Punish Count · 365 Day</span></div></td>
+          <td><span class="chip sla-b">B</span></td>
+          <td>Minute level</td>
+          <td>User-live room</td>
+          <td><span class="chip status-failed"><span class="dot red"></span>Failed</span></td>
+          <td class="muted mono">07-08 03:15</td>
+          <td>
+            <button class="btn-ghost btn-sm">Feature Monitor</button>
+            <button class="btn-ghost btn-sm">Go to Grafana</button>
+            <button class="btn-ghost btn-sm">Re-run</button>
+          </td>
+        </tr>
+        <tr>
+          <td><input type="checkbox"/></td>
+          <td class="muted mono">5</td>
+          <td><span class="code">room_country_root</span><span class="enum-badge">enum · 6
+            <div class="enum-pop">
+              <div class="enum-pop-hd"><span>Output samples · <span class="i-cn">取值与业务含义</span><span class="i-en">values &amp; meanings</span></span><span class="n">6 values</span></div>
+              <div class="enum-pop-row"><span class="ev">idlist1</span><span class="em"><span class="i-cn">高风险主播名单</span><span class="i-en">high-risk anchor list</span></span></div>
+              <div class="enum-pop-row"><span class="ev">idlist2</span><span class="em"><span class="i-cn">主播白名单</span><span class="i-en">anchor whitelist</span></span></div>
+              <div class="enum-pop-row"><span class="ev">idlist3</span><span class="em"><span class="i-cn">新主播观察名单</span><span class="i-en">new-anchor watchlist</span></span></div>
+              <div class="enum-pop-row"><span class="ev">idlist4</span><span class="em"><span class="i-cn">PK 违规历史名单</span><span class="i-en">PK violation history list</span></span></div>
+              <div class="enum-pop-row"><span class="ev">idlist5</span><span class="em"><span class="i-cn">灰产关联账号名单</span><span class="i-en">gray-market linked accounts</span></span></div>
+              <div class="enum-pop-more" onclick="switchPage('f2')"><span class="i-cn">+1 more · 查看详情 →</span><span class="i-en">+1 more · View detail →</span></div>
+            </div></span></td>
+          <td><div class="cell-name"><span class="cn">CN name: 房间归属根国家</span><span class="cn">EN name: Room · Root Country</span></div></td>
+          <td><span class="chip sla-a">A</span></td>
+          <td>Hour level</td>
+          <td>Live room</td>
+          <td><span class="chip status-indexed"><span class="dot green"></span>Indexed</span></td>
+          <td class="muted mono">07-08 14:22</td>
+          <td>
+            <button class="btn-ghost btn-sm">Feature Monitor</button>
+            <button class="btn-ghost btn-sm">Go to Grafana</button>
+            <button class="btn-ghost btn-sm">View RAG</button>
+          </td>
+        </tr>
+        <tr>
+          <td><input type="checkbox"/></td>
+          <td class="muted mono">6</td>
+          <td><span class="code">room_country_broadcast</span><span class="enum-badge">enum · 5
+            <div class="enum-pop">
+              <div class="enum-pop-hd"><span>Output samples · <span class="i-cn">取值与业务含义</span><span class="i-en">values &amp; meanings</span></span><span class="n">5 values</span></div>
+              <div class="enum-pop-row"><span class="ev">idlist1</span><span class="em"><span class="i-cn">开播国白名单房间</span><span class="i-en">broadcast-country whitelist rooms</span></span></div>
+              <div class="enum-pop-row"><span class="ev">idlist2</span><span class="em"><span class="i-cn">跨区开播观察名单</span><span class="i-en">cross-region broadcast watchlist</span></span></div>
+              <div class="enum-pop-row"><span class="ev">idlist3</span><span class="em"><span class="i-cn">合规受限区域房间名单</span><span class="i-en">compliance-restricted region rooms</span></span></div>
+              <div class="enum-pop-row"><span class="ev">idlist4</span><span class="em"><span class="i-cn">高风险开播地房间名单</span><span class="i-en">high-risk broadcast-location rooms</span></span></div>
+              <div class="enum-pop-row"><span class="ev">idlist5</span><span class="em"><span class="i-cn">strategy 灰度房间名单</span><span class="i-en">strategy canary room list</span></span></div>
+            </div></span></td>
+          <td><div class="cell-name"><span class="cn">CN name: 直播开播国</span><span class="cn">EN name: Room · Broadcast Country</span></div></td>
+          <td><span class="chip sla-c">C</span></td>
+          <td>Day level</td>
+          <td>Live room</td>
+          <td><span class="chip status-indexed"><span class="dot green"></span>Indexed</span></td>
+          <td class="muted mono">07-08 14:22</td>
+          <td>
+            <button class="btn-ghost btn-sm">Feature Monitor</button>
+            <button class="btn-ghost btn-sm">Go to Grafana</button>
+            <button class="btn-ghost btn-sm">View RAG</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="pagination">
+      <span>Showing <b style="color:var(--text-1)">1–20</b> of <b style="color:var(--text-1)">7,024</b> features</span>
+      <div class="pages">
+        <span class="page-btn nav">‹ Prev</span>
+        <span class="page-btn on">1</span>
+        <span class="page-btn">2</span>
+        <span class="page-btn">3</span>
+        <span class="page-btn">4</span>
+        <span class="page-btn">5</span>
+        <span class="page-ellipsis">…</span>
+        <span class="page-btn">352</span>
+        <span class="page-btn nav">Next ›</span>
+      </div>
+      <div class="page-size">
+        <select><option>20 / page</option><option>50 / page</option><option>100 / page</option></select>
+        <span>Go to</span>
+        <input class="input" style="width:52px;padding:4px 6px;font-size:12px" value="1"/>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= F2 · FEATURE DETAIL ================= -->
+<div class="page" id="page-f2">
+  <div class="page-header">
+    <div>
+      <div class="crumb">Knowledge Library <span class="sep">/</span> <span class="mono">slice_is_in_battle</span></div>
+      <div class="page-title">Slice · In Battle <span style="font-size:14px;color:var(--text-3);font-weight:500">切片是否在 PK 中</span></div>
+      <div class="page-sub" style="margin-top:8px;display:flex;gap:16px;flex-wrap:wrap">
+        <span><span class="chip type-model">Model</span></span>
+        <span><span class="chip sla-a">SLA A</span></span>
+        <span><span class="chip status-indexed"><span class="dot green"></span>Indexed</span></span>
+        <span class="muted">Last synced: 2026-07-08 14:22</span>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn">Re-index</button>
+      <button class="btn btn-primary">Edit Description</button>
+    </div>
+  </div>
+
+  <div class="detail-grid">
+    <!-- LEFT · Meta (read-only) -->
+    <div class="panel">
+      <div class="panel-header">
+        <div>
+          <div class="panel-title">Feature Meta</div>
+          <div class="panel-hint">Synced from Feature Platform · read-only</div>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="meta-item">
+          <div class="meta-key">Feature Code</div>
+          <div class="meta-val mono">slice_is_in_battle</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-key">Feature English name</div>
+          <div class="meta-val">Slice · In Battle</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-key">Feature Chinese name</div>
+          <div class="meta-val">切片是否在 PK 中</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-key">Feature type</div>
+          <div class="meta-val">Model feature</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-key">Owner entity</div>
+          <div class="meta-val">Video Slice</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-key">Date type</div>
+          <div class="meta-val">FLOAT64</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-key">Stability level</div>
+          <div class="meta-val">A <span class="tag-inline">system-evaluated</span></div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-key">Real-time level</div>
+          <div class="meta-val">Second level</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-key">Feature validity</div>
+          <div class="meta-val">Minute level</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-key">Data Source Extra</div>
+          <div class="meta-val">DAG</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-key">Config Mode</div>
+          <div class="meta-val">Field Mode</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-key">Output Samples <span class="tag-inline" style="background:#EDE9FE;color:#5B21B6">new 07/28 · optional</span></div>
+          <div style="font-size:11px;color:var(--text-4);margin:4px 0 6px"><span class="i-cn">示例特征：treco_room_status（categorization · 4 values）</span><span class="i-en">Example: treco_room_status (categorization · 4 values)</span></div>
+          <div class="enum-pop-row"><span class="ev">RoomStatusEnum_Prepare</span><span class="em"><span class="i-cn">开播准备中</span><span class="i-en">preparing to go live</span></span></div>
+          <div class="enum-pop-row"><span class="ev">RoomStatusEnum_Living</span><span class="em"><span class="i-cn">直播中</span><span class="i-en">live / broadcasting</span></span></div>
+          <div class="enum-pop-row"><span class="ev">RoomStatusEnum_Pause</span><span class="em"><span class="i-cn">暂停（PK / 连麦挂起等）</span><span class="i-en">paused (PK / co-host suspended)</span></span></div>
+          <div class="enum-pop-row"><span class="ev">RoomStatusEnum_Finish</span><span class="em"><span class="i-cn">已结束</span><span class="i-en">ended</span></span></div>
+          <div style="font-size:10.5px;color:var(--text-4);margin-top:6px;line-height:1.5"><span class="i-cn">仅 categorization features 维护 · 非必填 · model feature 不适用 · 进入向量化文本，Ask AI 可直接查询</span><span class="i-en">Categorization features only · optional · N/A for model features · feeds embedding text, queryable via Ask AI</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MIDDLE · Structured text preview -->
+    <div class="panel">
+      <div class="panel-header">
+        <div>
+          <div class="panel-title">Structured Text · Ready for Embedding</div>
+          <div class="panel-hint"><span class="i-cn">向量化前的可读结构化文本 · 拼装规则见 F6</span><span class="i-en">Readable pre-embedding text · assembly rules in F6</span></div>
+        </div>
+        <button class="btn btn-sm">Regenerate</button>
+      </div>
+      <div class="panel-body">
+        <div class="structured-block"><span class="k">FEATURE:</span> <span class="v">slice_is_in_battle</span>
+<span class="k">TYPE:</span>     <span class="v">Model feature</span>
+<span class="k">ENTITY:</span>   <span class="v">Video Slice</span>
+<span class="k">VALUE:</span>    <span class="v">FLOAT64 · minute-level · SLA A</span>
+
+<span class="k">DESCRIPTION</span>
+Whether the given video slice is currently in a PK (battle) session
+between two live rooms. Returns 1 when the slice belongs to a room that
+is engaged in an active PK; 0 otherwise. Used for governance policies
+that treat PK sessions differently from normal broadcast (e.g. gift-boost
+scenarios, cross-room co-broadcast risk models).
+
+<span class="k">USAGE SCOPE</span>
+Generic · applies to any live-room governance policy involving PK state.
+Not bound to a specific policy code.
+
+<span class="k">DATA SOURCE</span>
+Upstream data source: DAG pipeline
+Nodes:
+  - GetLocalFeatureProvider (fetches treco_user_name, treco_room_title,
+    slice_sub_feature_info, slice_is_in_battle, slice_effect ...)
+  - LLMGatewayInferenceProvider (biz_code: atlas.issue_discovery.htd_normal_filter)
+Task key: zeta_inference_htd
+
+<span class="k">CODE LOGIC (extracted)</span>
+1. GetLocalFeatureProvider assembles the slice's feature list
+2. LLMGatewayInferenceProvider runs prompt_id 7655179793482631943 (v2)
+3. Result JMES: (label &amp;&amp; `1`) || `0`
+4. Fallback value: 0
+
+<span class="k">RATE LIMIT</span>
+Rate limited per caller PSM, per-VDC QPS cap.
+</div>
+      </div>
+    </div>
+
+    <!-- RIGHT · Embedding + Try Q&A -->
+    <div class="panel">
+      <div class="panel-header">
+        <div>
+          <div class="panel-title">RAG Status</div>
+          <div class="panel-hint">Embedding · vector store</div>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="embed-row"><span class="k">Status</span><span class="v"><span class="chip status-indexed"><span class="dot green"></span>Indexed</span></span></div>
+        <div class="embed-row"><span class="k">Vector ID</span><span class="v mono">vec_9f2a…c81b</span></div>
+        <div class="embed-row"><span class="k">Embedding model</span><span class="v">bge-m3</span></div>
+        <div class="embed-row"><span class="k">Chunk count</span><span class="v">3</span></div>
+        <div class="embed-row"><span class="k">First indexed</span><span class="v mono">07-05 09:12</span></div>
+        <div class="embed-row"><span class="k">Last synced</span><span class="v mono">07-08 14:22</span></div>
+        <div class="embed-row"><span class="k">Coverage</span><span class="v">Discovery + Q&amp;A</span></div>
+
+        <div class="section-hd">Recall Test · 召回验证</div>
+        <div class="try-box">
+          <div class="try-hint"><span class="i-cn">用一句真实问法验证该特征能否被 Ask AI 召回（只读演示 · 消费 INDEXED 向量）</span><span class="i-en">Validate that this feature can be recalled by Ask AI with a real question (read-only demo · consumes INDEXED vectors)</span></div>
+          <input class="try-input" value="这个特征在 PK 中怎么用？" readonly/>
+          <div class="try-answer"><b style="color:var(--text-1)">Recall test passed ✓</b> · <span class="i-cn">top-1 命中 <span class="mono">slice_is_in_battle</span> · score 0.91（阈值 0.65）</span><span class="i-en">top-1 hit <span class="mono">slice_is_in_battle</span> · score 0.91 (threshold 0.65)</span></div>
+        </div>
+
+        <div class="agent-note" style="margin-top:14px;padding:10px 12px;background:var(--bg-soft);border:1px dashed var(--border-strong);border-radius:var(--radius)">
+          <b style="color:var(--text-2)">Boundary ·</b> <span class="i-cn">详情页只负责查看、确认、Regenerate / Re-index，不承载新特征创建与补录。创建新特征请前往</span><span class="i-en">The detail page is for viewing, confirmation, Regenerate / Re-index only — no new-feature creation or backfill. To create a new feature, go to</span>
+          <a href="javascript:void(0)" onclick="switchPage('f3')" style="color:var(--primary);font-weight:600">F3 · New feature entry · Ask AI →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ================= F3 · NEW FEATURE ================= -->
+<div class="page" id="page-f3">
+  <div class="page-header">
+    <div>
+      <div class="crumb">Knowledge Library <span class="sep">/</span> New Feature</div>
+      <div class="page-title">Register New Feature · 录入特征</div>
+      <div class="page-sub"><span class="i-cn">主路径：New feature entry · Ask AI（从描述业务诉求开始，由 Agent 问答生成方案）· 手动模板为次要路径</span><span class="i-en">Main journey: New feature entry · Ask AI (start from describing the business need; the Agent generates the proposal via Q&amp;A) · manual template is secondary</span></div>
+    </div>
+  </div>
+
+  <!-- v0.3 · New feature entry · Ask AI empty state (main journey) -->
+  <div class="ai-entry-card">
+    <span class="ai-entry-eyebrow">✦ New feature entry · Ask AI <span style="font-weight:700">· Create mode</span></span>
+    <div class="ai-entry-title"><span class="i-cn">从描述业务诉求开始，让 Agent 帮你生成新 feature 方案</span><span class="i-en">Start from the business need — let the Agent generate your new feature proposal</span></div>
+    <div class="ai-entry-sub"><span class="i-cn">你不需要先手填模板。<b>Start from describing</b> —— 描述你想创建的新特征要解决什么策略问题，Agent 会按 F3 表单结构追问 feature meaning、entity、data source、owner、usage example、risk / limitation，并实时生成 New Feature Proposal。</span><span class="i-en">No need to fill a template first. <b>Start from describing</b> — explain what strategy problem the new feature should solve. The Agent asks for feature meaning, entity, data source, owner, usage example, risk / limitation following the F3 form structure, and renders the New Feature Proposal in real time.</span></div>
+    <div class="ai-entry-actions">
+      <button class="btn btn-primary ai-entry-btn" onclick="openAgentEntry()">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M12 2l2.4 5.8L20 10l-5.6 2.2L12 18l-2.4-5.8L4 10l5.6-2.2z"/></svg>
+        Start Agent Entry
+      </button>
+      <span class="ai-entry-hint"><span class="i-cn">需要 RAG 编辑权限 · One task = one conversation</span><span class="i-en">Requires RAG edit permission · One task = one conversation</span></span>
+    </div>
+    <div class="ai-entry-steps">
+      <div class="ai-entry-step"><b>1 · Describe &amp; Q&amp;A</b><span class="i-cn">描述策略问题，Agent 追问并按表单结构收集字段</span><span class="i-en">Describe the strategy problem; the Agent collects fields per the form structure</span></div>
+      <div class="ai-entry-step"><b>2 · Confirm → Skills Evaluation</b><span class="i-cn">确认 Proposal 后由 Agent skills 评估入库要求，不走人工审批</span><span class="i-en">After Confirm, Agent skills evaluate against knowledge-base requirements — no manual approval</span></div>
+      <div class="ai-entry-step"><b>3 · Submit → Embedding queue</b><span class="i-cn">写入 FP Meta + Knowledge Library，索引成功即 INDEXED 可召回</span><span class="i-en">Written to FP Meta + Knowledge Library; INDEXED and retrievable once embedding succeeds</span></div>
+    </div>
+  </div>
+
+  <div class="manual-toggle-bar">
+    <span><span class="i-cn">次要路径 · 手动模板</span><span class="i-en">Secondary path · manual template</span></span>
+    <button class="btn btn-sm" id="manual-btn" onclick="toggleManualForm(this)">展开手动表单</button>
+  </div>
+
+  <div class="form-card" id="manual-form" style="display:none">
+    <div class="form-info-banner">
+      <svg class="icon" viewBox="0 0 24 24" style="color:var(--primary);flex-shrink:0"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+      <div>
+        <span class="i-cn">本页面同时把特征写入 <strong>Feature Platform Meta</strong> 与 <strong>Knowledge Library</strong>。所有特征都会自动进入 embedding 队列。</span><span class="i-en">This page writes the feature to both <strong>Feature Platform Meta</strong> and <strong>Knowledge Library</strong>. All features automatically enter the embedding queue.</span><br>
+        <span style="font-size:11.5px;color:var(--text-3)"><span class="i-cn">提交后不走人工审批 · 触发 <strong>Agent Skills Evaluation</strong>（检查必填完整度 / 语义清晰度 / source·owner 可追溯 / usage example 可召回性 / risk 覆盖上线边界），通过后进入 embedding queue。</span><span class="i-en">No manual approval on submit · triggers <strong>Agent Skills Evaluation</strong> (required-field completeness / semantic clarity / source &amp; owner traceability / usage-example recallability / risk covering launch boundaries); enters the embedding queue once passed.</span></span>
+      </div>
+    </div>
+
+    <div class="form-tabs">
+      <div class="form-tab active">Basic Info</div>
+      <div class="form-tab">Storage &amp; Data Source</div>
+      <div class="form-tab">Rate Limit</div>
+      <div class="form-tab" style="color:var(--primary)">Knowledge Library <span class="tag-inline" style="background:var(--primary-light);color:var(--primary)">new</span></div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-field">
+        <label class="field-label">Feature English name <span class="req">*</span></label>
+        <input class="input" placeholder="e.g. Slice · In Battle"/>
+      </div>
+      <div class="form-field">
+        <label class="field-label">Feature Chinese name <span class="req">*</span></label>
+        <input class="input" placeholder="例：切片是否在 PK 中"/>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-field full">
+        <label class="field-label">Short description · 一句话解释 <span class="req">*</span> <span class="muted">(≤ 80 字，用于列表 / Ask AI 摘要 / hover)</span></label>
+        <input class="input" placeholder="切片是否在直播间 PK 中"/>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-field">
+        <label class="field-label">Feature code <span class="req">*</span></label>
+        <input class="input mono" placeholder="slice_is_in_battle"/>
+      </div>
+      <div class="form-field">
+        <label class="field-label">Owner entity · 主体 <span class="req">*</span></label>
+        <select class="select">
+          <option>Live room</option><option>User</option><option>User-User</option>
+          <option>User-live room</option><option>Device</option><option>Video Slice</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-field">
+        <label class="field-label">Feature type <span class="req">*</span></label>
+        <select class="select">
+          <option>Ordinary feature</option><option>Metric feature</option><option>Model feature</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label class="field-label">Date type <span class="req">*</span></label>
+        <select class="select">
+          <option>INT64</option><option>STRING</option><option>BOOL</option>
+          <option>STRING_LIST</option><option>FLOAT64</option><option>ENUM</option><option>INT64_LIST</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-field">
+        <label class="field-label">Stability level <span class="tag-inline">system-evaluated</span></label>
+        <input class="input" value="A · pending eval" disabled style="background:var(--bg-soft);color:var(--text-3)"/>
+      </div>
+      <div class="form-field">
+        <label class="field-label">Real-time level <span class="req">*</span></label>
+        <select class="select">
+          <option>Second level</option><option>Minute level</option><option>Hour level</option><option>Day level</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="divider-lbl">RAG 分类 · Classification <span class="tag-inline" style="background:var(--primary-light);color:var(--primary)">follows FP dimensions</span></div>
+
+    <div class="form-row">
+      <div class="form-field">
+        <label class="field-label">Freshness · 时效性 <span class="req">*</span></label>
+        <div class="radio-group">
+          <div class="radio-chip on" onclick="pickRadio(this)">Online 在线</div>
+          <div class="radio-chip" onclick="pickRadio(this)">Offline 离线</div>
+        </div>
+      </div>
+      <div class="form-field">
+        <label class="field-label">Source · 来源 <span class="req">*</span></label>
+        <div class="radio-group">
+          <div class="radio-chip on" onclick="pickRadio(this)">Native 原生</div>
+          <div class="radio-chip" onclick="pickRadio(this)">Derived 衍生</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-field">
+        <label class="field-label">Usage · 用途 <span class="req">*</span> <span class="muted">(multi)</span></label>
+        <div class="chip-multi">
+          <span class="chip-check on" onclick="this.classList.toggle('on')">Model 模型</span>
+          <span class="chip-check" onclick="this.classList.toggle('on')">Strategy 策略</span>
+          <span class="chip-check" onclick="this.classList.toggle('on')">Metric 指标</span>
+          <span class="chip-check on" onclick="this.classList.toggle('on')">RAG 检索</span>
+        </div>
+      </div>
+      <div class="form-field">
+        <label class="field-label">Scope · 作用域 <span class="req">*</span></label>
+        <div class="radio-group">
+          <div class="radio-chip on" onclick="pickRadio(this)">Common 通用</div>
+          <div class="radio-chip" onclick="pickRadio(this)">Current scenario</div>
+          <div class="radio-chip" onclick="pickRadio(this)">Scenario specific</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider-lbl">覆盖范围 · Coverage <span class="tag-inline" style="background:var(--primary-light);color:var(--primary)">new</span></div>
+
+    <div class="form-row">
+      <div class="form-field">
+        <label class="field-label">Business domain · 业务域</label>
+        <input class="input" placeholder="e.g. live_governance / content_review"/>
+      </div>
+      <div class="form-field">
+        <label class="field-label">Scenarios · 场景 <span class="muted">(multi · Scope=Scenario specific 时必填)</span></label>
+        <div class="chip-multi">
+          <span class="chip-check on" onclick="this.classList.toggle('on')">live_review</span>
+          <span class="chip-check on" onclick="this.classList.toggle('on')">anchor_violation</span>
+          <span class="chip-check" onclick="this.classList.toggle('on')">risk_recall</span>
+          <span class="chip-check" onclick="this.classList.toggle('on')">strategy_thresholding</span>
+          <span class="chip-check" style="border-style:dashed;color:var(--primary)">+ 添加场景</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-field">
+        <label class="field-label">Supported regions · 支持国家/区域 <span class="req">*</span> <span class="muted">(multi)</span></label>
+        <div class="chip-multi">
+          <span class="chip-check" onclick="this.classList.toggle('on')">Global</span>
+          <span class="chip-check on" onclick="this.classList.toggle('on')">SEA</span>
+          <span class="chip-check" onclick="this.classList.toggle('on')">US</span>
+          <span class="chip-check" onclick="this.classList.toggle('on')">EU</span>
+          <span class="chip-check" onclick="this.classList.toggle('on')">LATAM</span>
+          <span class="chip-check" onclick="this.classList.toggle('on')">MEA</span>
+          <span class="chip-check" style="border-style:dashed;color:var(--primary)">+ Add</span>
+        </div>
+      </div>
+      <div class="form-field">
+        <label class="field-label">Not available in <span class="muted">(exceptions)</span></label>
+        <input class="input" placeholder="e.g. JP, KR (会体现在 Ask AI 提示 &quot;此特征不适用&quot;)"/>
+      </div>
+    </div>
+
+    <div class="divider-lbl">Feature Content · 描述与逻辑</div>
+
+    <div class="form-row">
+      <div class="form-field full">
+        <label class="field-label">Feature description · 特征含义描述 <span class="req">*</span></label>
+        <textarea class="input" rows="4" placeholder="详细描述这个特征衡量什么、输入/输出的语义、使用场景。文本会灌入向量库供 Ask AI 检索。"></textarea>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-field full">
+        <label class="field-label">Coding · 代码逻辑 <span class="req">*</span></label>
+        <textarea class="input mono" rows="6" style="font-size:12px" placeholder="Paste snippet, DAG node config, JMES path etc."></textarea>
+        <div class="muted mt-2" style="font-size:11.5px">RD 补齐 · 后期可用 Agent 读策略代码 + 血缘自动推导</div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-field full">
+        <label class="field-label">Data source <span class="req">*</span> <span class="muted">(multi · 选取上游 subfeature 数据源)</span></label>
+        <div class="chip-multi">
+          <span class="chip-check on" onclick="this.classList.toggle('on')" style="font-family:'SF Mono',Consolas,monospace;font-size:11px">ocr_text_default_lower<span style="color:var(--text-3);font-family:-apple-system,sans-serif;font-weight:400;margin-left:6px">OCR</span></span>
+          <span class="chip-check" onclick="this.classList.toggle('on')" style="font-family:'SF Mono',Consolas,monospace;font-size:11px">slice_info_host_asr_text<span style="color:var(--text-3);font-family:-apple-system,sans-serif;font-weight:400;margin-left:6px">ASR</span></span>
+          <span class="chip-check" onclick="this.classList.toggle('on')" style="font-family:'SF Mono',Consolas,monospace;font-size:11px">treco_room_lower_title<span style="color:var(--text-3);font-family:-apple-system,sans-serif;font-weight:400;margin-left:6px">直播间标题</span></span>
+          <span class="chip-check" onclick="this.classList.toggle('on')" style="font-family:'SF Mono',Consolas,monospace;font-size:11px">treco_user_lower_bio_description<span style="color:var(--text-3);font-family:-apple-system,sans-serif;font-weight:400;margin-left:6px">bio</span></span>
+          <span class="chip-check" onclick="this.classList.toggle('on')" style="font-family:'SF Mono',Consolas,monospace;font-size:11px">treco_user_lower_name<span style="color:var(--text-3);font-family:-apple-system,sans-serif;font-weight:400;margin-left:6px">用户名称</span></span>
+          <span class="chip-check" onclick="this.classList.toggle('on')" style="font-family:'SF Mono',Consolas,monospace;font-size:11px">room_sub_feature_text_content_live_goal<span style="color:var(--text-3);font-family:-apple-system,sans-serif;font-weight:400;margin-left:6px">LIVE goal</span></span>
+          <span class="chip-check" onclick="this.classList.toggle('on')" style="font-family:'SF Mono',Consolas,monospace;font-size:11px">room_sub_feature_text_content_about_me<span style="color:var(--text-3);font-family:-apple-system,sans-serif;font-weight:400;margin-left:6px">about me</span></span>
+          <span class="chip-check" onclick="this.classList.toggle('on')" style="font-family:'SF Mono',Consolas,monospace;font-size:11px">room_sub_feature_text_content_pin_message<span style="color:var(--text-3);font-family:-apple-system,sans-serif;font-weight:400;margin-left:6px">pin</span></span>
+          <span class="chip-check" onclick="this.classList.toggle('on')" style="font-family:'SF Mono',Consolas,monospace;font-size:11px">room_sub_feature_text_content_sticker<span style="color:var(--text-3);font-family:-apple-system,sans-serif;font-weight:400;margin-left:6px">sticker</span></span>
+          <span class="chip-check" onclick="this.classList.toggle('on')" style="font-family:'SF Mono',Consolas,monospace;font-size:11px">room_sub_feature_text_content_live_board<span style="color:var(--text-3);font-family:-apple-system,sans-serif;font-weight:400;margin-left:6px">LIVE board</span></span>
+          <span class="chip-check" onclick="this.classList.toggle('on')" style="font-family:'SF Mono',Consolas,monospace;font-size:11px">room_sub_feature_text_content_poll<span style="color:var(--text-3);font-family:-apple-system,sans-serif;font-weight:400;margin-left:6px">poll</span></span>
+          <span class="chip-check" style="border-style:dashed;color:var(--primary)">+ 添加</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider-lbl">RAG Discovery · 检索增强 <span class="tag-inline" style="background:var(--primary-light);color:var(--primary)">optional but recommended</span></div>
+
+    <div class="form-row">
+      <div class="form-field full">
+        <label class="field-label">Search summary · 检索摘要 <span class="muted">(2–3 句 · 灌入向量库的可读摘要)</span></label>
+        <textarea class="input" rows="2" placeholder="例：这是一个 room 粒度的在线原生特征，用于表示直播间当前是否处于 PK 状态，可用于 IDSP 策略场景中的风险叠加。"></textarea>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-field full">
+        <label class="field-label">Aliases · 别名 / 同义词 / 常见误拼 <span class="muted">(帮助 Ask AI 提升召回)</span></label>
+        <div class="chip-multi">
+          <span class="chip-check on" onclick="this.classList.toggle('on')">battle_flag</span>
+          <span class="chip-check on" onclick="this.classList.toggle('on')">is_pk</span>
+          <span class="chip-check on" onclick="this.classList.toggle('on')">PK 状态</span>
+          <span class="chip-check" style="border-style:dashed;color:var(--primary)">+ 添加别名</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-field full">
+        <label class="field-label">RAG tags · 检索标签 <span class="muted">(chips · Ask AI 侧过滤/加权用)</span></label>
+        <div class="chip-multi">
+          <span class="chip-check on" onclick="this.classList.toggle('on')">room</span>
+          <span class="chip-check on" onclick="this.classList.toggle('on')">pk</span>
+          <span class="chip-check on" onclick="this.classList.toggle('on')">online</span>
+          <span class="chip-check on" onclick="this.classList.toggle('on')">native</span>
+          <span class="chip-check" onclick="this.classList.toggle('on')">idsp</span>
+          <span class="chip-check" style="border-style:dashed;color:var(--primary)">+ 添加 tag</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-field full">
+        <label class="field-label">Common questions · 常见问法 <span class="muted">(one per line · 用户真实会问的话)</span></label>
+        <textarea class="input" rows="3" placeholder="这个特征在 PK 中怎么用？&#10;开播国 SEA 能不能用这个特征？&#10;这个特征和 room_country_root 是什么关系？"></textarea>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-field full">
+        <label class="field-label">Output samples · 取值枚举与业务含义 <span class="muted">(optional · 仅 categorization features · model feature 不适用)</span></label>
+        <textarea class="input mono" rows="3" style="font-size:12px" placeholder="RoomStatusEnum_Prepare → 开播准备中&#10;RoomStatusEnum_Living → 直播中&#10;001 → Game LIVE room"></textarea>
+        <div class="muted mt-2" style="font-size:11.5px">完整取值枚举 + 每个值的业务含义 · 进入向量化文本，Ask AI 可直接回答"这个特征有哪些取值 / 001 代表什么"</div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-field">
+        <label class="field-label">Usage example · 使用示例</label>
+        <textarea class="input" rows="3" placeholder="例：在 anchor_violation 策略中，slice_is_in_battle = 1 时叠加 2x 处罚权重"></textarea>
+      </div>
+      <div class="form-field">
+        <label class="field-label">Risk / limitation · 风险与限制</label>
+        <textarea class="input" rows="3" placeholder="例：PK 结束后 30s 内可能有延迟；不适用于批量后处理场景"></textarea>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn">Cancel</button>
+      <button class="btn">Save as Draft</button>
+      <button class="btn btn-primary">Submit to Agent Evaluation</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ================= F4 · Q&A widget explainer page ================= -->
+<div class="page" id="page-f4">
+  <div class="page-header">
+    <div>
+      <div class="crumb">Knowledge Library <span class="sep">/</span> AI Q&amp;A Widget</div>
+      <div class="page-title">AI Q&amp;A Widget · 悬浮窗方案说明</div>
+      <div class="page-sub"><span class="i-cn">页面右下常驻 · 未来底层 agent 会同时对接 Lark 对话框（同一个 agent，两个入口）</span><span class="i-en">Always on at the bottom right · the same agent will later also power a Lark dialog (one agent, two entries)</span></div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 520px;gap:20px">
+    <div class="panel">
+      <div class="panel-header"><div class="panel-title">Design Notes / 设计说明</div></div>
+      <div class="panel-body">
+        <div class="section-hd">Positioning · 定位</div>
+        <ul style="margin-left:20px;color:var(--text-2);line-height:1.9">
+          <li>页面右下常驻 <span class="mono">Ask AI</span> 按钮 · 与现有 <span class="mono">Oncall</span> 悬浮窗<strong>并存</strong>（本期不动 Oncall）</li>
+          <li>点击弹出侧边面板（本 Sketch）· 支持最大化为居中 modal</li>
+          <li>底层 agent 未来与 Lark bot 共用一套</li>
+        </ul>
+
+        <div class="section-hd">Modes · 模式</div>
+        <ul style="margin-left:20px;color:var(--text-2);line-height:1.9">
+          <li><strong>Feature Discovery</strong>（本期唯一）—— 我该用哪个特征？逻辑是什么？稳定性如何？</li>
+          <li><strong>Platform Oncall 合并</strong>—— <strong>P2 再课 Oncall 团队</strong> 对齐，本期不 block；届时评估：并入 Ask AI / 保留独立</li>
+        </ul>
+
+        <div class="section-hd">Answer Pattern · 回答模式</div>
+        <ul style="margin-left:20px;color:var(--text-2);line-height:1.9">
+          <li>默认<strong>先解释用户问题可能涉及的业务口径</strong>，再按相关度排序展示 Feature Cards</li>
+          <li><strong>不标 Recommended</strong> · 只给轻量判断（Likely suitable / Likely not suitable / Need more context），最终决策留给业务</li>
+          <li>用户明确搜 <span class="mono">code / name</span> 时 → 跳过解释，直接返回列表</li>
+          <li>问题太泛且口径冲突明显（NEED_CLARIFICATION）→ <strong>最多追问 1 轮选项式澄清</strong>，用户回答或 Skip 后必须返回 Feature Cards</li>
+        </ul>
+
+        <div class="section-hd">Interaction · 交互</div>
+        <ul style="margin-left:20px;color:var(--text-2);line-height:1.9">
+          <li>示例 prompt 卡片 3 张 · 引导初次使用 · 对话在会话内连续追加（本期无跨会话记忆）</li>
+          <li>召回结果以 <strong>Feature Card</strong> 形式返回（含 why matched / scope / SLA / data source / owner / usage example / risk）· 点击 <strong>View detail to confirm</strong> 跳 F2</li>
+          <li><strong>LOW_CONFIDENCE</strong> · score &lt; 阈值：结果打灰 + “参考度低 / Low confidence”标签 + 引导补充场景</li>
+          <li><strong>NO_RESULT</strong> · 空结果：不编造答案，引导有 RAG 编辑权限的用户进入 F3 New feature entry · Ask AI；<strong>无编辑权限用户点击后弹申请权限弹窗</strong>，不进入写模式</li>
+          <li>Guardrail · 只消费 INDEXED Feature Knowledge，不编造特征逻辑；最终确认必须进入 F2 detail</li>
+        </ul>
+
+        <div class="section-hd">Rollout · 上线路径</div>
+        <ol style="margin-left:20px;color:var(--text-2);line-height:1.9">
+          <li><strong>Phase 1（本期）</strong> · Ask AI 悬浮窗独立上线 · 只做 Feature Discovery · Oncall widget 不动</li>
+          <li>Phase 2 · 记忆 / 多轮 / 收藏 + 与 Oncall 团队对齐是否合并</li>
+          <li>Phase 3 · Lark 对话框接入（同一 agent 底座）</li>
+        </ol>
+
+        <div class="section-hd">User Persona · 谁在问</div>
+        <p style="color:var(--text-2)">雪荣团队等业务方 —— 现有 7000+ 特征里只知道自己提过的几十个，其余靠"抓着艺楠、加浩问"。本 widget 就是把这个"图书管理员"角色搬到平台上。</p>
+      </div>
+    </div>
+
+    <!-- State gallery · Ask AI 关键状态（可在右下角悬浮窗实际点击体验） -->
+    <div class="state-gallery">
+      <div class="panel" style="border-style:dashed;background:var(--primary-light);border-color:#BFDBFE">
+        <div class="panel-body" style="padding:12px 16px;font-size:12.5px;color:#1E40AF">
+          ▶ 以下 4 个状态均已做成<strong>可交互演示</strong>：点击页面右下角 <strong>Ask AI · 问特征</strong> 悬浮窗，使用 3 条建议 prompt 或自由输入即可触发。
+        </div>
+      </div>
+
+      <div class="state-card">
+        <div class="state-card-hd">① 口径澄清（最多 1 轮 · 可 Skip）<span class="state-code">NEED_CLARIFICATION</span></div>
+        <div class="state-card-bd">
+          <div class="bubble user">我想找一个直播间开播国相关的特征</div>
+          <div class="bubble ai" style="max-width:100%">
+            <div class="interp">「开播国」在库里对应<b>多个容易误用的口径</b>（房间归属地 / 当前开播地 / 观众地区）。为避免误用，我先确认一次：</div>
+            <div class="clarify-box">
+              <div class="clarify-hd">你要的是哪种口径？<span class="once">只追问这 1 轮</span></div>
+              <div class="clarify-chips">
+                <span class="clarify-chip">房间归属根国家</span>
+                <span class="clarify-chip">当前开播国家</span>
+                <span class="clarify-chip">观众 / IP 地区</span>
+                <span class="clarify-chip skip">Skip · 直接看结果</span>
+              </div>
+            </div>
+          </div>
+          <div style="font-size:11.5px;color:var(--text-3)">规则：用户回答或 Skip 后，<b>必须</b>返回 Feature Cards，不允许连环追问。</div>
+        </div>
+      </div>
+
+      <div class="state-card">
+        <div class="state-card-hd">② 正常召回（先解释口径 → 排序卡片 · 不标 Recommended）<span class="state-code">FEATURE_CARDS</span></div>
+        <div class="state-card-bd">
+          <div class="bubble ai" style="max-width:100%">
+            <div class="interp">你选择了<b>房间归属根国家</b>口径。按相关度排序找到 2 个候选（不做最终推荐，请对比后使用）：</div>
+            <div class="feat-card">
+              <div class="feat-card-name">Room · Root Country <span class="fit-pill">Likely suitable</span></div>
+              <div class="feat-card-code">room_country_root</div>
+              <div class="feat-card-meta"><span>SLA A</span><span>·</span><span>Ordinary</span><span>·</span><span>Live room</span><span>·</span><span>Hour level</span></div>
+              <div class="feat-card-row"><b>Why matched:</b> 命中「直播间 + 国家口径」，语义对应房间归属地。</div>
+              <div class="feat-card-cta">View detail to confirm →</div>
+            </div>
+          </div>
+          <div style="font-size:11.5px;color:var(--text-3)">卡片字段：name CN/EN · code · why matched · scope · SLA/实时性/validity · data source · owner · usage example · risk。</div>
+        </div>
+      </div>
+
+      <div class="state-card">
+        <div class="state-card-hd">③ 低置信（score &lt; 阈值 · 灰显）<span class="state-code">LOW_CONFIDENCE</span></div>
+        <div class="state-card-bd">
+          <div class="bubble ai" style="max-width:100%">
+            <div class="interp">召回置信度低于展示阈值，以下结果<b>仅供参考</b>，建议补充使用场景后重试：</div>
+            <div class="feat-card low">
+              <div class="feat-card-name">Slice · Sub Feature Info <span class="low-pill">参考度低 · Low confidence</span></div>
+              <div class="feat-card-code">slice_sub_feature_info</div>
+              <div class="feat-card-row"><b>Why matched:</b> 仅部分命中「zero-shot 输入字段」语义，score 0.41（阈值 0.65）。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="state-card">
+        <div class="state-card-hd">④ 空结果 → 引导新建（含权限分支）<span class="state-code">NO_RESULT</span></div>
+        <div class="state-card-bd">
+          <div class="bubble ai" style="max-width:100%">
+            <div class="interp">没有召回可用特征。我<b>不会编造</b>特征逻辑 —— 你可以换个描述，或创建一条新 feature：</div>
+            <div class="qa-empty">
+              <div class="qa-empty-icon">🔍</div>
+              <div class="qa-empty-t">未找到匹配的 INDEXED 特征</div>
+              <div class="qa-empty-s">如业务确认需要新特征，可从描述策略问题开始，由 Agent 生成新 feature 方案。</div>
+              <div class="qa-empty-actions">
+                <button class="btn btn-sm">换个问法</button>
+                <button class="btn btn-sm btn-primary">去 F3 创建新 feature</button>
+              </div>
+            </div>
+          </div>
+          <div style="font-size:11.5px;color:var(--text-3)">权限分支：有 RAG 编辑权限 → 跳 F3 并打开 Agent Entry；<b>无权限 → 弹「申请权限」弹窗，不进入写模式</b>（悬浮窗右上角 RAG edit 开关可切换演示）。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= AGENT ENTRY MODAL (F3 main journey) ================= -->
+<div class="modal-overlay" id="agent-modal">
+  <div class="ae-window">
+    <div class="ae-head">
+      <div>
+        <div class="ae-title">Agent Entry · New Feature <span class="ae-task-chip">Task #1 · Create mode</span></div>
+        <div class="ae-sub">One new feature task = one conversation · <span class="i-cn">Proposal 字段结构与 F3 新特征表单一致</span><span class="i-en">Proposal fields follow the F3 new-feature form structure</span></div>
+      </div>
+      <button class="agent-window-close" onclick="closeAgentEntry()">×</button>
+    </div>
+
+    <div class="ae-body">
+      <!-- LEFT · Agent Q&A -->
+      <div class="ae-chat">
+        <div style="padding:12px 16px 0"><div class="agent-window-label">Agent Q&amp;A</div></div>
+        <div class="ae-chat-scroll" id="ae-chat"></div>
+        <div class="ae-success" id="ae-success">
+          <b><span class="i-cn">Submitted ✓ · 本次新 feature 创建任务已结束</span><span class="i-en">Submitted ✓ · this new-feature task is complete</span></b>
+          <span class="i-cn">已写入 <b style="display:inline">Feature Platform Meta + Knowledge Library</b>，并进入 embedding queue（索引成功后状态变为 INDEXED，Ask AI 立即可召回）。</span><span class="i-en">Written to <b style="display:inline">Feature Platform Meta + Knowledge Library</b> and queued for embedding (INDEXED once successful — Ask AI can retrieve it immediately).</span><br>
+          <span class="i-cn">当前 conversation 已关闭 —— 如需创建另一条 feature，请开启新的 Agent conversation，避免上下文混淆。</span><span class="i-en">This conversation is closed — start a new Agent conversation to create another feature and avoid mixed context.</span>
+        </div>
+        <div class="ae-input-row" id="ae-input-row">
+          <textarea id="ae-input" rows="2"></textarea>
+          <button class="btn btn-primary" id="ae-send" onclick="aeSend()">Send</button>
+        </div>
+      </div>
+
+      <!-- RIGHT · Generated New Feature Proposal (follows F3 form structure) -->
+      <div class="ae-side">
+        <div class="agent-window-label" style="display:flex;justify-content:space-between;align-items:center">
+          <span>Generated New Feature Proposal</span>
+          <span style="font-weight:600;color:var(--text-4);text-transform:none;letter-spacing:0"><span class="i-cn">实时渲染 · 同 F3 表单结构</span><span class="i-en">Rendered in real time · same structure as the F3 form</span></span>
+        </div>
+        <div class="prop-progress">
+          <div class="bar"><i id="prop-bar"></i></div>
+          <span class="num" id="prop-num">Required 0/19</span>
+        </div>
+        <div class="prop-locked" id="prop-locked">🔒 <span class="i-cn">Proposal 已确认锁定 · 如需修改请返回 Q&amp;A 补充</span><span class="i-en">Proposal confirmed &amp; locked · go back to Q&amp;A to make changes</span></div>
+
+        <div class="prop-section">
+          <div class="prop-section-hd">Basic Info <span class="cnt" data-sec="basic">0/8</span></div>
+          <div class="prop-row pending" id="p_name_en"><span class="pk">Feature English name <span class="req">*</span></span><span class="pv">待收集</span></div>
+          <div class="prop-row pending" id="p_name_cn"><span class="pk">Feature Chinese name <span class="req">*</span></span><span class="pv">待收集</span></div>
+          <div class="prop-row pending" id="p_short"><span class="pk">Short description <span class="req">*</span></span><span class="pv">待收集</span></div>
+          <div class="prop-row pending" id="p_code"><span class="pk">Feature code <span class="req">*</span></span><span class="pv">待收集</span></div>
+          <div class="prop-row pending" id="p_owner_entity"><span class="pk">Owner entity <span class="req">*</span></span><span class="pv">待收集</span></div>
+          <div class="prop-row pending" id="p_owner_team"><span class="pk">Owner · 负责团队 <span class="req">*</span></span><span class="pv">待收集</span></div>
+          <div class="prop-row pending" id="p_type"><span class="pk">Feature type <span class="req">*</span></span><span class="pv">待收集</span></div>
+          <div class="prop-row" id="p_stab"><span class="pk">Stability level</span><span class="pv muted">pending eval · system-evaluated</span></div>
+          <div class="prop-row pending" id="p_dtype"><span class="pk">Date type <span class="req">*</span></span><span class="pv">待收集</span></div>
+          <div class="prop-row pending" id="p_rt"><span class="pk">Real-time level <span class="req">*</span></span><span class="pv">待收集</span></div>
+        </div>
+
+        <div class="prop-section">
+          <div class="prop-section-hd">RAG Classification <span class="cnt" data-sec="cls">0/4</span></div>
+          <div class="prop-row pending" id="p_fresh"><span class="pk">Freshness <span class="req">*</span></span><span class="pv">待收集</span></div>
+          <div class="prop-row pending" id="p_src"><span class="pk">Source <span class="req">*</span></span><span class="pv">待收集</span></div>
+          <div class="prop-row pending" id="p_usage"><span class="pk">Usage <span class="req">*</span></span><span class="pv">待收集</span></div>
+          <div class="prop-row pending" id="p_scope"><span class="pk">Scope <span class="req">*</span></span><span class="pv">待收集</span></div>
+        </div>
+
+        <div class="prop-section">
+          <div class="prop-section-hd">Coverage <span class="cnt" data-sec="cov">0/1</span></div>
+          <div class="prop-row pending" id="p_domain"><span class="pk">Business domain</span><span class="pv">待收集</span></div>
+          <div class="prop-row pending" id="p_scen"><span class="pk">Scenarios</span><span class="pv">待收集</span></div>
+          <div class="prop-row pending" id="p_regions"><span class="pk">Supported regions <span class="req">*</span></span><span class="pv">待收集</span></div>
+          <div class="prop-row pending" id="p_navail"><span class="pk">Not available in</span><span class="pv">待收集</span></div>
+        </div>
+
+        <div class="prop-section">
+          <div class="prop-section-hd">Feature Content <span class="cnt" data-sec="content">0/3</span></div>
+          <div class="prop-row pending" id="p_desc"><span class="pk">Feature description <span class="req">*</span></span><span class="pv">待收集</span></div>
+          <div class="prop-row pending" id="p_coding"><span class="pk">Coding <span class="req">*</span></span><span class="pv">待收集</span></div>
+          <div class="prop-row pending" id="p_dsrc"><span class="pk">Data source <span class="req">*</span></span><span class="pv">待收集</span></div>
+        </div>
+
+        <div class="prop-section">
+          <div class="prop-section-hd">RAG Discovery <span class="cnt" data-sec="disc">0/2</span></div>
+          <div class="prop-row pending" id="p_summary"><span class="pk">Search summary</span><span class="pv">待收集</span></div>
+          <div class="prop-row pending" id="p_alias"><span class="pk">Aliases</span><span class="pv">待收集</span></div>
+          <div class="prop-row pending" id="p_tags"><span class="pk">RAG tags</span><span class="pv">待收集</span></div>
+          <div class="prop-row pending" id="p_cq"><span class="pk">Common questions</span><span class="pv">待收集</span></div>
+          <div class="prop-row pending" id="p_uex"><span class="pk">Usage example <span class="req">*</span></span><span class="pv">待收集</span></div>
+          <div class="prop-row pending" id="p_risk"><span class="pk">Risk / limitation <span class="req">*</span></span><span class="pv">待收集</span></div>
+          <div class="prop-row" id="p_samples"><span class="pk">Output samples</span><span class="pv muted"><span class="i-cn">不适用 · model feature（仅 categorization 需要）</span><span class="i-en">N/A · model feature (categorization only)</span></span></div>
+        </div>
+
+        <div class="agent-window-label" style="margin-top:14px">Skills Evaluation <span style="font-weight:600;color:var(--text-4);text-transform:none;letter-spacing:0"><span class="i-cn">· 模版对照 F3 表单分组</span><span class="i-en">· template mirrors the F3 form sections</span></span></div>
+        <div class="eval-box">
+          <div class="eval-idle" id="eval-idle"><span class="i-cn">Confirm Proposal 后可运行 · Agent 调用 skills 按 F3 表单要求逐项评估，不走人工审批</span><span class="i-en">Runs after Confirm Proposal · the Agent evaluates each item via skills against the F3 form requirements — no manual approval</span></div>
+          <div class="eval-running" id="eval-running"><span class="spinner"></span> AGENT_EVALUATING · <span class="i-cn">Agent 正在评估新 feature 方案质量…</span><span class="i-en">the Agent is evaluating the proposal quality…</span></div>
+          <div class="eval-list" id="eval-list">
+            <div class="eval-item" data-eval="0"><span class="eval-dot pend">·</span> <span><span class="i-cn">Required fields · Basic Info / Classification / Content 必填 19/19</span><span class="i-en">Required fields · Basic Info / Classification / Content 19/19</span></span></div>
+            <div class="eval-item" data-eval="1"><span class="eval-dot pend">·</span> <span><span class="i-cn">Description 能解释特征语义（Feature Content）</span><span class="i-en">Description explains the feature semantics (Feature Content)</span></span></div>
+            <div class="eval-item" data-eval="2"><span class="eval-dot pend">·</span> <span><span class="i-cn">Coding / Data source / Owner 可追溯（Feature Content）</span><span class="i-en">Coding / Data source / Owner traceable (Feature Content)</span></span></div>
+            <div class="eval-item" data-eval="3"><span class="eval-dot pend">·</span> <span><span class="i-cn">Usage example 支持未来召回（RAG Discovery）</span><span class="i-en">Usage example supports future recall (RAG Discovery)</span></span></div>
+            <div class="eval-item" data-eval="4"><span class="eval-dot pend">·</span> <span><span class="i-cn">Search summary / aliases / tags 适合检索（RAG Discovery）</span><span class="i-en">Search summary / aliases / tags fit retrieval (RAG Discovery)</span></span></div>
+            <div class="eval-item" data-eval="5"><span class="eval-dot pend">·</span> <span><span class="i-cn">Risk / limitation 覆盖上线边界（RAG Discovery）</span><span class="i-en">Risk / limitation covers launch boundaries (RAG Discovery)</span></span></div>
+          </div>
+          <div class="eval-fix" id="eval-fix">
+            <b>EVALUATION_FAILED · <span class="i-cn">返回修改建议：</span><span class="i-en">fix suggestions:</span></b><br>
+            <span class="i-cn">Risk / limitation 未覆盖上线边界 —— 请补充：① 上线前是否需要稳定性评估；② prompt / 上游版本变更时的失效场景；③ 时效性边界（如 PK 结束后的延迟窗口）。请回到左侧 Q&amp;A 补齐后重新评估。</span><span class="i-en">Risk / limitation does not cover launch boundaries — please add: ① whether stability evaluation is required before launch; ② failure scenarios when prompt / upstream versions change; ③ timeliness boundary (e.g. latency window after PK ends). Go back to the Q&amp;A on the left, then re-run the evaluation.</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="ae-footer">
+      <div class="ae-steps">
+        <div class="ae-step" id="step-qa"><span class="n">Q</span> Agent Q&amp;A</div>
+        <div class="ae-step-sep"></div>
+        <div class="ae-step" id="step-confirm"><span class="n">1</span> Confirm</div>
+        <div class="ae-step-sep"></div>
+        <div class="ae-step" id="step-eval"><span class="n">2</span> Skills Evaluation</div>
+        <div class="ae-step-sep"></div>
+        <div class="ae-step" id="step-submit"><span class="n">3</span> Submit</div>
+      </div>
+      <div class="ae-actions" id="ae-actions">
+        <button class="btn btn-sm" id="btn-confirm" onclick="aeConfirm()" disabled>Confirm Proposal</button>
+        <button class="btn btn-sm" id="btn-eval" onclick="aeEvaluate()" disabled>Run Skills Evaluation</button>
+        <button class="btn btn-sm btn-primary" id="btn-submit" onclick="aeSubmit()" disabled>Submit</button>
+      </div>
+      <div class="ae-actions" id="ae-actions-done" style="display:none">
+        <button class="btn btn-sm" onclick="closeAgentEntry()">Close</button>
+        <button class="btn btn-sm btn-primary" onclick="aeReset()">Start new conversation</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Apply-permission popup (no RAG edit permission) -->
+<div class="perm-overlay" id="perm-overlay">
+  <div class="perm-modal">
+    <div class="perm-icon">🔒</div>
+    <div class="perm-t"><span class="i-cn">需要 RAG 编辑权限</span><span class="i-en">RAG edit permission required</span></div>
+    <div class="perm-s"><span class="i-cn">创建新 feature（New feature entry · Ask AI）仅对有 RAG 编辑权限的用户开放。<br>你当前只有 Feature Discovery 读权限，不会进入写模式。</span><span class="i-en">Creating a new feature (New feature entry · Ask AI) is only available to users with RAG edit permission.<br>You currently have Feature Discovery read access only and will not enter write mode.</span></div>
+    <div class="perm-actions">
+      <button class="btn btn-sm" onclick="closePermModal()">Cancel</button>
+      <button class="btn btn-sm btn-primary" onclick="closePermModal()">Apply for permission</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= FLOATING WIDGET (always visible) ================= -->
+<div class="fab" id="fab" onclick="toggleQA()">
+  <span class="fab-dot"></span>
+  <span class="i-cn">Ask AI · 问特征</span><span class="i-en">Ask AI · Features</span>
+</div>
+
+<div class="qa-panel" id="qa-panel">
+  <div class="qa-head">
+    <div>
+      <div class="qa-head-title">Feature Discovery Agent</div>
+      <div class="qa-head-sub">RAG-powered · 6,683 features INDEXED · <span class="i-cn">只消费已索引知识</span><span class="i-en">answers only from indexed knowledge</span></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <span class="qa-perm on" id="qa-perm" onclick="togglePerm()" title="演示开关：模拟当前用户是否有 RAG 编辑权限">RAG edit ✓</span>
+      <button class="btn btn-sm" onclick="toggleQA()">×</button>
+    </div>
+  </div>
+  <div class="qa-mode">
+    <div class="active">Feature Discovery</div>
+    <div>Platform Oncall <span class="tag-inline" style="background:var(--bg-hover)">P2</span></div>
+  </div>
+  <div class="qa-body" id="qa-body">
+    <div class="qa-suggest">
+      <div class="qa-suggest-hint">Try asking</div>
+      <div class="qa-suggest-card" data-q="我想找一个直播间开播国相关的特征" data-q-en="I need a feature about the live room broadcast country"><span class="i-cn">我想找一个直播间开播国相关的特征 <span class="tag-inline">演示：口径澄清</span></span><span class="i-en">I need a feature about the live room broadcast country <span class="tag-inline">demo: clarification</span></span></div>
+      <div class="qa-suggest-card" data-q="slice_is_in_battle 的稳定性怎么样？" data-q-en="How stable is slice_is_in_battle?"><span class="i-cn">slice_is_in_battle 的稳定性怎么样？ <span class="tag-inline">演示：code 直查</span></span><span class="i-en">How stable is slice_is_in_battle? <span class="tag-inline">demo: direct code lookup</span></span></div>
+      <div class="qa-suggest-card" data-q="room status 有哪些取值？" data-q-en="What values does room status have?"><span class="i-cn">room status 有哪些取值？ <span class="tag-inline">演示：取值枚举</span></span><span class="i-en">What values does room status have? <span class="tag-inline">demo: value enum</span></span></div>
+    </div>
+
+    <!-- conversation (appended, multi-turn within discovery session) -->
+    <div class="qa-conversation" id="qa-conversation"></div>
+  </div>
+  <div class="qa-guardrail">Guardrail · <span class="i-cn">仅基于 INDEXED Feature Knowledge 回答，不编造特征逻辑 · 最终确认请进入 F2 详情页</span><span class="i-en">answers only from INDEXED Feature Knowledge, never invents feature logic · final confirmation in the F2 detail page</span></div>
+  <div class="qa-input-row">
+    <textarea class="qa-input" id="qa-input" rows="1" placeholder="Ask about features…（输入“替代 zeta”可演示低置信；“宠物偏好”演示空结果）"></textarea>
+    <button class="qa-send" onclick="qaSendInput()">Send</button>
+  </div>
 </div>
 
 <script>
-const STEPS = [
-/* ── FLOW A ─────────────────────────────────────────────── */
-{
- tag:"Flow A · Discovery", n:"A1", title:"Someone needs a feature they have never used",
- screen:`<div class="screen-bar"><u></u><u></u><u></u> Ask AI · Feature Discovery</div>
- <div class="screen-body"><div class="chat">
-   <div class="bub ai">Ask about features — I only answer from what is already indexed.</div>
-   <div class="bub me">我想找一个直播间开播国相关的特征</div>
- </div></div>`,
- notes:[
-  {h:"What this solves",p:"A strategy author needs a feature for a rule. Today that means finding whoever owns the platform and waiting. Throughput becomes a function of someone else's calendar — and waiting quietly rewards creating a near-duplicate feature instead."},
-  {h:"Design decision",p:"The entry point is <b>always-on and everywhere</b>, sitting beside the existing Oncall widget rather than replacing it. Discovery is a read capability open to <b>anyone</b> who can reach the platform; no permission, no request form."}
- ]
-},
-{
- tag:"Flow A · Discovery", n:"A2", title:"It asks once — then never again",
- screen:`<div class="screen-bar"><u></u><u></u><u></u> Ask AI · <span style="color:var(--amber)">NEED_CLARIFICATION</span></div>
- <div class="screen-body"><div class="chat">
-   <div class="bub me">我想找一个直播间开播国相关的特征</div>
-   <div class="bub ai warnful">“开播国” maps to three different definitions that are easy to confuse. Which one applies?
-     <div class="chips"><span class="chip">Room · root country</span><span class="chip">Room · broadcast country</span><span class="chip">Anchor · registration country</span><span class="chip skip">Skip</span></div>
-   </div>
- </div></div>`,
- notes:[
-  {h:"What this solves",p:"The same phrase covers several business definitions. Returning a ranked list without asking hands the user a plausible wrong feature — the most expensive failure in the whole flow, because it silently ships into a rule."},
-  {h:"Design decision",p:"<b>Exactly one</b> clarification round per conversation, offered as chips, always skippable. After an answer or a skip, the system must return cards. Later ambiguous questions in the same conversation get ranked candidates — never another follow-up.",cls:"guard",lbl:"Guardrail · asking is not free"},
-  {h:"Why the cap",p:"Clarification is the product's core bet, and also its most likely way to die. Abandonment during clarification is tracked as a guardrail metric for exactly this reason."}
- ]
-},
-{
- tag:"Flow A · Discovery", n:"A3", title:"Candidates, with the definition explained first",
- screen:`<div class="screen-bar"><u></u><u></u><u></u> Ask AI · <span style="color:var(--teal)">FEATURE_CARDS</span></div>
- <div class="screen-body">
-   <div class="bub ai" style="max-width:100%">Room · root country is the country the room belongs to; broadcast country is where this session is streaming from. They diverge on travel and on relayed rooms.</div>
-   <div class="fcard">
-     <div class="fcard-top"><div><b>Room · Root Country</b><code>room_country_root</code></div><span class="pill ok">Likely suitable</span></div>
-     <p>Matched on: room-level attribution, hour-level freshness, used by 14 active rules.</p>
-     <div class="meta"><em>SLA A</em><em>hour level</em><em>live room</em><em>indexed 07-08</em></div>
-     <span class="cta">View detail to confirm →</span>
-   </div>
-   <div class="fcard">
-     <div class="fcard-top"><div><b>Room · Broadcast Country</b><code>room_country_broadcast</code></div><span class="pill mute">Need more context</span></div>
-     <p>Day-level only. Suitable if your rule tolerates a 24h window.</p>
-     <div class="meta"><em>SLA C</em><em>day level</em><em>live room</em></div>
-     <span class="cta">View detail to confirm →</span>
-   </div>
- </div>`,
- notes:[
-  {h:"Design decision",p:"The explanation comes <b>before</b> the ranking. A direct code or name lookup skips it — but for a semantic question, telling someone which definition they are choosing between matters more than the order of the list."},
-  {h:"The label that does not exist",p:"No card is ever labelled <b>Recommended</b>. The only labels are <code>Likely suitable</code>, <code>Likely not suitable</code>, and <code>Need more context</code>.",cls:"guard",lbl:"Guardrail · the system does not decide"},
-  {h:"Why it matters",p:"A recommendation invites adoption without reading. These labels invite a decision. The business owner still owns the choice — the card ends at <em>View detail to confirm</em>, not <em>Use this</em>."}
- ]
-},
-{
- tag:"Flow A · Discovery", n:"A4", title:"When it is not sure, it says the number",
- screen:`<div class="screen-bar"><u></u><u></u><u></u> Ask AI · <span style="color:var(--red)">LOW_CONFIDENCE</span></div>
- <div class="screen-body">
-   <div class="bub ai warnful" style="max-width:100%">Nothing scored above the display threshold. These are the closest, but treat them as leads, not answers — add the scenario and I will retry.</div>
-   <div class="fcard dim">
-     <div class="fcard-top"><div><b>Anchor · Region Tag</b><code>anchor_region_tag_v2</code></div><span class="pill bad">Low confidence</span></div>
-     <p class="mono" style="font-size:11px">score 0.41 · display threshold 0.62</p>
-     <div class="meta"><em>SLA B</em><em>day level</em></div>
-     <span class="cta dead">View detail — unavailable at this confidence</span>
-   </div>
- </div>`,
- notes:[
-  {h:"Design decision",p:"Low-confidence cards render grayed, disclose <b>the actual score and the threshold</b>, and ask for more scenario context."},
-  {h:"The link is removed",p:"A low-confidence card <b>cannot navigate to the detail page</b>. The one action that would let a weak match become a real decision is taken away.",cls:"guard",lbl:"Guardrail · weak match, no path forward"},
-  {h:"Why show the number",p:"Hiding the score would make this look like a system failure. Showing it makes it a <em>calibrated</em> answer — the user learns what the retrieval layer can and cannot do, which is how trust in it gets built."}
- ]
-},
-{
- tag:"Flow A · Discovery", n:"A5", title:"When it has nothing, it says nothing",
- screen:`<div class="screen-bar"><u></u><u></u><u></u> Ask AI · <span style="color:var(--red)">NO_RESULT</span></div>
- <div class="screen-body">
-   <div class="bub ai warnful" style="max-width:100%">
-     No indexed feature covers this. <b>I will not describe a feature that does not exist.</b>
-     <div class="btns"><span class="btn">Rephrase</span><span class="btn on">Create in F3 →</span></div>
-   </div>
-   <div style="margin-top:13px;border:1px dashed var(--line-2);border-radius:7px;padding:12px;background:rgba(255,255,255,.014)">
-     <span class="pill warn">PERMISSION_REQUIRED</span>
-     <p style="font-size:12.5px;color:var(--fg-dim);margin-top:8px">You have discovery access but not RAG edit permission. Creation is blocked here.</p>
-     <div class="btns"><span class="btn">Cancel</span><span class="btn">Apply for permission</span></div>
-   </div>
- </div>`,
- notes:[
-  {h:"Design decision",p:"An empty result is a first-class state with its own copy, not a blank panel. It offers two ways forward — rephrase, or create the missing feature — and routes the second by permission."},
-  {h:"The refusal is explicit",p:"The system states plainly that it <b>will not invent feature logic</b>. A retrieval layer that always produces something confident is worse than one that admits a miss.",cls:"guard",lbl:"Guardrail · no fabrication"},
-  {h:"Measured, not assumed",p:"<code>LOW_CONFIDENCE</code> and <code>NO_RESULT</code> rates are tracked as guardrail metrics. If they go to zero, the system has started guessing."}
- ]
-},
-{
- tag:"Flow A · Discovery", n:"A6", title:"Confirmation happens on the detail page, not in the chat",
- screen:`<div class="screen-bar"><u></u><u></u><u></u> F2 · Feature Detail — room_country_root</div>
- <div class="screen-body"><div class="cols3">
-   <div class="col"><h5>Meta · read-only</h5>
-     <div class="kv"><span>type</span><b>categorization</b></div>
-     <div class="kv"><span>owner</span><b>room-attr</b></div>
-     <div class="kv"><span>stability</span><b>A</b></div>
-     <div class="kv"><span>real-time</span><b>hour</b></div>
-     <div class="kv"><span>config mode</span><b>standard</b></div>
-   </div>
-   <div class="col"><h5>Structured text</h5>
-     <div class="stext"><u>FEATURE</u> Room · Root Country
-<u>ENTITY</u> live room
-<u>USAGE SCOPE</u> attribution
-<u>CODE LOGIC</u> root_country_of(room)
-<u>OUTPUT SAMPLES</u>
-  001 → Game LIVE room
-  002 → Chat room …</div>
-   </div>
-   <div class="col"><h5>RAG status</h5>
-     <div class="kv"><span>status</span><b style="color:var(--teal)">INDEXED</b></div>
-     <div class="kv"><span>model</span><b>bge-m3</b></div>
-     <div class="kv"><span>chunks</span><b>3</b></div>
-     <div class="kv"><span>synced</span><b>07-08 14:22</b></div>
-     <div style="margin-top:10px;padding-top:9px;border-top:1px solid var(--line)">
-       <h5>Recall test · read-only</h5>
-       <div class="kv"><span>top-1 score</span><b style="color:var(--teal)">0.81</b></div>
-     </div>
-   </div>
- </div></div>`,
- notes:[
-  {h:"Design decision",p:"Three columns, three questions: <b>what is it</b>, <b>what does the retrieval layer actually see</b>, and <b>is it reachable right now</b>. The middle column is the embedded text itself — the thing that decides whether search works."},
-  {h:"Verifiable, not assertive",p:"The Recall Test runs a real question against this feature and shows the top-N hit, the score, and the threshold. It reads only <code>INDEXED</code> vectors and cannot modify retrieval — a window, not a control."},
-  {h:"Boundary",p:"This page views, confirms, regenerates, re-indexes. It does <b>not</b> host creation or backfill. Those belong to Flow B, so that a page people trust to read stays read-shaped."}
- ]
-},
-/* ── FLOW B ─────────────────────────────────────────────── */
-{
- tag:"Flow B · Contribution", n:"B1", title:"The write path forks on permission, immediately",
- screen:`<div class="screen-bar"><u></u><u></u><u></u> F3 · New Feature — entry</div>
- <div class="screen-body">
-   <div style="border:1px solid var(--amber-dim);border-radius:8px;padding:15px;background:rgba(229,165,68,.05)">
-     <span class="pill warn">Agent entry</span>
-     <p style="font-size:14px;margin-top:9px;color:var(--fg)">Describe the strategy problem your new feature needs to solve.</p>
-     <p style="font-size:12.5px;color:var(--fg-dim);margin-top:5px">I will ask for feature meaning, entity, data source, owner, usage example, and risk / limitation.</p>
-     <div class="btns"><span class="btn on">Start Agent Entry</span><span class="btn">Start from describing</span></div>
-   </div>
-   <p style="font-size:11.5px;color:var(--fg-faint);margin-top:11px">Manual template — secondary path, same field contract, same gate.</p>
- </div>`,
- notes:[
-  {h:"Design decision",p:"<b>Start Agent Entry sits before the template button.</b> Ordering is the instruction: begin from the business need, not from a blank form."},
-  {h:"Why the template survives",p:"The manual path is kept deliberately, to bound token cost. But it writes the same field contract and passes the same evaluation gate — <b>it cannot bypass anything</b>. A second path is only safe if it is not a shortcut."},
-  {h:"Read stays open, write stays gated",p:"Discovery is open to everyone. Contribution requires RAG edit permission. Two capabilities, one widget, different doors."}
- ]
-},
-{
- tag:"Flow B · Contribution", n:"B2", title:"An interview, not a nineteen-field form",
- screen:`<div class="screen-bar"><u></u><u></u><u></u> Agent Entry · collecting</div>
- <div class="screen-body" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-   <div class="chat">
-     <div class="bub ai">What should this feature tell a rule that existing ones can't?</div>
-     <div class="bub me">Whether a room switched broadcast country mid-session.</div>
-     <div class="bub ai">Which entity does it attach to, and where does the value come from?</div>
-     <div class="bub me">Live room. Session start/end events from the streaming log.</div>
-     <div class="bub ai">Give me one usage example and one limitation you already know about.</div>
-   </div>
-   <div>
-     <h5 style="font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--fg-faint);margin-bottom:9px">Generated proposal</h5>
-     <div class="meter"><i style="width:63%"></i></div>
-     <div class="meter-lbl"><span>Required 12 / 19</span><span>collecting</span></div>
-     <div style="margin-top:10px">
-       <div class="kv"><span>feature name</span><b>room_country_switch</b></div>
-       <div class="kv"><span>entity</span><b>live room</b></div>
-       <div class="kv"><span>data source</span><b>streaming log</b></div>
-       <div class="kv"><span>usage example</span><b style="color:var(--fg-faint)">pending</b></div>
-       <div class="kv"><span>risk / limitation</span><b style="color:var(--fg-faint)">pending</b></div>
-     </div>
-   </div>
- </div>`,
- notes:[
-  {h:"What this solves",p:"The old flow asked people to fill nineteen fields before they had described what they wanted. Most gave up, or filled the boxes with words that made the feature unsearchable later."},
-  {h:"Design decision",p:"The proposal renders <b>live, on the right, while the conversation runs on the left</b>. The user watches a document assemble itself out of their answers — completion is visible as <code>Required N/19</code>, so nobody wonders how much is left."},
-  {h:"The fields are the knowledge",p:"Usage example and risk / limitation are required, not optional. They are the fields that make a feature <em>retrievable</em> and <em>safe</em> later — exactly the two people skip when a form lets them."}
- ]
-},
-{
- tag:"Flow B · Contribution", n:"B3", title:"19 of 19 unlocks a lock, not a submit",
- screen:`<div class="screen-bar"><u></u><u></u><u></u> Agent Entry · <span style="color:var(--teal)">ready to confirm</span></div>
- <div class="screen-body">
-   <div class="meter"><i style="width:100%"></i></div>
-   <div class="meter-lbl"><span style="color:var(--teal)">Required 19 / 19</span><span>complete</span></div>
-   <div class="btns" style="margin-top:16px">
-     <span class="btn on">Confirm Proposal</span>
-     <span class="btn off">Run Skills Evaluation</span>
-     <span class="btn off">Submit</span>
-   </div>
-   <p style="font-size:12px;color:var(--fg-faint);margin-top:13px">Confirm locks this version. Nothing is written to the library yet.</p>
- </div>`,
- notes:[
-  {h:"Design decision",p:"Reaching 19/19 enables <b>Confirm</b> — not Submit. Confirm freezes a version so the evaluation has a fixed thing to evaluate."},
-  {h:"Three gates, in order",p:"<code>Required 19/19</code> → <code>Confirmed &amp; locked</code> → <code>Evaluation 6/6</code>. All three, both paths, no exceptions.",cls:"state",lbl:"Submission gate"},
-  {h:"Evaluation runs after Confirm",p:"An earlier draft ran it after Submit. That was corrected: evaluating something already submitted means the check cannot block anything. The gate has to sit <em>before</em> the door, not behind it."}
- ]
-},
-{
- tag:"Flow B · Contribution", n:"B4", title:"Six checks, and the one that fails is the useful one",
- screen:`<div class="screen-bar"><u></u><u></u><u></u> <span style="color:var(--red)">EVALUATION_FAILED</span> · 5 of 6</div>
- <div class="screen-body">
-   <div class="gate"><i class="y">✓</i><span>Required-field completeness</span></div>
-   <div class="gate"><i class="y">✓</i><span>Semantic clarity</span></div>
-   <div class="gate"><i class="y">✓</i><span>Source / owner traceability</span></div>
-   <div class="gate"><i class="y">✓</i><span>Usage-example recallability</span></div>
-   <div class="gate"><i class="n">✕</i><span style="color:var(--fg)">Risk / limitation covers launch boundaries</span></div>
-   <div class="gate"><i class="y">✓</i><span>Classification / region consistency</span></div>
-   <div style="margin-top:13px;border:1px solid var(--red-dim);border-radius:7px;padding:12px;background:rgba(212,103,79,.055)">
-     <p style="font-size:12.5px;color:var(--fg-dim)">Add: pre-launch stability assessment · failure modes when the upstream version changes · the latency window after a PK ends.</p>
-   </div>
-   <div class="btns"><span class="btn on">Back to Q&amp;A</span><span class="btn off">Submit</span></div>
- </div>`,
- notes:[
-  {h:"Design decision",p:"Failure keeps the window open and returns <b>itemized fixes</b>, not a score. The user is told what to add, in the words of the check that failed."},
-  {h:"Why this check fails most",p:"Risk and limitation is where people write “none.” The check asks for the boundaries that make a feature <em>unsafe</em> — the stability story before launch, what breaks when an upstream version moves, how stale the value can get. Nobody volunteers that."},
-  {h:"Quality as a gate, not a habit",p:"Review culture depends on who is reviewing. A gate does not. This is what converts new-feature quality from something people mean to do into something the system requires."}
- ]
-},
-{
- tag:"Flow B · Contribution", n:"B5", title:"Editing anything throws the approval away",
- screen:`<div class="screen-bar"><u></u><u></u><u></u> Agent Entry · version invalidated</div>
- <div class="screen-body">
-   <div class="bub me" style="max-width:100%">Actually — change the data source to the room-events topic.</div>
-   <div style="margin-top:13px;border:1px solid var(--amber-dim);border-radius:7px;padding:13px;background:rgba(229,165,68,.055)">
-     <span class="pill warn">Proposal v2 created</span>
-     <div style="margin-top:10px">
-       <div class="gate"><i class="n">✕</i><span>Confirm — invalidated</span></div>
-       <div class="gate"><i class="n">✕</i><span>Evaluation 6/6 — invalidated</span></div>
-     </div>
-     <p style="font-size:12.5px;color:var(--fg-dim);margin-top:10px">Confirm and evaluate again before Submit becomes available.</p>
-   </div>
-   <div class="btns"><span class="btn on">Confirm Proposal</span><span class="btn off">Submit</span></div>
- </div>`,
- notes:[
-  {h:"The rule",p:"<b>Any Q&amp;A edit creates a new proposal version and invalidates the previous Confirm and Evaluation.</b> The backend must reject a Submit unless the <em>latest</em> version passed.",cls:"guard",lbl:"Guardrail · approval is not transferable"},
-  {h:"What it prevents",p:"Pass evaluation, then quietly change the data source, then submit. Without version-scoped approval that is a one-line exploit — and the reviewed artifact and the shipped artifact are no longer the same thing."},
-  {h:"Cost of the rule",p:"It makes late edits expensive on purpose. That friction is the point: it pushes correction into the Q&A, where it is cheap, rather than after approval, where it is invisible."}
- ]
-},
-{
- tag:"Flow B · Contribution", n:"B6", title:"Submitted is not indexed, and indexed is not automatic",
- screen:`<div class="screen-bar"><u></u><u></u><u></u> Pipeline</div>
- <div class="screen-body">
-   <div class="gate"><i class="y">✓</i><span>Submit → written to Meta + Knowledge Library</span></div>
-   <div class="gate"><i class="y">✓</i><span>Conversation closed — one feature, one conversation</span></div>
-   <div class="gate"><i class="y">✓</i><span>Entered embedding queue</span></div>
-   <div class="gate"><i class="y">✓</i><span><span class="mono" style="color:var(--teal)">INDEXED</span> — retrievable by Ask AI</span></div>
-   <div class="kpis" style="margin-top:15px">
-     <div class="kpi"><span>Total</span><b>7,025</b></div>
-     <div class="kpi ok"><span>Indexed</span><b>6,684</b></div>
-     <div class="kpi bad"><span>Failed</span><b>341</b></div>
-   </div>
-   <div class="row" style="margin-top:11px">
-     <div class="row-main"><b>anchor_account_punish_count…</b><span>text assembly failed · 07-08 03:15</span></div>
-     <div style="display:flex;gap:7px;align-items:center"><span class="pill bad">INDEX_FAILED</span><span class="btn" style="font-size:11px;padding:4px 10px">Re-run</span></div>
-   </div>
- </div>`,
- notes:[
-  {h:"Design decision",p:"Submit writes the record and closes the conversation. The feature becomes retrievable <b>only after embedding succeeds</b> — the two are deliberately separate states, because one can succeed while the other fails."},
-  {h:"Failure is legible",p:"<code>INDEX_FAILED</code> keeps the reason and offers a re-run, individually or in bulk. 341 failures are visible in the KPI row rather than hidden behind a 95.1% that looks like success.",cls:"state",lbl:"INDEX_FAILED"},
-  {h:"The metric that closes the loop",p:"Indexed availability is the target — <b>95.1% today, ≥99% required</b> — because a feature that exists but is unreachable is, to the person asking, a feature that does not exist."}
- ]
-},
-/* ── CLOSE ──────────────────────────────────────────────── */
-{
- tag:"Close", n:"—", title:"Six places this system chooses to say less",
- close:true,
- notes:[]
+function switchPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelector('.tab[data-page="'+id+'"]').classList.add('active');
+  window.scrollTo(0,0);
 }
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click',()=>switchPage(t.dataset.page));
+});
+/* ================= v0.3 · i18n ================= */
+let LANG = 'cn';
+function L(o){ return (o && typeof o === 'object') ? (o[LANG] || o.cn) : o; }
+function toggleLang(){
+  LANG = LANG === 'cn' ? 'en' : 'cn';
+  document.body.classList.toggle('lang-en', LANG === 'en');
+  document.getElementById('lang-toggle').textContent = LANG === 'cn' ? 'EN' : '中文';
+  const qa = document.getElementById('qa-input');
+  if(qa) qa.placeholder = LANG === 'cn'
+    ? 'Ask about features…（输入“替代 zeta”可演示低置信；“宠物偏好”演示空结果）'
+    : 'Ask about features… (type "replace zeta" for the low-confidence demo; "pet preference" for empty result)';
+  const mb = document.getElementById('manual-btn');
+  if(mb){
+    const opened = document.getElementById('manual-form').style.display !== 'none';
+    mb.textContent = opened ? (LANG==='cn'?'收起手动表单':'Hide manual form') : (LANG==='cn'?'展开手动表单':'Show manual form');
+  }
+}
+
+/* ================= F3 manual form (secondary path) ================= */
+function toggleManualForm(btn){
+  const f = document.getElementById('manual-form');
+  const opened = f.style.display !== 'none';
+  f.style.display = opened ? 'none' : 'block';
+  btn.textContent = opened ? (LANG==='cn'?'展开手动表单':'Show manual form') : (LANG==='cn'?'收起手动表单':'Hide manual form');
+}
+function pickRadio(el){
+  el.parentElement.querySelectorAll('.radio-chip').forEach(x=>x.classList.remove('on'));
+  el.classList.add('on');
+}
+
+/* ================= Permission (demo toggle) ================= */
+let ragEdit = true;
+function togglePerm(){
+  ragEdit = !ragEdit;
+  const chip = document.getElementById('qa-perm');
+  chip.className = 'qa-perm ' + (ragEdit ? 'on' : 'off');
+  chip.textContent = ragEdit ? 'RAG edit ✓' : 'RAG edit ✗';
+}
+function openPermModal(){ document.getElementById('perm-overlay').classList.add('open'); }
+function closePermModal(){ document.getElementById('perm-overlay').classList.remove('open'); }
+
+/* ================= Agent Entry modal (create flow) ================= */
+const AE_REQUIRED = ['p_name_en','p_name_cn','p_short','p_code','p_owner_entity','p_owner_team','p_type','p_dtype','p_rt','p_fresh','p_src','p_usage','p_scope','p_regions','p_desc','p_coding','p_dsrc','p_uex','p_risk'];
+const AE_SECTIONS = {
+  basic:   ['p_name_en','p_name_cn','p_short','p_code','p_owner_entity','p_owner_team','p_type','p_dtype','p_rt'],
+  cls:     ['p_fresh','p_src','p_usage','p_scope'],
+  cov:     ['p_regions'],
+  content: ['p_desc','p_coding','p_dsrc'],
+  disc:    ['p_uex','p_risk']
+};
+const AE_FILLS = [
+  { p_code:'slice_pk_interaction_risk_score', p_name_en:'Slice · PK Interaction Risk Score', p_name_cn:'切片 PK 互动风险分数',
+    p_short:{cn:'直播 PK 场景下 video slice 的互动风险分数',en:'Interaction risk score of a video slice in live PK scenarios'},
+    p_type:'Model feature', p_dtype:'FLOAT64',
+    p_desc:{cn:'衡量 video slice 在直播 PK 场景（礼物、连麦、跨房间互动）下的综合互动风险，0–1 连续值，供策略加权。',en:'Measures overall interaction risk (gifts, co-host, cross-room) of a video slice during live PK; continuous 0–1, for strategy weighting.'},
+    p_fresh:{cn:'Online 在线',en:'Online'}, p_src:{cn:'Derived 衍生',en:'Derived'},
+    p_usage:{cn:'Model · Strategy · RAG 检索',en:'Model · Strategy · RAG retrieval'}, p_scope:'Current scenario' },
+  { p_owner_entity:'Video Slice', p_owner_team:'Video Slice Feature Team', p_rt:'Second level',
+    p_dsrc:'DAG pipeline · GetLocalFeatureProvider + LLMGatewayInferenceProvider',
+    p_coding:{cn:'LLM prompt inference → JMES 取 score，fallback 0（Agent 从 DAG 配置推导 · RD 可修正）',en:'LLM prompt inference → JMES score, fallback 0 (derived from DAG config by the Agent · RD can revise)'},
+    p_domain:'live_governance' },
+  { p_regions:'SEA · US · LATAM',
+    p_navail:{cn:'JP · KR（合规限制 · Ask AI 会提示不适用）',en:'JP · KR (compliance · Ask AI will flag as not applicable)'},
+    p_scen:'pk_battle · anchor_violation · risk_recall',
+    p_uex:{cn:'在 anchor_violation 策略中，score > 0.8 时对礼物 / 连麦互动叠加 2x 处罚权重',en:'In anchor_violation, apply 2x punishment weight to gift / co-host interactions when score > 0.8'},
+    p_risk:{cn:'依赖上游 DAG 与 prompt 版本（初稿）',en:'Depends on upstream DAG & prompt versions (draft)'},
+    p_summary:{cn:'slice 粒度的在线衍生模型特征，衡量直播 PK 场景下互动风险，用于策略加权与风险召回。',en:'Slice-level online derived model feature measuring interaction risk in live PK, for strategy weighting and risk recall.'},
+    p_alias:'pk_risk · battle_risk_score · PK 互动风险', p_tags:'slice · pk · online · model · risk',
+    p_cq:{cn:'「PK 场景怎么做风险加权？」「和 slice_is_in_battle 什么关系？」',en:'"How to weight risk in PK?" "Relation to slice_is_in_battle?"'} }
+];
+const AE_TURNS = [
+  { prefill:{cn:'我想创建一个新 feature，用来表示直播 PK 场景下的互动风险分数，给策略做加权用。',en:'I want to create a new feature that scores interaction risk in live PK battles, for strategy weighting.'},
+    reply:{cn:'收到 ✓ 我已根据你的描述起草 Basic Info、RAG 分类和特征描述（见右侧，可随时纠正）。接下来确认 3 件事：\n① Owner entity —— 特征挂在什么粒度？（Live room / User / Video Slice…）\n② Data source —— 分数从哪里来？\n③ Owner 团队是谁？另外对实时性的要求是什么级别？',en:'Got it ✓ I drafted Basic Info, RAG classification and the description from your input (see right; correct me anytime). Three things to confirm:\n① Owner entity — what granularity? (Live room / User / Video Slice…)\n② Data source — where does the score come from?\n③ Which team owns it? And what real-time level is required?'} },
+  { prefill:{cn:'Entity 是 Video Slice；分数来自 DAG pipeline，经 GetLocalFeatureProvider + LLMGatewayInferenceProvider 推理得到；owner 是 Video Slice Feature Team；需要秒级实时。',en:'Entity is Video Slice; the score comes from the DAG pipeline via GetLocalFeatureProvider + LLMGatewayInferenceProvider; owner is the Video Slice Feature Team; second-level real-time.'},
+    reply:{cn:'已写入 ✓ 我还从 DAG 配置推导了 Coding 草稿（RD 可修正）。最后一组问题：\n① Usage example —— 策略里会怎么用它？给一个具体例子；\n② Risk / limitation —— 有哪些风险或限制？\n③ Supported regions —— 支持哪些区域？有没有不可用地区？',en:'Written ✓ I also drafted Coding from the DAG config (RD can revise). Last set of questions:\n① Usage example — how will strategies use it? One concrete example;\n② Risk / limitation — any risks or limits?\n③ Supported regions — which regions? Any unavailable ones?'} },
+  { prefill:{cn:'例子：在 anchor_violation 策略中，分数大于 0.8 时对礼物、连麦互动叠加 2x 处罚权重。支持 SEA、US、LATAM，日韩因合规暂不可用。风险是依赖上游 DAG 和 prompt 版本。',en:'Example: in anchor_violation, apply 2x punishment weight to gift / co-host interactions when the score exceeds 0.8. Supports SEA, US, LATAM; JP/KR unavailable for compliance. Risk: depends on upstream DAG and prompt versions.'},
+    reply:{cn:'New Feature Proposal 已生成完整（Required 19/19 ✓），检索用的 search summary / aliases / tags / common questions 也一并起草了。\n请在右侧核对，无误后点击下方 Confirm Proposal —— 确认后我会调用 skills 按知识库要求逐项评估（不走人工审批）。',en:'The New Feature Proposal is complete (Required 19/19 ✓). I also drafted the search summary / aliases / tags / common questions for retrieval.\nReview it on the right, then click Confirm Proposal — I will run the skills evaluation against knowledge-base requirements (no manual approval).'} },
+  { prefill:{cn:'补充：上线前需完成稳定性评估；prompt 或上游 DAG 版本变更时分数可能漂移，需要回归验证；PK 结束后 30s 内存在延迟窗口，不适用于批量后处理场景。',en:'Addition: stability evaluation required before launch; scores may drift when prompt or upstream DAG versions change — regression validation needed; a 30s latency window exists after a PK ends, not suitable for batch post-processing.'},
+    reply:{cn:'已更新 Risk / limitation ✓ 请点击 Re-run Skills Evaluation 重新评估。',en:'Risk / limitation updated ✓ Please click Re-run Skills Evaluation.'} }
+];
+const AE_RISK_FINAL = {cn:'依赖上游 DAG 与 prompt 版本，版本变更需回归验证；上线前需完成稳定性评估；PK 结束后 30s 内存在延迟窗口，不适用于批量后处理',en:'Depends on upstream DAG & prompt versions (regression validation on change); stability evaluation before launch; 30s latency window after PK ends — not for batch post-processing'};
+let aeStage = 0, aeConfirmed = false, aeEvalRound = 0, aeInited = false;
+
+function aeEl(id){ return document.getElementById(id); }
+function aeScroll(){ const c = aeEl('ae-chat'); c.scrollTop = c.scrollHeight; }
+function aeMsg(role, text){
+  const d = document.createElement('div');
+  d.className = 'ae-msg ' + role;
+  d.textContent = L(text);
+  aeEl('ae-chat').appendChild(d); aeScroll();
+}
+function aeTyping(cb, delay){
+  const t = document.createElement('div');
+  t.className = 'typing'; t.innerHTML = '<i></i><i></i><i></i>';
+  aeEl('ae-chat').appendChild(t); aeScroll();
+  setTimeout(()=>{ t.remove(); cb(); }, delay || 900);
+}
+function aeInline(act, label, primary){
+  const d = document.createElement('div');
+  d.className = 'ae-next';
+  d.innerHTML = '<div class="hint">Next step</div>' +
+    '<button class="btn btn-sm' + (primary ? ' btn-primary' : '') + ' ae-inline-btn" data-act="' + act + '" onclick="' + act + '()">' + L(label) + '</button>';
+  aeEl('ae-chat').appendChild(d); aeScroll();
+}
+function aeDisableInline(act){
+  document.querySelectorAll('.ae-inline-btn[data-act="' + act + '"]').forEach(b=>{ b.disabled = true; });
+}
+function sideSet(){ }
+function aeCount(){
+  let filled = 0;
+  AE_REQUIRED.forEach(id=>{ if(!aeEl(id).classList.contains('pending')) filled++; });
+  aeEl('prop-num').textContent = 'Required ' + filled + '/' + AE_REQUIRED.length;
+  aeEl('prop-bar').style.width = (filled / AE_REQUIRED.length * 100) + '%';
+  Object.keys(AE_SECTIONS).forEach(sec=>{
+    const ids = AE_SECTIONS[sec];
+    const done = ids.filter(id=>!aeEl(id).classList.contains('pending')).length;
+    const el = document.querySelector('.cnt[data-sec="'+sec+'"]');
+    if(el){ el.textContent = done + '/' + ids.length; el.classList.toggle('done', done === ids.length); }
+  });
+  return filled;
+}
+function aeFill(map){
+  Object.keys(map).forEach(id=>{
+    const row = aeEl(id); if(!row) return;
+    row.querySelector('.pv').textContent = L(map[id]);
+    row.classList.remove('pending','flash');
+    void row.offsetWidth; row.classList.add('flash');
+  });
+  aeCount();
+}
+function aeStep(id, cls){ const el = aeEl(id); el.className = 'ae-step' + (cls ? ' ' + cls : ''); }
+function openAgentEntry(){
+  if(!ragEdit){ openPermModal(); return; }
+  document.getElementById('agent-modal').classList.add('open');
+  if(!aeInited){ aeReset(); }
+}
+function closeAgentEntry(){ document.getElementById('agent-modal').classList.remove('open'); }
+function aeReset(){
+  aeInited = true; aeStage = 0; aeConfirmed = false; aeEvalRound = 0;
+  aeEl('ae-chat').innerHTML = '';
+  document.querySelectorAll('#agent-modal .prop-row').forEach(r=>{
+    if(r.id === 'p_stab' || r.id === 'p_samples') return;
+    r.classList.add('pending'); r.classList.remove('flash');
+    r.querySelector('.pv').textContent = LANG === 'cn' ? '待收集' : 'to be collected';
+  });
+  aeCount();
+  aeEl('prop-locked').classList.remove('show');
+  aeEl('eval-idle').style.display = '';
+  aeEl('eval-running').classList.remove('show');
+  aeEl('eval-list').classList.remove('show');
+  aeEl('eval-fix').classList.remove('show');
+  document.querySelectorAll('#eval-list .eval-dot').forEach(d=>{ d.className = 'eval-dot pend'; d.textContent = '·'; });
+  aeEl('ae-success').classList.remove('show');
+  aeEl('ae-input-row').style.display = '';
+  aeEl('ae-input').disabled = false;
+  aeEl('ae-input').placeholder = '';
+  aeEl('ae-actions').style.display = '';
+  aeEl('ae-actions-done').style.display = 'none';
+  aeEl('btn-confirm').disabled = true;
+  aeEl('btn-eval').disabled = true; aeEl('btn-eval').textContent = 'Run Skills Evaluation';
+  aeEl('btn-submit').disabled = true;
+  aeStep('step-qa','active'); aeStep('step-confirm'); aeStep('step-eval'); aeStep('step-submit');
+  aeMsg('sys','New conversation · Task #1 · Create mode');
+  aeMsg('agent',{cn:'你好！我们来创建一条新 feature（one task = one conversation）。\n请从描述开始：这个新特征要解决什么策略问题？不需要按模板措辞，说清业务诉求即可。',en:"Hi! Let's create a new feature (one task = one conversation).\nStart from describing: what strategy problem should this feature solve? No template wording needed — just describe the business need."});
+  aeEl('ae-input').value = L(AE_TURNS[0].prefill);
+}
+function aeSend(){
+  const input = aeEl('ae-input');
+  const text = input.value.trim();
+  if(!text || input.disabled) return;
+  aeMsg('user', text);
+  input.value = '';
+  if(aeStage < 3){
+    const turn = AE_TURNS[aeStage];
+    const fills = AE_FILLS[aeStage];
+    const stage = aeStage;
+    aeTyping(()=>{
+      aeFill(fills);
+      aeMsg('agent', turn.reply);
+      if(stage === 2){
+        aeEl('btn-confirm').disabled = false;
+        aeStep('step-qa','done'); aeStep('step-confirm','active');
+        input.placeholder = LANG === 'cn' ? '可继续补充信息，或直接 Confirm Proposal' : 'Add more info, or just Confirm Proposal';
+        aeInline('aeConfirm', 'Confirm Proposal ✓', true);
+      } else {
+        input.value = L(AE_TURNS[stage + 1].prefill);
+      }
+    }, 1100);
+    aeStage++;
+  } else if(aeStage === 4){
+    aeTyping(()=>{
+      aeFill({ p_risk: AE_RISK_FINAL });
+      aeMsg('agent', AE_TURNS[3].reply);
+      aeEl('btn-eval').disabled = false;
+      aeEl('btn-eval').textContent = 'Re-run Skills Evaluation';
+      aeStep('step-eval','active');
+      aeInline('aeEvaluate', 'Re-run Skills Evaluation', true);
+    }, 1000);
+    aeStage = 5;
+  } else {
+    aeTyping(()=>{
+      const t = text.toLowerCase();
+      if(!aeEl('btn-confirm').disabled && /(conf|确认)/.test(t)){ aeConfirm(); return; }
+      if(!aeEl('btn-eval').disabled && /(eval|评估)/.test(t)){ aeEvaluate(); return; }
+      if(!aeEl('btn-submit').disabled && /(submit|提交)/.test(t)){ aeSubmit(); return; }
+      aeMsg('agent',{cn:'已记录 ✓ 你可以点击下方按钮或底部操作栏继续下一步。',en:'Noted ✓ Continue with the button below or the footer actions.'});
+      if(!aeEl('btn-confirm').disabled) aeInline('aeConfirm', 'Confirm Proposal ✓', true);
+      else if(!aeEl('btn-eval').disabled) aeInline('aeEvaluate', aeEl('btn-eval').textContent, true);
+      else if(!aeEl('btn-submit').disabled) aeInline('aeSubmit', 'Submit', true);
+    }, 700);
+  }
+}
+function aeConfirm(){
+  if(aeEl('btn-confirm').disabled) return;
+  aeConfirmed = true;
+  aeEl('btn-confirm').disabled = true;
+  aeDisableInline('aeConfirm');
+  aeEl('prop-locked').classList.add('show');
+  aeStep('step-confirm','done'); aeStep('step-eval','active');
+  aeEl('btn-eval').disabled = false;
+  aeMsg('sys',{cn:'Proposal confirmed · 已锁定 · 与右侧面板同步',en:'Proposal confirmed · locked · synced with the right panel'});
+  aeMsg('agent',{cn:'Proposal 已锁定 ✓ 点击 Run Skills Evaluation 开始评估 —— Agent 将调用 skills 按 F3 表单要求逐项检查，不走人工审批。',en:'Proposal locked ✓ Click Run Skills Evaluation — the Agent will check each item against the F3 form requirements via skills (no manual approval).'});
+  aeInline('aeEvaluate', 'Run Skills Evaluation', true);
+}
+function aeEvaluate(){
+  if(aeEl('btn-eval').disabled) return;
+  aeEl('btn-eval').disabled = true;
+  aeDisableInline('aeEvaluate');
+  aeEl('eval-idle').style.display = 'none';
+  aeEl('eval-fix').classList.remove('show');
+  aeEl('eval-list').classList.remove('show');
+  aeEl('eval-running').classList.add('show');
+  aeMsg('sys',{cn:'AGENT_EVALUATING · skills 评估中，本 task 不可重复提交',en:'AGENT_EVALUATING · skills running; this task cannot be re-submitted'});
+  const round = ++aeEvalRound;
+  setTimeout(()=>{
+    aeEl('eval-running').classList.remove('show');
+    aeEl('eval-list').classList.add('show');
+    const items = document.querySelectorAll('#eval-list .eval-item');
+    items.forEach((it, i)=>{
+      const dot = it.querySelector('.eval-dot');
+      setTimeout(()=>{
+        if(round === 1 && i === 5){ dot.className = 'eval-dot fail'; dot.textContent = '✗'; }
+        else { dot.className = 'eval-dot'; dot.textContent = '✓'; }
+      }, i * 220);
+    });
+    setTimeout(()=>{
+      if(round === 1){
+        aeEl('eval-fix').classList.add('show');
+        aeStep('step-eval','fail');
+        aeMsg('agent',{cn:'EVALUATION_FAILED · 5/6 通过，1 项未通过：\nRisk / limitation 未覆盖上线边界。请补充：① 上线前稳定性评估安排；② prompt / 上游版本变更的失效场景；③ 时效性边界（如 PK 结束后的延迟窗口）。\n补齐后我会更新 Proposal 并重新评估。',en:'EVALUATION_FAILED · 5/6 passed, 1 failed:\nRisk / limitation does not cover launch boundaries. Please add: ① stability evaluation plan before launch; ② failure scenarios on prompt / upstream version changes; ③ timeliness boundary (e.g. latency window after PK ends).\nOnce added, I will update the Proposal and re-evaluate.'});
+        aeEl('ae-input').value = L(AE_TURNS[3].prefill);
+        aeStage = 4;
+      } else {
+        aeStep('step-eval','done'); aeStep('step-submit','active');
+        aeEl('btn-submit').disabled = false;
+        aeMsg('agent',{cn:'Skills Evaluation 全部通过 ✓（6/6）\n点击 Submit 后：写入 Feature Platform Meta + Knowledge Library → 进入 embedding queue → 索引成功后 INDEXED 直接生效，Ask AI 立即可召回。',en:'Skills Evaluation all passed ✓ (6/6)\nAfter Submit: write to Feature Platform Meta + Knowledge Library → embedding queue → INDEXED takes effect once embedding succeeds, and Ask AI can retrieve it immediately.'});
+        aeInline('aeSubmit', 'Submit', true);
+      }
+    }, items.length * 220 + 300);
+  }, 1500);
+}
+function aeSubmit(){
+  if(aeEl('btn-submit').disabled) return;
+  aeEl('btn-submit').disabled = true;
+  aeDisableInline('aeSubmit');
+  aeStep('step-submit','done');
+  aeMsg('sys',{cn:'Submitted · conversation closed',en:'Submitted · conversation closed'});
+  aeEl('ae-success').classList.add('show');
+  aeEl('ae-input-row').style.display = 'none';
+  aeEl('ae-actions').style.display = 'none';
+  aeEl('ae-actions-done').style.display = 'flex';
+  aeScroll();
+}
+
+/* ================= Ask AI widget (discovery flow) ================= */
+function toggleQA(){ document.getElementById('qa-panel').classList.toggle('open'); }
+function qaScroll(){ const b = document.getElementById('qa-body'); b.scrollTop = b.scrollHeight; }
+function qaBubble(role, html){
+  const d = document.createElement('div');
+  d.className = 'bubble ' + role;
+  d.innerHTML = html;
+  document.getElementById('qa-conversation').appendChild(d);
+  qaScroll();
+  return d;
+}
+function qaTyping(cb, delay){
+  const t = document.createElement('div');
+  t.className = 'typing'; t.innerHTML = '<i></i><i></i><i></i>';
+  document.getElementById('qa-conversation').appendChild(t); qaScroll();
+  setTimeout(()=>{ t.remove(); cb(); qaScroll(); }, delay || 1000);
+}
+function qaGoDetail(){ toggleQA(); switchPage('f2'); }
+
+const QA_CARDS = {
+  root: { name:'Room · Root Country', code:'room_country_root', meta:'SLA A · Ordinary · Live room · Hour level',
+    why:{cn:'命中「直播间 + 国家口径」，语义对应房间归属地。',en:'Matches "live room + country"; semantically the room home country.'},
+    scope:'live_governance / room-level country policy · Global',
+    dsrc:'Room profile service', owner:'Live Governance Feature Platform',
+    uex:{cn:'用于按房间归属国家配置策略阈值。',en:'Configure strategy thresholds by room home country.'},
+    risk:{cn:'不代表当前开播地；如需实时开播位置，对比 broadcast country。',en:'Not the current broadcast location; compare broadcast country for real-time needs.'} },
+  broadcast: { name:'Room · Broadcast Country', code:'room_country_broadcast', meta:'SLA C · Ordinary · Live room · Day level',
+    why:{cn:'命中「开播国」，口径为当前直播开播地。',en:'Matches "broadcast country"; reflects the current broadcast location.'},
+    scope:'live_review / broadcast-country routing · Global',
+    dsrc:'Livestream session metadata', owner:'Live Room Feature Team',
+    uex:{cn:'用于按当前开播地做分区策略或路由。',en:'Regional strategies or routing by the current broadcast country.'},
+    risk:{cn:'SLA C，日级更新；不适合强实时策略。',en:'SLA C, daily update; not for strongly real-time strategies.'} },
+  battle: { name:'Slice · In Battle', code:'slice_is_in_battle', meta:'SLA A · Model · Video Slice · Second level',
+    why:{cn:'直接命中特征 code；问题关注 stability，优先展示 SLA、实时性与索引状态（INDEXED · last synced 07-08 14:22）。',en:'Direct feature-code hit; the question is about stability, so SLA, real-time level and index status are shown first (INDEXED · last synced 07-08 14:22).'},
+    scope:'live_governance / PK-state policies · video-slice level risk logic',
+    dsrc:'DAG pipeline · GetLocalFeatureProvider + LLMGatewayInferenceProvider', owner:'Video Slice Feature Team',
+    uex:{cn:'在 PK 场景下对礼物、连麦、跨房间互动风险做策略加权。',en:'Strategy weighting of gift / co-host / cross-room risk in PK scenarios.'},
+    risk:{cn:'Model feature，依赖上游 DAG 和 prompt 版本；PK 结束后短时间窗口可能有延迟，使用前确认 validity。',en:'Model feature; depends on upstream DAG & prompt versions; short latency window after a PK ends — confirm validity before use.'} },
+  sub: { name:'Slice · Sub Feature Info', code:'slice_sub_feature_info', meta:'SLA B · Ordinary · Video Slice · Minute level',
+    why:{cn:'仅部分命中「zero-shot 输入字段」语义 · score 0.41（阈值 0.65）。',en:'Partially matches "zero-shot input fields" · score 0.41 (threshold 0.65).'},
+    scope:'slice-level context enrichment / risk model input',
+    dsrc:'Subfeature provider', owner:'Slice Data Platform',
+    uex:{cn:'拆解 zero-shot 输出背后的 slice 信息，做规则条件或模型输入。',en:'Break down the slice info behind zero-shot outputs, as rule conditions or model input.'},
+    risk:{cn:'不是直接风险判断结果，需与 policy label / model output 组合使用。',en:'Not a direct risk verdict; combine with policy labels / model output.'} },
+  battleLow: { name:'Slice · In Battle', code:'slice_is_in_battle', meta:'SLA A · Model · Video Slice · Second level',
+    why:{cn:'仅部分命中「zero-shot / prompt inference」语义 · score 0.48（阈值 0.65）。',en:'Partially matches "zero-shot / prompt inference" · score 0.48 (threshold 0.65).'},
+    scope:'PK-state detection / live room interaction risk',
+    dsrc:'DAG pipeline · prompt inference result', owner:'Video Slice Feature Team',
+    uex:{cn:'当原策略只需判断 PK 状态时可比较该特征。',en:'Compare when the strategy only needs PK-state detection.'},
+    risk:{cn:'不能替代所有 zero-shot 语义，只适用于 PK-state 相关判断。',en:'Cannot replace all zero-shot semantics; PK-state judgments only.'} }
+};
+function qaCard(key, fit){
+  const c = QA_CARDS[key];
+  const lowLabel = LANG === 'cn' ? '参考度低 · Low confidence' : 'Low confidence';
+  const pill = fit === 'suit' ? '<span class="fit-pill">Likely suitable</span>'
+             : fit === 'ctx'  ? '<span class="fit-pill context">Need more context</span>'
+             : '<span class="low-pill">' + lowLabel + '</span>';
+  const low = fit === 'low';
+  return '<div class="feat-card' + (low ? ' low' : '') + '"' + (low ? '' : ' onclick="qaGoDetail()"') + '>' +
+    '<div class="feat-card-name">' + c.name + ' ' + pill + '</div>' +
+    '<div class="feat-card-code">' + c.code + '</div>' +
+    '<div class="feat-card-meta"><span>' + c.meta.split(' · ').join('</span><span>·</span><span>') + '</span></div>' +
+    '<div class="feat-card-row"><b>Why matched:</b> ' + L(c.why) + '</div>' +
+    '<div class="feat-card-row"><b>Scope:</b> ' + c.scope + '</div>' +
+    '<div class="feat-more"><b>Data source:</b> ' + c.dsrc + '<br><b>Owner:</b> ' + c.owner + '<br><b>Usage example:</b> ' + L(c.uex) + '<br><b>Risk / limitation:</b> ' + L(c.risk) + '</div>' +
+    (low ? '' : '<div class="feat-card-cta">View detail to confirm →</div>') +
+    '</div>';
+}
+let clarifyUsed = false;
+function qaAsk(q){
+  qaBubble('user', q);
+  const lower = q.toLowerCase();
+  if(/取值|枚举|哪些值|代表什么/.test(q) || lower.indexOf('room_status') > -1 || lower.indexOf('room status') > -1 || /\benum|values\b/.test(lower)){
+    qaTyping(()=>{
+      qaBubble('ai',
+        '<div class="interp">' + L({cn:'<b>treco_room_status</b>（room status）是 categorization feature，共 <b>4 个枚举值</b>。取值与业务含义（来自 Feature RAG 维护的 output samples）：',en:'<b>treco_room_status</b> (room status) is a categorization feature with <b>4 enum values</b>. Values and business meanings (from the output samples maintained in Feature RAG):'}) + '</div>' +
+        '<div class="feat-card" onclick="qaGoDetail()">' +
+          '<div class="feat-card-name">Room · Status <span class="fit-pill">Categorization · 4 values</span></div>' +
+          '<div class="feat-card-code">treco_room_status</div>' +
+          '<div class="feat-more">' +
+            '<b>RoomStatusEnum_Prepare</b> → ' + L({cn:'开播准备中',en:'preparing to go live'}) + '<br>' +
+            '<b>RoomStatusEnum_Living</b> → ' + L({cn:'直播中',en:'live / broadcasting'}) + '<br>' +
+            '<b>RoomStatusEnum_Pause</b> → ' + L({cn:'暂停（PK / 连麦挂起等场景）',en:'paused (PK / co-host suspended etc.)'}) + '<br>' +
+            '<b>RoomStatusEnum_Finish</b> → ' + L({cn:'已结束',en:'ended'}) +
+          '</div>' +
+          '<div class="feat-card-cta">View detail to confirm →</div>' +
+        '</div>' +
+        '<div style="margin-top:8px;font-size:12px;color:var(--text-3)">' + L({cn:'与 IDSP 条件配置下拉中的枚举值一致，可直接对照使用。仅 categorization feature 有此信息；model feature 分数范围固定（-1 ~ 100）。',en:'Consistent with the enum values in IDSP condition dropdowns. Only categorization features carry this info; model features have fixed score ranges (-1 to 100).'}) + '</div>');
+    }, 1100);
+  } else if(lower.indexOf('slice_is_in_battle') > -1 || q.indexOf('稳定') > -1 || lower.indexOf('stab') > -1){
+    qaTyping(()=>{ qaBubble('ai', '<div class="interp">' + L({cn:'命中 feature code <b>slice_is_in_battle</b> —— 直接返回结果（code / name 直查不做口径解释）。当前 SLA A、秒级实时、已 INDEXED；仍建议进入详情确认数据源与使用边界。',en:'Feature code <b>slice_is_in_battle</b> hit — returning directly (no interpretation for code / name lookups). SLA A, second-level, INDEXED; still confirm data source and usage boundaries in the detail page.'}) + '</div>' + qaCard('battle','suit')); });
+  } else if(q.indexOf('开播国') > -1 || q.indexOf('国家') > -1 || lower.indexOf('country') > -1){
+    if(clarifyUsed){
+      qaTyping(()=>{ qaBubble('ai', '<div class="interp">' + L({cn:'按相关度返回「国家口径」候选（本会话已澄清过一次，不再追问）：',en:'Ranked "country" candidates (already clarified once this session; no more follow-ups):'}) + '</div>' + qaCard('root','suit') + qaCard('broadcast','ctx')); });
+      return;
+    }
+    qaTyping(()=>{
+      qaBubble('ai',
+        '<div class="interp">' + L({cn:'「开播国」在库里对应<b>多个容易误用的口径</b>：房间归属地（较稳定）/ 当前开播地（会漂移）/ 观众地区（另一套特征）。为避免误用，我先确认一次：',en:'"Broadcast country" maps to <b>multiple easily-confused interpretations</b>: room home country (stable) / current broadcast country (drifts) / audience region (a different feature set). Let me confirm once:'}) + '</div>' +
+        '<div class="clarify-box" id="clarify-box">' +
+          '<div class="clarify-hd">' + L({cn:'你要的是哪种口径？',en:'Which interpretation do you need?'}) + '<span class="once">' + L({cn:'只追问这 1 轮',en:'asked only once'}) + '</span></div>' +
+          '<div class="clarify-chips">' +
+            '<span class="clarify-chip" onclick="qaClarify(this, \'root\')">' + L({cn:'房间归属根国家',en:'Room home (root) country'}) + '</span>' +
+            '<span class="clarify-chip" onclick="qaClarify(this, \'broadcast\')">' + L({cn:'当前开播国家',en:'Current broadcast country'}) + '</span>' +
+            '<span class="clarify-chip" onclick="qaClarify(this, \'audience\')">' + L({cn:'观众 / IP 地区',en:'Audience · IP region'}) + '</span>' +
+            '<span class="clarify-chip skip" onclick="qaClarify(this, \'skip\')">' + L({cn:'Skip · 直接看结果',en:'Skip · show results'}) + '</span>' +
+          '</div>' +
+        '</div>');
+    });
+  } else if(q.indexOf('替代') > -1 || lower.indexOf('zeta') > -1 || lower.indexOf('replace') > -1){
+    qaTyping(()=>{
+      qaBubble('ai',
+        '<div class="interp">' + L({cn:'<b>zeta_zero_shot_features</b> 覆盖多个 zero-shot / prompt inference 口径，当前召回整体置信度低于展示阈值（LOW_CONFIDENCE）—— 以下结果<b>仅供参考</b>：',en:'<b>zeta_zero_shot_features</b> spans multiple zero-shot / prompt-inference interpretations; overall recall confidence is below the display threshold (LOW_CONFIDENCE) — results below are <b>for reference only</b>:'}) + '</div>' +
+        qaCard('battleLow','low') + qaCard('sub','low') +
+        '<div style="margin-top:8px;font-size:12px;color:var(--text-3)">' + L({cn:'补充「要替代的是 PK 判断、违规语义判断，还是模型输入字段」，我可以给出高置信候选。',en:'Tell me whether you are replacing PK detection, violation semantics, or model input fields — I can then return high-confidence candidates.'}) + '</div>');
+    }, 1300);
+  } else {
+    qaTyping(()=>{
+      qaBubble('ai',
+        '<div class="interp">' + L({cn:'没有召回可用特征（NO_RESULT）。我只基于 INDEXED Feature Knowledge 回答，<b>不会编造</b>特征逻辑 —— 你可以换个描述，或创建一条新 feature：',en:'No usable feature retrieved (NO_RESULT). I only answer from INDEXED Feature Knowledge and <b>never invent</b> feature logic — rephrase, or create a new feature:'}) + '</div>' +
+        '<div class="qa-empty">' +
+          '<div class="qa-empty-icon">🔍</div>' +
+          '<div class="qa-empty-t">' + L({cn:'未找到匹配的 INDEXED 特征',en:'No matching INDEXED feature'}) + '</div>' +
+          '<div class="qa-empty-s">' + L({cn:'如业务确认需要新特征，可从描述策略问题开始，由 Agent 生成新 feature 方案（需 RAG 编辑权限）。',en:'If the business confirms a new feature is needed, start by describing the strategy problem and let the Agent generate a proposal (requires RAG edit permission).'}) + '</div>' +
+          '<div class="qa-empty-actions">' +
+            '<button class="btn btn-sm" onclick="document.getElementById(\'qa-input\').focus()">' + L({cn:'换个问法',en:'Rephrase'}) + '</button>' +
+            '<button class="btn btn-sm btn-primary" onclick="qaCreateNew()">' + L({cn:'去 F3 创建新 feature',en:'Create in F3'}) + '</button>' +
+          '</div>' +
+        '</div>');
+    }, 1200);
+  }
+}
+function qaClarify(chip, key){
+  const box = document.getElementById('clarify-box');
+  if(!box || box.classList.contains('answered')) return;
+  box.classList.add('answered'); box.removeAttribute('id');
+  chip.classList.add('picked');
+  clarifyUsed = true;
+  qaBubble('user', chip.textContent);
+  qaTyping(()=>{
+    if(key === 'root'){
+      qaBubble('ai', '<div class="interp">' + L({cn:'口径 = <b>房间归属根国家</b>。按相关度排序 2 个候选（不做最终推荐，请对比后使用）：',en:'Interpretation = <b>room home (root) country</b>. 2 candidates ranked by relevance (no final recommendation — compare before use):'}) + '</div>' + qaCard('root','suit') + qaCard('broadcast','ctx') + '<div style="margin-top:8px;font-size:12px;color:var(--text-3)">' + L({cn:'Compare before use · 最终确认请进入详情页。',en:'Compare before use · confirm in the detail page.'}) + '</div>');
+    } else if(key === 'broadcast'){
+      qaBubble('ai', '<div class="interp">' + L({cn:'口径 = <b>当前开播国家</b>。注意该口径 SLA C、日级更新：',en:'Interpretation = <b>current broadcast country</b>. Note: SLA C, daily update:'}) + '</div>' + qaCard('broadcast','suit') + qaCard('root','ctx') + '<div style="margin-top:8px;font-size:12px;color:var(--text-3)">' + L({cn:'如策略需要强实时，建议评估 root country + 实时信号组合。',en:'For strongly real-time strategies, consider root country + real-time signals.'}) + '</div>');
+    } else if(key === 'audience'){
+      qaBubble('ai', '<div class="interp">' + L({cn:'库内暂无「观众 / IP 地区」口径的 INDEXED 特征，以下为最接近候选，<b>置信度低于阈值</b>（LOW_CONFIDENCE）：',en:'No INDEXED feature for "audience / IP region". Closest candidate below, <b>confidence below threshold</b> (LOW_CONFIDENCE):'}) + '</div>' + qaCard('root','low') + '<div style="margin-top:8px;font-size:12px;color:var(--text-3)">' + L({cn:'如业务确认需要观众地区特征，可在 F3 通过 New feature entry · Ask AI 创建。',en:'If the business confirms the need, create it via F3 New feature entry · Ask AI.'}) + '</div>');
+    } else {
+      qaBubble('ai', '<div class="interp">' + L({cn:'已跳过澄清，按相关度返回全部候选（口径不同，请对比后使用）：',en:'Clarification skipped; all candidates ranked by relevance (different interpretations — compare before use):'}) + '</div>' + qaCard('root','suit') + qaCard('broadcast','ctx'));
+    }
+  }, 1200);
+}
+function qaCreateNew(){
+  if(!ragEdit){ openPermModal(); return; }
+  toggleQA();
+  switchPage('f3');
+  setTimeout(openAgentEntry, 350);
+}
+function qaSendInput(){
+  const input = document.getElementById('qa-input');
+  const q = input.value.trim();
+  if(!q) return;
+  input.value = '';
+  qaAsk(q);
+}
+document.querySelectorAll('.qa-panel .qa-suggest-card').forEach(c=>{
+  c.addEventListener('click', ()=>{ qaAsk(LANG === 'cn' ? c.dataset.q : (c.dataset.qEn || c.dataset.q)); });
+});
+document.getElementById('qa-input').addEventListener('keydown', e=>{
+  if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); qaSendInput(); }
+});
+document.getElementById('ae-input') && document.getElementById('ae-input').addEventListener('keydown', e=>{
+  if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); aeSend(); }
+});
+
+/* ---- F1 enum badge hover popover (fixed positioning, avoids table clipping) ---- */
+document.querySelectorAll('.enum-badge').forEach(b=>{
+  const pop = b.querySelector('.enum-pop');
+  b.addEventListener('mouseenter', ()=>{
+    const r = b.getBoundingClientRect();
+    pop.style.display = 'block';
+    const pw = pop.offsetWidth, ph = pop.offsetHeight;
+    let left = r.left, top = r.bottom + 6;
+    if(left + pw > window.innerWidth - 12) left = window.innerWidth - pw - 12;
+    if(top + ph > window.innerHeight - 12) top = r.top - ph - 6;
+    pop.style.left = left + 'px';
+    pop.style.top = top + 'px';
+  });
+  b.addEventListener('mouseleave', ()=>{ pop.style.display = 'none'; });
+});
+
+/* keyboard shortcuts */
+document.addEventListener('keydown', e=>{
+  if(e.key === 'Escape'){
+    document.getElementById('qa-panel').classList.remove('open');
+    closePermModal();
+  }
+  if((e.ctrlKey || e.metaKey) && e.key === 'k'){ e.preventDefault(); toggleQA(); document.getElementById('qa-input') && document.getElementById('qa-input').focus(); }
+});
+</script>
+
+
+<!-- ════════ GUIDED WORKFLOW LAYER (v0.4) ════════ -->
+<style>
+#tour{position:fixed;left:20px;bottom:20px;width:372px;max-width:calc(100vw - 40px);z-index:900;
+  background:var(--bg,#fff);border:1px solid var(--border,#ECEEF2);border-radius:14px;
+  box-shadow:0 18px 48px rgba(16,24,40,.18);font-size:13.5px;display:flex;flex-direction:column;
+  max-height:min(78vh,640px)}
+#tour.min{width:auto}
+#tour.min .t-body,#tour.min .t-foot{display:none}
+.t-head{display:flex;align-items:center;gap:9px;padding:11px 14px;border-bottom:1px solid var(--border,#ECEEF2);cursor:default}
+#tour.min .t-head{border-bottom:0}
+.t-head .dot{width:7px;height:7px;border-radius:50%;background:var(--primary,#1B6CF3);flex:none}
+.t-head b{font-size:12.5px;font-weight:700;letter-spacing:-.01em}
+.t-head .sp{flex:1}
+.t-head .cnt{font-family:var(--mono,"SF Mono",monospace);font-size:11px;color:var(--text-4,#98A0B0)}
+.t-head button{border:1px solid var(--border-strong,#DDE1E8);background:var(--bg,#fff);border-radius:6px;
+  width:24px;height:24px;cursor:pointer;color:var(--text-3,#6B7488);font-size:13px;line-height:1;padding:0}
+.t-head button:hover{border-color:var(--primary,#1B6CF3);color:var(--primary,#1B6CF3)}
+.t-prog{height:3px;background:var(--bg-hover,#F1F3F6)}
+.t-prog i{display:block;height:100%;background:var(--primary,#1B6CF3);transition:width .35s ease}
+.t-body{padding:14px;overflow-y:auto}
+.t-flow{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--text-4,#98A0B0);font-weight:600}
+.t-title{font-size:15.5px;font-weight:700;letter-spacing:-.015em;margin:5px 0 11px;line-height:1.35}
+.t-note{border-left:3px solid var(--border-strong,#DDE1E8);padding:0 0 0 11px;margin-bottom:11px}
+.t-note:last-child{margin-bottom:0}
+.t-note h5{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--text-4,#98A0B0);font-weight:600;margin-bottom:4px}
+.t-note p{font-size:12.8px;color:var(--text-2,#3D475C);line-height:1.58}
+.t-note b{color:var(--text-1,#0D1526)}
+.t-note code{font-family:var(--mono,"SF Mono",monospace);font-size:11.5px;color:var(--primary,#1B6CF3);
+  background:var(--primary-light,#EAF2FF);padding:1px 5px;border-radius:4px}
+.t-note.guard{border-left-color:var(--warn,#E8912B);background:linear-gradient(90deg,var(--warn-light,#FDF3E4),transparent 70%);padding:8px 0 8px 11px;border-radius:0 6px 6px 0}
+.t-note.guard h5{color:var(--warn,#E8912B)}
+.t-foot{display:flex;gap:8px;align-items:center;padding:11px 14px;border-top:1px solid var(--border,#ECEEF2)}
+.t-foot button{font:inherit;font-size:12.5px;font-weight:500;padding:7px 14px;border-radius:6px;cursor:pointer;
+  border:1px solid var(--border-strong,#DDE1E8);background:var(--bg,#fff);color:var(--text-2,#3D475C)}
+.t-foot button:hover:not(:disabled){border-color:var(--primary,#1B6CF3);color:var(--primary,#1B6CF3)}
+.t-foot button:disabled{opacity:.35;cursor:default}
+.t-foot button.pri{background:var(--primary,#1B6CF3);color:#fff;border-color:var(--primary,#1B6CF3);margin-left:auto}
+.t-foot button.pri:hover:not(:disabled){background:var(--primary-hover,#1257CE);color:#fff}
+.t-foot .rs{font-size:11.5px;color:var(--text-4,#98A0B0);cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+.t-busy{display:inline-block;width:9px;height:9px;border:2px solid var(--primary,#1B6CF3);border-right-color:transparent;
+  border-radius:50%;animation:tspin .6s linear infinite;vertical-align:-1px;margin-right:5px}
+@keyframes tspin{to{transform:rotate(360deg)}}
+.t-spot{outline:2px solid var(--primary,#1B6CF3)!important;outline-offset:3px;border-radius:8px;
+  box-shadow:0 0 0 6px rgba(27,108,243,.12)!important;transition:.2s}
+#tour-open{position:fixed;left:20px;bottom:20px;z-index:900;display:none;font:inherit;font-size:12.5px;font-weight:600;
+  padding:9px 15px;border-radius:22px;border:1px solid var(--primary,#1B6CF3);background:var(--primary,#1B6CF3);color:#fff;
+  cursor:pointer;box-shadow:0 8px 24px rgba(27,108,243,.3)}
+@media(max-width:820px){#tour{left:12px;right:12px;width:auto;bottom:12px;max-height:52vh}}
+</style>
+
+<div id="tour">
+  <div class="t-head">
+    <span class="dot"></span><b>Guided workflow</b><span class="sp"></span>
+    <span class="cnt"><span id="t-i">1</span>/<span id="t-n">13</span></span>
+    <button id="t-min" title="Minimise">–</button>
+  </div>
+  <div class="t-prog"><i id="t-prog"></i></div>
+  <div class="t-body">
+    <div class="t-flow" id="t-flow"></div>
+    <div class="t-title" id="t-title"></div>
+    <div id="t-notes"></div>
+  </div>
+  <div class="t-foot">
+    <button id="t-prev">← Back</button>
+    <span class="rs" id="t-reset">Restart</span>
+    <button id="t-next" class="pri">Run step →</button>
+  </div>
+</div>
+<button id="tour-open">▸ Guided workflow</button>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+const click=sel=>{const e=document.querySelector(sel); if(e) e.click(); return !!e;};
+function spot(sel,ms=2600){
+  document.querySelectorAll('.t-spot').forEach(e=>e.classList.remove('t-spot'));
+  const e=typeof sel==='string'?document.querySelector(sel):sel;
+  if(!e) return; e.classList.add('t-spot');
+  setTimeout(()=>e.classList.remove('t-spot'),ms);
+}
+function qaOpen(){ const p=$('qa-panel'); if(p&&!p.classList.contains('open')) toggleQA(); }
+function qaShut(){ const p=$('qa-panel'); if(p&&p.classList.contains('open')) toggleQA(); }
+
+async function reset(){
+  try{
+    document.querySelectorAll('.t-spot').forEach(e=>e.classList.remove('t-spot'));
+    if(typeof closePermModal==='function') closePermModal();
+    if(typeof closeAgentEntry==='function') closeAgentEntry();
+    if(typeof aeReset==='function') aeReset();
+    const c=$('qa-conversation'); if(c) c.innerHTML='';
+    const s=document.querySelector('.qa-suggest'); if(s) s.style.display='';
+    window.clarifyUsed=false;
+    if(typeof ragEdit!=='undefined' && !ragEdit && typeof togglePerm==='function') togglePerm();
+    qaShut(); switchPage('f1'); window.scrollTo(0,0);
+  }catch(e){}
+}
+
+const STEPS=[
+{fl:"Setup", t:"Where a strategy author starts",
+ run:async()=>{ await reset(); spot('.tab[data-page="f1"]'); },
+ notes:[
+  {h:"What this page is",p:"The Feature List, upgraded into a <b>Knowledge Library</b>: 7,024 features, 6,683 indexed, 341 failed. The KPI row is the point — it shows what exists <em>and</em> what is actually retrievable."},
+  {h:"Why that distinction matters",p:"The old list showed assets. It never showed embedding state, so nobody could tell whether a feature was reachable by the agent yet. A 95.1% that hides 341 failures is not a status, it is an average."}]},
+
+{fl:"Flow A · Discovery", t:"Ask AI is open to everyone",
+ run:async()=>{ switchPage('f1'); await wait(150); qaOpen(); spot('#qa-panel',3000); },
+ notes:[
+  {h:"Design decision",p:"Discovery is a <b>read</b> capability with no permission gate — anyone who can reach the platform can ask. It sits beside the existing Oncall widget rather than replacing it."},
+  {h:"What it replaces",p:"Finding the right feature used to mean asking whoever owns the platform and waiting. Throughput became a function of someone else's calendar."}]},
+
+{fl:"Flow A · Discovery", t:"An ambiguous question gets one question back",
+ run:async()=>{ qaOpen(); await wait(150); qaAsk('我想找一个直播间开播国相关的特征'); await wait(1400); spot('#clarify-box',3200); },
+ wait:1500,
+ notes:[
+  {h:"What just happened",p:"“开播国” maps to three definitions that are easy to confuse — room home country, current broadcast country, audience region. Instead of ranking them, the agent asks once."},
+  {cls:"guard",h:"Guardrail · asking is not free",p:"<b>Exactly one</b> clarification round per conversation, always skippable. After an answer or a skip it must return cards — later ambiguous questions get ranked candidates, never another follow-up."}]},
+
+{fl:"Flow A · Discovery", t:"Cards carry a fit label, never a recommendation",
+ run:async()=>{ if(!click('.clarify-chip')) qaAsk('开播国'); await wait(1200); spot('.feat-card',3000); },
+ wait:1300,
+ notes:[
+  {h:"Design decision",p:"The business definition is explained <em>before</em> the ranking. A direct code or name lookup skips the explanation; a semantic question does not."},
+  {cls:"guard",h:"Guardrail · the system does not decide",p:"No card is ever labelled <b>Recommended</b>. Only <code>Likely suitable</code>, <code>Likely not suitable</code>, <code>Need more context</code>. Each ends at <em>View detail to confirm</em>, never <em>Use this</em>."}]},
+
+{fl:"Flow A · Discovery", t:"When it is not sure, it shows the number",
+ run:async()=>{ qaOpen(); qaAsk('有没有可以替代 zeta_zero_shot_features 的？'); await wait(1300); spot('.qa-conversation .feat-card:last-of-type',3000); },
+ wait:1400,
+ notes:[
+  {h:"State",p:"<code>LOW_CONFIDENCE</code> — the top candidate scored below the display threshold. Results render muted and disclose the actual score against the threshold."},
+  {cls:"guard",h:"Guardrail · weak match, no path forward",p:"A low-confidence card <b>cannot open the detail page</b>. The one action that would turn a weak match into a real decision is removed."},
+  {h:"Why show the score",p:"Hiding it makes this read as a failure. Showing it makes it a calibrated answer — the user learns what retrieval can and cannot do, which is how trust gets built."}]},
+
+{fl:"Flow A · Discovery", t:"When it has nothing, it says nothing",
+ run:async()=>{ qaOpen(); qaAsk('有没有宠物偏好相关的特征？'); await wait(1300); },
+ wait:1400,
+ notes:[
+  {h:"State",p:"<code>NO_RESULT</code> — nothing usable in indexed knowledge. It offers two ways forward: rephrase, or create the missing feature."},
+  {cls:"guard",h:"Guardrail · no fabrication",p:"The agent states plainly that it <b>will not invent feature logic</b>. A retrieval layer that always returns something confident is worse than one that admits a miss."},
+  {h:"Measured, not assumed",p:"<code>LOW_CONFIDENCE</code> and <code>NO_RESULT</code> rates are guardrail metrics. If they hit zero, the system has started guessing."}]},
+
+{fl:"Flow A → B", t:"Creating from an empty result is permission-gated",
+ run:async()=>{ qaOpen(); if(typeof ragEdit!=='undefined' && ragEdit && typeof togglePerm==='function') togglePerm();
+                await wait(200); if(typeof qaCreateNew==='function') qaCreateNew(); await wait(400); spot('#perm-overlay',3200); },
+ wait:700,
+ notes:[
+  {h:"What just happened",p:"The permission switch in the panel header was flipped to <em>no RAG edit</em>, then <b>Create in F3</b> was clicked. The write path stops here."},
+  {h:"Design decision",p:"<code>PERMISSION_REQUIRED</code> returns a modal offering <em>Apply for permission</em> — it never drops the user into F3 write mode. Read is open to all; write is gated. Two capabilities, one widget, different doors."}]},
+
+{fl:"Flow A · Discovery", t:"Final confirmation happens on the detail page",
+ run:async()=>{ if(typeof closePermModal==='function') closePermModal();
+                if(typeof ragEdit!=='undefined' && !ragEdit && typeof togglePerm==='function') togglePerm();
+                qaShut(); switchPage('f2'); await wait(200); spot('.page.active .structured-block',3000); },
+ notes:[
+  {h:"Three columns, three questions",p:"What is it (read-only meta) · what does retrieval actually see (structured text) · is it reachable right now (RAG status, vector id, chunks, last synced)."},
+  {h:"Verifiable, not assertive",p:"The <b>Recall Test</b> runs a real question against this feature and shows the top-N hit, score, and threshold. It reads only <code>INDEXED</code> vectors and cannot change retrieval — a window, not a control."},
+  {h:"Boundary",p:"This page views, confirms, regenerates, re-indexes. It does <b>not</b> host creation or backfill — so a page people trust to read stays read-shaped."}]},
+
+{fl:"Flow B · Contribution", t:"An interview, not a nineteen-field form",
+ run:async()=>{ switchPage('f3'); await wait(250); if(typeof openAgentEntry==='function') openAgentEntry(); await wait(500); spot('#ae-chat',3000); },
+ wait:800,
+ notes:[
+  {h:"Design decision",p:"<b>Start Agent Entry sits before the template button.</b> Ordering is the instruction: begin from the business need, not from a blank form. The proposal assembles live on the right as the conversation runs on the left."},
+  {h:"Why the template survives",p:"The manual path is kept to bound token cost — but it writes the same field contract and passes the same gate. <b>It cannot bypass anything.</b> A second path is only safe if it is not a shortcut."}]},
+
+{fl:"Flow B · Contribution", t:"19 of 19 unlocks a lock, not a submit",
+ run:async()=>{ for(let k=0;k<6;k++){ if(typeof aeSend==='function') aeSend(); await wait(320); } await wait(400); spot('#ae-actions',3000); },
+ wait:2600,
+ notes:[
+  {h:"What just happened",p:"The agent asked for feature meaning, entity, data source, owner, usage example, and risk / limitation. Completion tracks as <code>Required N/19</code>."},
+  {h:"Design decision",p:"Reaching 19/19 enables <b>Confirm</b> — not Submit. Confirm freezes a version so the evaluation has a fixed thing to evaluate."},
+  {cls:"guard",h:"Submission gate · all three",p:"<code>Required 19/19</code> → <code>Confirmed &amp; locked</code> → <code>Evaluation 6/6</code>. Both paths, no exceptions."}]},
+
+{fl:"Flow B · Contribution", t:"Six checks, and the one that fails is the useful one",
+ run:async()=>{ if(typeof aeConfirm==='function') aeConfirm(); await wait(600);
+                if(typeof aeEvaluate==='function') aeEvaluate(); await wait(1600); spot('#ae-chat',3000); },
+ wait:2400,
+ notes:[
+  {h:"What just happened",p:"Evaluation runs <b>after Confirm</b>, not after Submit — an earlier draft had it backwards, and a check that runs after submission cannot block anything."},
+  {h:"Why this check fails",p:"Risk / limitation is where people write “none.” The check asks for the boundaries that make a feature <em>unsafe</em>: the stability story before launch, what breaks when an upstream version moves, how stale the value can get. Nobody volunteers that."},
+  {h:"Quality as a gate, not a habit",p:"Review culture depends on who is reviewing. A gate does not."}]},
+
+{fl:"Flow B · Contribution", t:"Passing the gate is what makes it real",
+ run:async()=>{ if(typeof aeSend==='function') aeSend(); await wait(700);
+                if(typeof aeConfirm==='function') aeConfirm(); await wait(500);
+                if(typeof aeEvaluate==='function') aeEvaluate(); await wait(1700);
+                if(typeof aeSubmit==='function') aeSubmit(); await wait(700); spot('#ae-success',3200); },
+ wait:3800,
+ notes:[
+  {cls:"guard",h:"Guardrail · approval is not transferable",p:"Any Q&amp;A edit creates a new proposal version and <b>invalidates the previous Confirm and Evaluation</b>. The backend must reject a Submit unless the <em>latest</em> version passed — otherwise reviewed and shipped stop being the same artifact."},
+  {h:"Submitted is not indexed",p:"Submit writes to Meta + Knowledge Library and closes the conversation. The feature becomes retrievable <b>only after embedding succeeds</b> — two separate states, because one can succeed while the other fails."},
+  {h:"The metric that closes the loop",p:"Indexed availability: <b>95.1% today, ≥99% required</b>. A feature that exists but is unreachable is, to the person asking, a feature that does not exist."}]},
+
+{fl:"Close", t:"Six places this system chooses to say less",
+ run:async()=>{ if(typeof closeAgentEntry==='function') closeAgentEntry(); switchPage('f1'); await wait(200); spot('.kpi-row, .kpis, .page.active .card',2600); },
+ notes:[
+  {h:"The pattern",p:"<b>One clarification</b>, never two · <b>never “Recommended”</b> · <b>no path forward from a weak match</b> · <b>no fabrication</b> on empty · <b>approval is version-scoped</b> · <b>submitted ≠ retrievable</b>."},
+  {h:"What they have in common",p:"Every one is a place the product could have produced a confident answer and chose not to. Together they are why a strategy author can trust what comes back — and why the platform team can finally let go of the loop."},
+  {cls:"guard",h:"The metric that would catch this being wrong",p:"<code>LOW_CONFIDENCE</code> and <code>NO_RESULT</code> rates. If they fall to zero, retrieval has stopped admitting misses and started guessing — and every guardrail above has quietly stopped working."}]}
 ];
 
-const wrap = document.getElementById('steps');
-wrap.innerHTML = STEPS.map((s,i)=>{
-  if(s.close) return `<section class="step" data-i="${i}">
-    <div class="step-head"><div class="step-tag"><s></s>${s.tag}</div><h3>${s.title}</h3></div>
-    <p class="lede" style="margin-top:0">Every one of these is a place the product could have produced a confident answer and chose not to. Together they are the reason a strategy author can trust what comes back — and the reason the platform team can let go of the loop.</p>
-    <div class="close-grid">
-      <div class="close-card"><b>ONE CLARIFICATION</b><p>Asks at most once per conversation, always skippable. Asking is the bet; asking twice is the failure.</p></div>
-      <div class="close-card"><b>NEVER "RECOMMENDED"</b><p>Only <em>likely suitable</em> / <em>likely not</em> / <em>need more context</em>. The system informs the decision, it does not make it.</p></div>
-      <div class="close-card"><b>NO PATH FROM A WEAK MATCH</b><p>Low-confidence cards show the score and the threshold, and cannot open the detail page.</p></div>
-      <div class="close-card"><b>NO FABRICATION</b><p>Empty means empty. It offers rephrase or create, and routes creation by permission.</p></div>
-      <div class="close-card"><b>APPROVAL IS VERSION-SCOPED</b><p>Any edit invalidates the prior confirm and evaluation. Reviewed and shipped are the same artifact or nothing ships.</p></div>
-      <div class="close-card"><b>SUBMITTED ≠ RETRIEVABLE</b><p>Indexing is its own state with its own failures, surfaced and re-runnable rather than averaged away.</p></div>
-    </div>
-    <div class="note" style="margin-top:22px"><h4>The metric that would catch this being wrong</h4>
-      <p><code>LOW_CONFIDENCE</code> and <code>NO_RESULT</code> rates. If they fall to zero, the retrieval layer has stopped admitting misses and started guessing — and every guardrail above has quietly stopped working.</p></div>
-  </section>`;
-  return `<section class="step" data-i="${i}">
-    <div class="step-head"><div class="step-tag"><s></s>${s.tag} &nbsp;·&nbsp; ${s.n}</div><h3>${s.title}</h3></div>
-    <div class="split">
-      <div class="screen">${s.screen}</div>
-      <div class="notes">${s.notes.map(n=>`
-        <div class="note ${n.cls||''}">
-          <h4>${n.lbl||n.h}</h4>
-          ${n.cls==='state'&&n.lbl?'':''}
-          <p>${n.p}</p>
-        </div>`).join('')}
-      </div>
-    </div>
-  </section>`;
-}).join('');
+let i=0, busy=false;
+$('t-n').textContent=STEPS.length;
 
-const secs=[...document.querySelectorAll('.step')], links=[...document.querySelectorAll('.rail a')];
-const prev=document.getElementById('prev'), next=document.getElementById('next'), cur=document.getElementById('cur');
-let i=0;
-function go(n){
-  i=Math.max(0,Math.min(STEPS.length-1,n));
-  secs.forEach((s,k)=>s.classList.toggle('on',k===i));
-  links.forEach((a,k)=>a.classList.toggle('on',k===i));
-  prev.disabled=i===0; next.disabled=i===STEPS.length-1;
-  next.textContent=i===STEPS.length-1?'End':'Next →';
-  cur.textContent=i+1;
-  window.scrollTo({top:0,behavior:'smooth'});
+function paint(){
+  const s=STEPS[i];
+  $('t-flow').textContent=s.fl;
+  $('t-title').textContent=s.t;
+  $('t-notes').innerHTML=s.notes.map(n=>`<div class="t-note ${n.cls||''}"><h5>${n.h}</h5><p>${n.p}</p></div>`).join('');
+  $('t-i').textContent=i+1;
+  $('t-prog').style.width=((i+1)/STEPS.length*100)+'%';
+  $('t-prev').disabled=i===0||busy;
+  $('t-next').disabled=busy;
+  $('t-next').innerHTML = busy ? '<span class="t-busy"></span>Running…'
+    : (i===STEPS.length-1?'Done':'Run step →');
 }
-links.forEach(a=>a.addEventListener('click',e=>{e.preventDefault();go(+a.dataset.go)}));
-prev.onclick=()=>go(i-1); next.onclick=()=>go(i+1);
+async function run(n){
+  if(busy) return;
+  i=Math.max(0,Math.min(STEPS.length-1,n));
+  busy=true; paint();
+  try{ await STEPS[i].run(); }catch(e){ console.warn('tour step',i,e); }
+  await wait(STEPS[i].wait||300);
+  busy=false; paint();
+}
+$('t-next').onclick=()=>{ if(i<STEPS.length-1) run(i+1); };
+$('t-prev').onclick=async()=>{ const t=i-1; await reset(); for(let k=1;k<=t;k++){ await STEPS[k].run(); await wait(120);} i=t; paint(); };
+$('t-reset').onclick=async()=>{ await reset(); run(0); };
+$('t-min').onclick=()=>{ $('tour').style.display='none'; $('tour-open').style.display='block'; };
+$('tour-open').onclick=()=>{ $('tour').style.display='flex'; $('tour-open').style.display='none'; };
 addEventListener('keydown',e=>{
-  if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();go(i+1)}
-  if(e.key==='ArrowLeft'){e.preventDefault();go(i-1)}
+  if(e.target.matches('input,textarea')) return;
+  if(e.key==='ArrowRight'){e.preventDefault(); if(i<STEPS.length-1) run(i+1);}
+  if(e.key==='ArrowLeft'){e.preventDefault(); $('t-prev').click();}
 });
-go(0);
+setTimeout(()=>run(0),350);
+})();
 </script>
+
 </body>
 </html>
